@@ -25,42 +25,42 @@ func TestTuples(t *testing.T) {
 		}
 	}
 
-	t.Run("A tuple with w=1.0 is a point", func(t *testing.T) {
+	t.Run("A tuple with w=1.0 is a Point", func(t *testing.T) {
 		a := Tuple{4.3, -4.2, 3.1, 1.0}
 
-		assertVal(t, a.x, 4.3)
-		assertVal(t, a.y, -4.2)
-		assertVal(t, a.z, 3.1)
-		assertVal(t, a.w, 1.0)
-		assertString(t, a.label(), "point")
+		assertVal(t, a.X, 4.3)
+		assertVal(t, a.Y, -4.2)
+		assertVal(t, a.Z, 3.1)
+		assertVal(t, a.W, 1.0)
+		assertString(t, a.Label(), "point")
 	})
 
-	t.Run("A tuple with w=0.0 is a vector", func(t *testing.T) {
+	t.Run("A tuple with w=0.0 is a Vector", func(t *testing.T) {
 		a := Tuple{4.3, -4.2, 3.1, 0.0}
 
-		assertVal(t, a.x, 4.3)
-		assertVal(t, a.y, -4.2)
-		assertVal(t, a.z, 3.1)
-		assertVal(t, a.w, 0.0)
-		assertString(t, a.label(), "vector")
+		assertVal(t, a.X, 4.3)
+		assertVal(t, a.Y, -4.2)
+		assertVal(t, a.Z, 3.1)
+		assertVal(t, a.W, 0.0)
+		assertString(t, a.Label(), "vector")
 	})
 
-	t.Run("point() creates a tuple with w=1", func(t *testing.T) {
-		p := point(4, -4, 3)
+	t.Run("Point() creates a tuple with w=1", func(t *testing.T) {
+		p := Point(4, -4, 3)
 
-		assertVal(t, p.x, 4)
-		assertVal(t, p.y, -4)
-		assertVal(t, p.z, 3)
-		assertVal(t, p.w, 1)
+		assertVal(t, p.X, 4)
+		assertVal(t, p.Y, -4)
+		assertVal(t, p.Z, 3)
+		assertVal(t, p.W, 1)
 	})
 
-	t.Run("vector() creates a tuple with w=0", func(t *testing.T) {
-		v := vector(4, -4, 3)
+	t.Run("Vector() creates a tuple with w=0", func(t *testing.T) {
+		v := Vector(4, -4, 3)
 
-		assertVal(t, v.x, 4)
-		assertVal(t, v.y, -4)
-		assertVal(t, v.z, 3)
-		assertVal(t, v.w, 0)
+		assertVal(t, v.X, 4)
+		assertVal(t, v.Y, -4)
+		assertVal(t, v.Z, 3)
+		assertVal(t, v.W, 0)
 	})
 
 	t.Run("test IsClose", func(t *testing.T) {
@@ -80,119 +80,119 @@ func TestTuples(t *testing.T) {
 		assertTupleEqual(t, Add(a1, a2), Tuple{1, 1, 6, 1})
 	})
 
-	t.Run("test subtracting points", func(t *testing.T) {
-		p1 := point(3, 2, 1)
-		p2 := point(5, 6, 7)
+	t.Run("test subtracting Points", func(t *testing.T) {
+		p1 := Point(3, 2, 1)
+		p2 := Point(5, 6, 7)
 
-		assertTupleEqual(t, Subtract(p1, p2), vector(-2, -4, -6))
+		assertTupleEqual(t, Subtract(p1, p2), Vector(-2, -4, -6))
 	})
 
-	t.Run("test subtract vector from a point", func(t *testing.T) {
-		p := point(3, 2, 1)
-		v := vector(5, 6, 7)
+	t.Run("test subtract Vector from a Point", func(t *testing.T) {
+		p := Point(3, 2, 1)
+		v := Vector(5, 6, 7)
 
-		assertTupleEqual(t, Subtract(p, v), point(-2, -4, -6))
+		assertTupleEqual(t, Subtract(p, v), Point(-2, -4, -6))
 	})
 
-	t.Run("test subtracting vectors", func(t *testing.T) {
-		v1 := vector(3, 2, 1)
-		v2 := vector(5, 6, 7)
+	t.Run("test subtracting Vectors", func(t *testing.T) {
+		v1 := Vector(3, 2, 1)
+		v2 := Vector(5, 6, 7)
 
-		assertTupleEqual(t, Subtract(v1, v2), vector(-2, -4, -6))
+		assertTupleEqual(t, Subtract(v1, v2), Vector(-2, -4, -6))
 	})
 
-	t.Run("test subtracting from the zero vector", func(t *testing.T) {
-		v1 := vector(0, 0, 0)
-		v2 := vector(1, 2, 3)
+	t.Run("test subtracting from the zero Vector", func(t *testing.T) {
+		v1 := Vector(0, 0, 0)
+		v2 := Vector(1, 2, 3)
 
-		assertTupleEqual(t, Subtract(v1, v2), vector(-1, -2, -3))
+		assertTupleEqual(t, Subtract(v1, v2), Vector(-1, -2, -3))
 	})
 
-	t.Run("test negating a vector", func(t *testing.T) {
-		v := vector(1, 2, 3)
+	t.Run("test negating a Vector", func(t *testing.T) {
+		v := Vector(1, 2, 3)
 
-		assertTupleEqual(t, v.negate(), vector(-1, -2, -3))
+		assertTupleEqual(t, v.Negate(), Vector(-1, -2, -3))
 	})
 
 	t.Run("multiple a tuple by a scalar", func(t *testing.T) {
 		a := Tuple{1, -2, 3, -4}
 
-		assertTupleEqual(t, a.multiply(3.5), Tuple{3.5, -7, 10.5, -14})
+		assertTupleEqual(t, a.Multiply(3.5), Tuple{3.5, -7, 10.5, -14})
 	})
 
 	t.Run("multiple a tuple by a fraction", func(t *testing.T) {
 		a := Tuple{1, -2, 3, -4}
 
-		assertTupleEqual(t, a.multiply(0.5), Tuple{0.5, -1, 1.5, -2})
+		assertTupleEqual(t, a.Multiply(0.5), Tuple{0.5, -1, 1.5, -2})
 	})
 
-	t.Run("divide a tuple by a scalar", func(t *testing.T) {
+	t.Run("Divide a tuple by a scalar", func(t *testing.T) {
 		a := Tuple{1, -2, 3, -4}
 
-		assertTupleEqual(t, a.divide(2), Tuple{0.5, -1, 1.5, -2})
+		assertTupleEqual(t, a.Divide(2), Tuple{0.5, -1, 1.5, -2})
 	})
 
-	t.Run("Compute the magnitude of vector(1, 0, 0)", func(t *testing.T) {
-		v := vector(1, 0, 0)
+	t.Run("Compute the Magnitude of Vector(1, 0, 0)", func(t *testing.T) {
+		v := Vector(1, 0, 0)
 
-		assertVal(t, v.magnitude(), 1)
+		assertVal(t, v.Magnitude(), 1)
 	})
 
-	t.Run("Compute the magnitude of vector(0, 1, 0)", func(t *testing.T) {
-		v := vector(0, 1, 0)
+	t.Run("Compute the Magnitude of Vector(0, 1, 0)", func(t *testing.T) {
+		v := Vector(0, 1, 0)
 
-		assertVal(t, v.magnitude(), 1)
+		assertVal(t, v.Magnitude(), 1)
 	})
 
-	t.Run("Compute the magnitude of vector(0, 0, 1)", func(t *testing.T) {
-		v := vector(0, 0, 1)
+	t.Run("Compute the Magnitude of Vector(0, 0, 1)", func(t *testing.T) {
+		v := Vector(0, 0, 1)
 
-		assertVal(t, v.magnitude(), 1)
+		assertVal(t, v.Magnitude(), 1)
 	})
 
-	t.Run("Compute the magnitude of vector(1, 2, 3)", func(t *testing.T) {
-		v := vector(1, 2, 3)
+	t.Run("Compute the Magnitude of Vector(1, 2, 3)", func(t *testing.T) {
+		v := Vector(1, 2, 3)
 
-		assertVal(t, v.magnitude(), math.Sqrt(14))
+		assertVal(t, v.Magnitude(), math.Sqrt(14))
 	})
 
-	t.Run("Compute the magnitude of vector(-1, -2, -3)", func(t *testing.T) {
-		v := vector(-1, -2, -3)
+	t.Run("Compute the Magnitude of Vector(-1, -2, -3)", func(t *testing.T) {
+		v := Vector(-1, -2, -3)
 
-		assertVal(t, v.magnitude(), math.Sqrt(14))
+		assertVal(t, v.Magnitude(), math.Sqrt(14))
 	})
 
-	t.Run("Normalize vector(4, 0, 0) gives the unit vector", func(t *testing.T) {
-		v := vector(4, 0, 0)
+	t.Run("Normalize Vector(4, 0, 0) gives the unit vector", func(t *testing.T) {
+		v := Vector(4, 0, 0)
 
-		assertTupleEqual(t, v.normalize(), vector(1, 0, 0))
+		assertTupleEqual(t, v.Normalize(), Vector(1, 0, 0))
 	})
 
-	t.Run("Normalize vector(1, 2, 2)", func(t *testing.T) {
-		v := vector(1, 2, 3)
+	t.Run("Normalize Vector(1, 2, 2)", func(t *testing.T) {
+		v := Vector(1, 2, 3)
 
-		assertTupleEqual(t, v.normalize(), vector(1/math.Sqrt(14), 2/math.Sqrt(14), 3/math.Sqrt(14)))
+		assertTupleEqual(t, v.Normalize(), Vector(1/math.Sqrt(14), 2/math.Sqrt(14), 3/math.Sqrt(14)))
 	})
 
-	t.Run("magnitude of a normalized vector is 1", func(t *testing.T) {
-		v := vector(1, 2, 3)
-		norm := v.normalize()
+	t.Run("Magnitude of a Normalized Vector is 1", func(t *testing.T) {
+		v := Vector(1, 2, 3)
+		norm := v.Normalize()
 
-		assertVal(t, norm.magnitude(), 1)
+		assertVal(t, norm.Magnitude(), 1)
 	})
 
 	t.Run("dot product of 2 tuples", func(t *testing.T) {
-		a := vector(1, 2, 3)
-		b := vector(2, 3, 4)
+		a := Vector(1, 2, 3)
+		b := Vector(2, 3, 4)
 
 		assertVal(t, Dot(a, b), 20)
 	})
 
 	t.Run("cross product of 2 tuples", func(t *testing.T) {
-		a := vector(1, 2, 3)
-		b := vector(2, 3, 4)
+		a := Vector(1, 2, 3)
+		b := Vector(2, 3, 4)
 
-		assertTupleEqual(t, Cross(a, b), vector(-1, 2, -1))
-		assertTupleEqual(t, Cross(b, a), vector(1, -2, 1))
+		assertTupleEqual(t, Cross(a, b), Vector(-1, 2, -1))
+		assertTupleEqual(t, Cross(b, a), Vector(1, -2, 1))
 	})
 }

@@ -5,41 +5,41 @@ import "math"
 const EPSILON = 0.00001
 
 type Tuple struct {
-	x float64
-	y float64
-	z float64
-	w float64
+	X float64
+	Y float64
+	Z float64
+	W float64
 }
 
-func (t *Tuple) label() string {
-	if t.w == 1.0 {
+func (t *Tuple) Label() string {
+	if t.W == 1.0 {
 		return "point"
-	} else if t.w == 0.0 {
+	} else if t.W == 0.0 {
 		return "vector"
 	} else {
 		return "unknown"
 	}
 }
 
-func (t *Tuple) negate() Tuple {
-	return Tuple{-t.x, -t.y, -t.z, -t.w}
+func (t *Tuple) Negate() Tuple {
+	return Tuple{-t.X, -t.Y, -t.Z, -t.W}
 }
 
-func (t *Tuple) multiply(a float64) Tuple {
-	return Tuple{t.x * a, t.y * a, t.z * a, t.w * a}
+func (t *Tuple) Multiply(a float64) Tuple {
+	return Tuple{t.X * a, t.Y * a, t.Z * a, t.W * a}
 }
 
-func (t *Tuple) divide(a float64) Tuple {
-	return Tuple{t.x / a, t.y / a, t.z / a, t.w / a}
+func (t *Tuple) Divide(a float64) Tuple {
+	return Tuple{t.X / a, t.Y / a, t.Z / a, t.W / a}
 }
 
-func (t *Tuple) magnitude() float64 {
-	return math.Sqrt(math.Pow(t.x, 2) + math.Pow(t.y, 2) + math.Pow(t.z, 2) + math.Pow(t.w, 2))
+func (t *Tuple) Magnitude() float64 {
+	return math.Sqrt(math.Pow(t.X, 2) + math.Pow(t.Y, 2) + math.Pow(t.Z, 2) + math.Pow(t.W, 2))
 }
 
-func (t *Tuple) normalize() Tuple {
-	magnitude := t.magnitude()
-	return Tuple{t.x / magnitude, t.y / magnitude, t.z / magnitude, t.w / magnitude}
+func (t *Tuple) Normalize() Tuple {
+	magnitude := t.Magnitude()
+	return Tuple{t.X / magnitude, t.Y / magnitude, t.Z / magnitude, t.W / magnitude}
 }
 
 func IsClose(a float64, b float64) bool {
@@ -50,30 +50,30 @@ func IsClose(a float64, b float64) bool {
 	}
 }
 
-func point(x float64, y float64, z float64) Tuple {
-	return Tuple{x: x, y: y, z: z, w: 1}
+func Point(X float64, Y float64, Z float64) Tuple {
+	return Tuple{X: X, Y: Y, Z: Z, W: 1}
 }
 
-func vector(x float64, y float64, z float64) Tuple {
-	return Tuple{x: x, y: y, z: z, w: 0}
+func Vector(X float64, Y float64, Z float64) Tuple {
+	return Tuple{X: X, Y: Y, Z: Z, W: 0}
 }
 
 func Equal(a Tuple, b Tuple) bool {
-	return IsClose(a.x, b.x) && IsClose(a.y, b.y) && IsClose(a.z, b.z) && IsClose(a.w, b.w)
+	return IsClose(a.X, b.X) && IsClose(a.Y, b.Y) && IsClose(a.Z, b.Z) && IsClose(a.W, b.W)
 }
 
 func Add(a Tuple, b Tuple) Tuple {
-	return Tuple{a.x + b.x, a.y + b.y, a.z + b.z, a.w + b.w}
+	return Tuple{a.X + b.X, a.Y + b.Y, a.Z + b.Z, a.W + b.W}
 }
 
 func Subtract(a Tuple, b Tuple) Tuple {
-	return Tuple{a.x - b.x, a.y - b.y, a.z - b.z, a.w - b.w}
+	return Tuple{a.X - b.X, a.Y - b.Y, a.Z - b.Z, a.W - b.W}
 }
 
 func Dot(a Tuple, b Tuple) float64 {
-	return a.x*b.x + a.y*b.y + a.z*b.z + a.w*b.w
+	return a.X*b.X + a.Y*b.Y + a.Z*b.Z + a.W*b.W
 }
 
 func Cross(a Tuple, b Tuple) Tuple {
-	return vector(a.y*b.z-a.z*b.y, a.z*b.x-a.x*b.z, a.x*b.y-a.y*b.x)
+	return Vector(a.Y*b.Z-a.Z*b.Y, a.Z*b.X-a.X*b.Z, a.X*b.Y-a.Y*b.X)
 }
