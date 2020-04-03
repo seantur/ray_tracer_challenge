@@ -8,18 +8,21 @@ import (
 func TestTuples(t *testing.T) {
 
 	assertVal := func(t *testing.T, got float64, want float64) {
+		t.Helper()
 		if got != want {
 			t.Errorf("got %f want %f", got, want)
 		}
 	}
 
 	assertString := func(t *testing.T, got string, want string) {
+		t.Helper()
 		if got != want {
 			t.Errorf("got %s want %s", got, want)
 		}
 	}
 
 	assertTupleEqual := func(t *testing.T, got Tuple, want Tuple) {
+		t.Helper()
 		if !Equal(got, want) {
 			t.Error("wanted equal tuples are not equal")
 		}
