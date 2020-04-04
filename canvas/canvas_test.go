@@ -20,7 +20,7 @@ func TestCanvas(t *testing.T) {
 	assertColorsEqual := func(t *testing.T, got Color, want Color) {
 		t.Helper()
 
-		allClose := tuples.IsClose(got.red, want.red) && tuples.IsClose(got.green, want.green) && tuples.IsClose(got.blue, want.blue)
+		allClose := tuples.IsClose(got.Red, want.Red) && tuples.IsClose(got.Green, want.Green) && tuples.IsClose(got.Blue, want.Blue)
 
 		if !allClose {
 			t.Error("wanted equal colors are not equal")
@@ -47,9 +47,9 @@ func TestCanvas(t *testing.T) {
 	t.Run("Colors are a tuple", func(t *testing.T) {
 		c := Color{-0.5, 0.4, 1.7}
 
-		assertVal(t, c.red, -0.5)
-		assertVal(t, c.green, 0.4)
-		assertVal(t, c.blue, 1.7)
+		assertVal(t, c.Red, -0.5)
+		assertVal(t, c.Green, 0.4)
+		assertVal(t, c.Blue, 1.7)
 	})
 
 	t.Run("Adding colors", func(t *testing.T) {
@@ -69,7 +69,7 @@ func TestCanvas(t *testing.T) {
 	t.Run("Multiply a color by a scalar", func(t *testing.T) {
 		c := Color{0.2, 0.3, 0.4}
 
-		assertColorsEqual(t, c.multiply(2.), Color{0.4, 0.6, 0.8})
+		assertColorsEqual(t, c.Multiply(2.), Color{0.4, 0.6, 0.8})
 	})
 
 	t.Run("Multiply 2 colors together", func(t *testing.T) {
@@ -80,54 +80,56 @@ func TestCanvas(t *testing.T) {
 	})
 
 	t.Run("Create a canvas", func(t *testing.T) {
-		c := Canvas{height: 10, width: 20}
-		c.init()
+		c := Canvas{Height: 10, Width: 20}
+		c.Init()
 
-		assertVal(t, float64(c.width), 20)
-		assertVal(t, float64(c.height), 10)
+		assertVal(t, float64(c.Width), 20)
+		assertVal(t, float64(c.Height), 10)
 
-		for i := 0; i < c.width; i++ {
-			for j := 0; j < c.height; j++ {
-				assertColorsEqual(t, c.read_pixel(i, j), Color{0, 0, 0})
+		for i := 0; i < c.Width; i++ {
+			for j := 0; j < c.Height; j++ {
+				val, _ := c.ReadPixel(i, j)
+				assertColorsEqual(t, val, Color{0, 0, 0})
 			}
 		}
 
 	})
 
 	t.Run("Write a pixel to a canvas", func(t *testing.T) {
-		c := Canvas{height: 20, width: 10}
-		c.init()
+		c := Canvas{Height: 20, Width: 10}
+		c.Init()
 
-		red := Color{1, 0, 0}
+		Red := Color{1, 0, 0}
 
-		c.write_pixel(2, 3, red)
+		c.WritePixel(2, 3, Red)
 
-		assertColorsEqual(t, c.read_pixel(2, 3), red)
+		val, _ := c.ReadPixel(2, 3)
+		assertColorsEqual(t, val, Red)
 	})
 
 	t.Run("construct PPM header", func(t *testing.T) {
-		c := Canvas{height: 3, width: 5}
-		c.init()
+		c := Canvas{Height: 3, Width: 5}
+		c.Init()
 
-		assertStringLine(t, c.to_ppm(), "P3", 0)
-		assertStringLine(t, c.to_ppm(), "5 3", 1)
-		assertStringLine(t, c.to_ppm(), "255", 2)
+		assertStringLine(t, c.toPPM(), "P3", 0)
+		assertStringLine(t, c.toPPM(), "5 3", 1)
+		assertStringLine(t, c.toPPM(), "255", 2)
 
 	})
 
 	t.Run("construct PPM pixel data", func(t *testing.T) {
-		c := Canvas{height: 3, width: 5}
-		c.init()
+		c := Canvas{Height: 3, Width: 5}
+		c.Init()
 
 		c1 := Color{1.5, 0, 0}
 		c2 := Color{0, 0.5, 0}
 		c3 := Color{-0.5, 0, 1}
 
-		c.write_pixel(0, 0, c1)
-		c.write_pixel(2, 1, c2)
-		c.write_pixel(4, 2, c3)
+		c.WritePixel(0, 0, c1)
+		c.WritePixel(2, 1, c2)
+		c.WritePixel(4, 2, c3)
 
-		got := c.to_ppm()
+		got := c.toPPM()
 
 		assertStringLine(t, got, "255 0 0 0 0 0 0 0 0 0 0 0 0 0 0", 3)
 		assertStringLine(t, got, "0 0 0 0 0 0 0 128 0 0 0 0 0 0 0", 4)
@@ -136,23 +138,47 @@ func TestCanvas(t *testing.T) {
 	})
 
 	t.Run("PPM lines > 70 are on a new line", func(t *testing.T) {
-		c := Canvas{height: 2, width: 10}
-		c.init()
+		c := Canvas{Height: 2, Width: 10}
+		c.Init()
 
 		color := Color{1, 0.8, 0.6}
 
-		for i := 0; i < c.width; i++ {
-			for j := 0; j < c.height; j++ {
-				c.write_pixel(i, j, color)
+		for i := 0; i < c.Width; i++ {
+			for j := 0; j < c.Height; j++ {
+				c.WritePixel(i, j, color)
 			}
 		}
 
-		got := c.to_ppm()
+		got := c.toPPM()
 
 		assertStringLine(t, got, "255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 255 204", 3)
 		assertStringLine(t, got, "153 255 204 153 255 204 153 255 204 153 255 204 153", 4)
 		assertStringLine(t, got, "255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 255 204", 5)
 		assertStringLine(t, got, "153 255 204 153 255 204 153 255 204 153 255 204 153", 6)
+
+	})
+
+	t.Run("ensure ppm string ends with newline", func(t *testing.T) {
+		c := Canvas{Height: 3, Width: 5}
+		c.Init()
+
+		ppm := c.toPPM()
+		endPPM := ppm[len(ppm)-1]
+
+		if endPPM != '\n' {
+			t.Error("did not end with newline")
+		}
+	})
+
+	t.Run("ensure out of bounds doesn't crash", func(t *testing.T) {
+		c := Canvas{Height: 3, Width: 5}
+		c.Init()
+
+		_, err := c.ReadPixel(3, 5)
+
+		if err.Error() != ErrOutOfBounds {
+			t.Error("did not throw appropriate error")
+		}
 
 	})
 
