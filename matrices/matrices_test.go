@@ -105,14 +105,104 @@ func TestMatrices(t *testing.T) {
 
 	t.Run("matrix multiplied by a tuple", func(t *testing.T) {
 		A := Matrix{4, 4, []float64{1, 2, 3, 4, 2, 4, 4, 2, 8, 6, 4, 1, 0, 0, 0, 1}}
-		tuple := tuples.Tuple{1, 2, 3, 1}
+		tuple := tuples.Tuple{X: 1, Y: 2, Z: 3, W: 1}
 
-		want := tuples.Tuple{18, 24, 33, 1}
+		want := tuples.Tuple{X: 18, Y: 24, Z: 33, W: 1}
 		got := TupleMultiply(A, tuple)
 
 		if !tuples.Equal(want, got) {
 			t.Error("did not get expected tuple")
 		}
+	})
+
+	t.Run("matrix multiplied by identity matrix", func(t *testing.T) {
+		A := Matrix{4, 4, []float64{0, 1, 2, 4, 1, 2, 4, 8, 2, 4, 8, 16, 4, 8, 16, 32}}
+		I := GetIdentity()
+
+		assertMatrixEqual(t, Multiply(A, I), A)
+	})
+
+	t.Run("identity matrix multiplied by a tuple", func(t *testing.T) {
+		I := GetIdentity()
+		tuple := tuples.Tuple{X: 1, Y: 2, Z: 3, W: 1}
+
+		got := TupleMultiply(I, tuple)
+
+		if !tuples.Equal(tuple, got) {
+			t.Error("did not get expected tuple")
+		}
+	})
+
+	t.Run("transpose a matrix", func(t *testing.T) {
+		A := Matrix{4, 4, []float64{0, 9, 3, 0, 9, 8, 0, 8, 1, 8, 5, 3, 0, 0, 5, 8}}
+		want := Matrix{4, 4, []float64{0, 9, 1, 0, 9, 8, 8, 0, 3, 0, 5, 5, 0, 8, 3, 8}}
+
+		got := A.Transpose()
+
+		assertMatrixEqual(t, want, got)
+	})
+
+	t.Run("the transpose of an the identity matrix is the identity matrix", func(t *testing.T) {
+		I := GetIdentity()
+		It := I.Transpose()
+
+		assertMatrixEqual(t, I, It)
+
+	})
+
+	t.Run("get determinant of 2x2 matrix", func(t *testing.T) {
+		A := Matrix{2, 2, []float64{1, 5, -3, 2}}
+
+		got := GetDeterminant(A)
+
+		assertVal(t, 17, got)
+
+	})
+
+	t.Run("get 2x2 submatrix of 3x3 matrix", func(t *testing.T) {
+		A := Matrix{3, 3, []float64{1, 5, 0, -3, 2, 7, 0, 6, -3}}
+		want := Matrix{2, 2, []float64{-3, 2, 0, 6}}
+
+		got := A.Submatrix(0, 2)
+
+		assertMatrixEqual(t, want, got)
+	})
+
+	t.Run("get 3x3 submatrix of 4x4 matrix", func(t *testing.T) {
+		A := Matrix{4, 4, []float64{-6, 1, 1, 6, -8, 5, 8, 6, -1, 0, 8, 2, -7, 1, -1, 1}}
+		want := Matrix{3, 3, []float64{-6, 1, 6, -8, 8, 6, -7, -1, 1}}
+
+		got := A.Submatrix(2, 1)
+
+		assertMatrixEqual(t, want, got)
+	})
+
+	t.Run("calculate the minor of 3x3 matrix", func(t *testing.T) {
+		A := Matrix{3, 3, []float64{3, 5, 0, 2, -1, -7, 6, -1, 5}}
+		B := A.Submatrix(1, 0)
+
+		det := GetDeterminant(B)
+		minor := GetMinor(A, 1, 0)
+
+		assertVal(t, det, minor)
+		assertVal(t, minor, 25)
+	})
+
+	t.Run("calculate the cofactor of 3x3 matrix", func(t *testing.T) {
+		A := Matrix{3, 3, []float64{3, 5, 0, 2, -1, -7, 6, -1, 5}}
+
+		minor := GetMinor(A, 0, 0)
+		assertVal(t, minor, -12)
+
+		cofactor := GetCofactor(A, 0, 0)
+		assertVal(t, cofactor, -12)
+
+		minor = GetMinor(A, 1, 0)
+		assertVal(t, minor, 25)
+
+		cofactor = GetCofactor(A, 1, 0)
+		assertVal(t, cofactor, -25)
+
 	})
 
 }

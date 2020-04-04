@@ -37,6 +37,54 @@ func (m *Matrix) Set(row int, col int, val float64) error {
 	return nil
 }
 
+func (m *Matrix) Transpose() Matrix {
+
+	M := Matrix{Row: m.Col, Col: m.Row}
+	M.Init()
+
+	for i := 0; i < m.Row; i++ {
+		for j := 0; j < m.Col; j++ {
+			val, _ := m.At(i, j)
+			M.Set(j, i, val)
+		}
+	}
+
+	return M
+}
+
+// Return the matrix with row/col removed
+func (m *Matrix) Submatrix(row int, col int) Matrix {
+
+	M := Matrix{Row: m.Row - 1, Col: m.Col - 1}
+	M.Init()
+
+	var Mi, Mj int
+
+	for i := 0; i < m.Row; i++ {
+		switch {
+		case i < row:
+			Mi = i
+		case i == row:
+			continue
+		case i > row:
+			Mi = i - 1
+		}
+		for j := 0; j < m.Col; j++ {
+			switch {
+			case j < col:
+				Mj = j
+			case j == col:
+				continue
+			case j > col:
+				Mj = j - 1
+			}
+			val, _ := m.At(i, j)
+			M.Set(Mi, Mj, val)
+		}
+	}
+	return M
+}
+
 func Equal(m1 Matrix, m2 Matrix) bool {
 
 	if m1.Row != m2.Row || m1.Col != m2.Col {
@@ -54,16 +102,16 @@ func Equal(m1 Matrix, m2 Matrix) bool {
 func Multiply(m1 Matrix, m2 Matrix) Matrix {
 
 	//if m1.Col != m2.Row {
-
+	// TODO throw an error if you can't multiply
 	//}
 
 	M := Matrix{Row: m1.Row, Col: m2.Col}
 	M.Init()
-	var val float64
 
 	for i := 0; i < m1.Row; i++ {
 		for j := 0; j < m2.Col; j++ {
-			val = 0
+			var val float64
+			//val = 0
 
 			for k := 0; k < m1.Col; k++ {
 				m1Val, _ := m1.At(i, k)
@@ -90,4 +138,35 @@ func TupleMultiply(m Matrix, t tuples.Tuple) tuples.Tuple {
 	w, _ := out.At(3, 0)
 
 	return tuples.Tuple{X: x, Y: y, Z: z, W: w}
+}
+
+func GetIdentity() Matrix {
+	return Matrix{Row: 4, Col: 4, Vals: []float64{1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1}}
+}
+
+// TODO Enforce 2x2
+func GetDeterminant(m Matrix) float64 {
+	a, _ := m.At(0, 0)
+	b, _ := m.At(0, 1)
+	c, _ := m.At(1, 0)
+	d, _ := m.At(1, 1)
+
+	return a*d - b*c
+}
+
+// TODO Enforce 3x3
+func GetMinor(m Matrix, row int, col int) float64 {
+	sub := m.Submatrix(row, col)
+	return GetDeterminant(sub)
+}
+
+// TODO Enforce 3x3
+func GetCofactor(m Matrix, row int, col int) float64 {
+	minor := GetMinor(m, row, col)
+
+	if (row + col%2) == 0 {
+		return minor
+	} else {
+		return -minor
+	}
 }
