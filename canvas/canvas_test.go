@@ -2,6 +2,7 @@ package canvas
 
 import (
 	"github.com/seantur/ray_tracer_challenge/tuples"
+	"strings"
 	"testing"
 )
 
@@ -26,11 +27,21 @@ func TestCanvas(t *testing.T) {
 		}
 	}
 
-	assertString := func(t *testing.T, got string, want string) {
+	assertStringLine := func(t *testing.T, got string, want_line string, line int) {
 		t.Helper()
-		if got != want {
-			t.Errorf("got %s want %s", got, want)
+
+		got_split := strings.Split(got, "\n")
+
+		if len(got_split) <= line {
+			t.Fatal("trying to compare line out of bounds")
 		}
+
+		got_line := got_split[line]
+
+		if got_line != want_line {
+			t.Errorf("got %s want %s", got_line, want_line)
+		}
+
 	}
 
 	t.Run("Colors are a tuple", func(t *testing.T) {
@@ -98,9 +109,50 @@ func TestCanvas(t *testing.T) {
 		c := Canvas{height: 3, width: 5}
 		c.init()
 
-		want := "P3\n5 3\n 255\n"
+		assertStringLine(t, c.to_ppm(), "P3", 0)
+		assertStringLine(t, c.to_ppm(), "5 3", 1)
+		assertStringLine(t, c.to_ppm(), "255", 2)
 
-		assertString(t, c.to_ppm(), want)
+	})
+
+	t.Run("construct PPM pixel data", func(t *testing.T) {
+		c := Canvas{height: 3, width: 5}
+		c.init()
+
+		c1 := Color{1.5, 0, 0}
+		c2 := Color{0, 0.5, 0}
+		c3 := Color{-0.5, 0, 1}
+
+		c.write_pixel(0, 0, c1)
+		c.write_pixel(2, 1, c2)
+		c.write_pixel(4, 2, c3)
+
+		got := c.to_ppm()
+
+		assertStringLine(t, got, "255 0 0 0 0 0 0 0 0 0 0 0 0 0 0", 3)
+		assertStringLine(t, got, "0 0 0 0 0 0 0 128 0 0 0 0 0 0 0", 4)
+		assertStringLine(t, got, "0 0 0 0 0 0 0 0 0 0 0 0 0 0 255", 5)
+
+	})
+
+	t.Run("PPM lines > 70 are on a new line", func(t *testing.T) {
+		c := Canvas{height: 2, width: 10}
+		c.init()
+
+		color := Color{1, 0.8, 0.6}
+
+		for i := 0; i < c.width; i++ {
+			for j := 0; j < c.height; j++ {
+				c.write_pixel(i, j, color)
+			}
+		}
+
+		got := c.to_ppm()
+
+		assertStringLine(t, got, "255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 255 204", 3)
+		assertStringLine(t, got, "153 255 204 153 255 204 153 255 204 153 255 204 153", 4)
+		assertStringLine(t, got, "255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 255 204", 5)
+		assertStringLine(t, got, "153 255 204 153 255 204 153 255 204 153 255 204 153", 6)
 
 	})
 
