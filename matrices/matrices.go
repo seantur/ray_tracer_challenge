@@ -85,6 +85,34 @@ func (m *Matrix) Submatrix(row int, col int) Matrix {
 	return M
 }
 
+func (m *Matrix) isInvertible() bool {
+	if GetDeterminant(*m) == 0 {
+		return false
+	}
+	return true
+
+}
+
+func (m *Matrix) Inverse() (Matrix, error) {
+
+	det := GetDeterminant(*m)
+
+	if !m.isInvertible() {
+		return Matrix{}, errors.New("trying to invert and non-invertible matrix")
+	}
+
+	M := Matrix{Row: m.Row, Col: m.Col}
+	M.Init()
+
+	for i := 0; i < m.Row; i++ {
+		for j := 0; j < m.Col; j++ {
+			M.Set(j, i, GetCofactor(*m, i, j)/det)
+		}
+	}
+
+	return M, nil
+}
+
 func Equal(m1 Matrix, m2 Matrix) bool {
 
 	if m1.Row != m2.Row || m1.Col != m2.Col {
@@ -144,14 +172,24 @@ func GetIdentity() Matrix {
 	return Matrix{Row: 4, Col: 4, Vals: []float64{1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1}}
 }
 
-// TODO Enforce 2x2
 func GetDeterminant(m Matrix) float64 {
-	a, _ := m.At(0, 0)
-	b, _ := m.At(0, 1)
-	c, _ := m.At(1, 0)
-	d, _ := m.At(1, 1)
+	if m.Row == 2 && m.Col == 2 {
+		a, _ := m.At(0, 0)
+		b, _ := m.At(0, 1)
+		c, _ := m.At(1, 0)
+		d, _ := m.At(1, 1)
 
-	return a*d - b*c
+		return a*d - b*c
+	}
+
+	var det float64
+
+	for i := 0; i < m.Col; i++ {
+		val, _ := m.At(0, i)
+		det += val * GetCofactor(m, 0, i)
+	}
+
+	return det
 }
 
 // TODO Enforce 3x3
@@ -164,7 +202,7 @@ func GetMinor(m Matrix, row int, col int) float64 {
 func GetCofactor(m Matrix, row int, col int) float64 {
 	minor := GetMinor(m, row, col)
 
-	if (row + col%2) == 0 {
+	if ((row + col) % 2) == 0 {
 		return minor
 	} else {
 		return -minor
