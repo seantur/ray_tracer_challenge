@@ -1,6 +1,7 @@
 package raytracing
 
 import (
+	"errors"
 	"github.com/seantur/ray_tracer_challenge/tuples"
 	"math"
 )
@@ -21,15 +22,33 @@ func Intersect(s Sphere, r Ray) []Intersection {
 		return make([]Intersection, 0)
 	}
 
-	var ret []Intersection
-
-	return append(
-		ret,
+	xs := []Intersection{
 		Intersection{(-b - math.Sqrt(discriminant)) / (2 * a), &s},
-		Intersection{(-b + math.Sqrt(discriminant)) / (2 * a), &s})
+		Intersection{(-b + math.Sqrt(discriminant)) / (2 * a), &s}}
+
+	return xs
 }
 
 type Intersection struct {
 	t      float64
 	object *Sphere
+}
+
+func Hit(intersections []Intersection) (Intersection, error) {
+
+	var hit_val float64
+	hit_intersection := intersections[0]
+
+	for _, intersection := range intersections {
+		if intersection.t > 0 && (hit_val == 0 || intersection.t < hit_val) {
+			hit_intersection = intersection
+			hit_val = intersection.t
+		}
+	}
+
+	if hit_val == 0 {
+		return hit_intersection, errors.New("did not find hit")
+	}
+
+	return hit_intersection, nil
 }

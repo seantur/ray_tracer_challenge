@@ -1,7 +1,9 @@
 package raytracing
 
 import (
+	"github.com/seantur/ray_tracer_challenge/matrices"
 	"github.com/seantur/ray_tracer_challenge/tuples"
+	"reflect"
 	"testing"
 )
 
@@ -99,10 +101,10 @@ func TestRays(t *testing.T) {
 
 	t.Run("Aggregating intersections", func(t *testing.T) {
 		s := Sphere{}
+		i1 := Intersection{1, &s}
+		i2 := Intersection{2, &s}
 
-		var xs []Intersection
-
-		xs = append(xs, Intersection{1, &s}, Intersection{2, &s})
+		xs := [...]Intersection{i1, i2}
 
 		assertVal(t, float64(len(xs)), 2)
 		assertVal(t, xs[0].t, 1)
@@ -128,6 +130,83 @@ func TestRays(t *testing.T) {
 			t.Fatal()
 		}
 
+	})
+
+	t.Run("The hit when all intersections have positive t", func(t *testing.T) {
+		s := Sphere{}
+		i1 := Intersection{1, &s}
+		i2 := Intersection{2, &s}
+
+		xs := []Intersection{i1, i2}
+
+		i, _ := Hit(xs)
+
+		if !reflect.DeepEqual(i, i1) {
+			t.Errorf("expected equal intersections were not equal")
+		}
+	})
+
+	t.Run("The hit where some intersections have negative t", func(t *testing.T) {
+		s := Sphere{}
+		i1 := Intersection{-1, &s}
+		i2 := Intersection{1, &s}
+
+		xs := []Intersection{i1, i2}
+
+		i, _ := Hit(xs)
+
+		if !reflect.DeepEqual(i, i2) {
+			t.Errorf("expected equal intersections were not equal")
+		}
+	})
+
+	t.Run("The hit where all intersections have negative t", func(t *testing.T) {
+		s := Sphere{}
+		i1 := Intersection{-2, &s}
+		i2 := Intersection{-1, &s}
+
+		xs := []Intersection{i1, i2}
+
+		_, err := Hit(xs)
+
+		if err == nil {
+			t.Errorf("expected no hits, but got one")
+		}
+	})
+
+	t.Run("The hit is always the lower nonnegative intersection", func(t *testing.T) {
+		s := Sphere{}
+		i1 := Intersection{5, &s}
+		i2 := Intersection{7, &s}
+		i3 := Intersection{-3, &s}
+		i4 := Intersection{2, &s}
+
+		xs := []Intersection{i1, i2, i3, i4}
+		i, _ := Hit(xs)
+
+		if !reflect.DeepEqual(i, i4) {
+			t.Errorf("expected equal intersections were not equal")
+		}
+	})
+
+	t.Run("Translating a ray", func(t *testing.T) {
+		r := Ray{Origin: tuples.Point(1, 2, 3), Direction: tuples.Vector(0, 1, 0)}
+		m := matrices.GetTranslation(3, 4, 5)
+
+		r2 := r.Transform(m)
+
+		assertTupleEqual(t, r2.Origin, tuples.Point(4, 6, 8))
+		assertTupleEqual(t, r2.Direction, tuples.Vector(0, 1, 0))
+	})
+
+	t.Run("Scaling a ray", func(t *testing.T) {
+		r := Ray{Origin: tuples.Point(1, 2, 3), Direction: tuples.Vector(0, 1, 0)}
+		m := matrices.GetScaling(2, 3, 4)
+
+		r2 := r.Transform(m)
+
+		assertTupleEqual(t, r2.Origin, tuples.Point(2, 6, 12))
+		assertTupleEqual(t, r2.Direction, tuples.Vector(0, 3, 0))
 	})
 
 }
