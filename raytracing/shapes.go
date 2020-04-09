@@ -2,14 +2,27 @@ package raytracing
 
 import (
 	"errors"
+	"github.com/seantur/ray_tracer_challenge/matrices"
 	"github.com/seantur/ray_tracer_challenge/tuples"
 	"math"
 )
 
 type Sphere struct {
+	transform matrices.Matrix
 }
 
-func Intersect(s Sphere, r Ray) []Intersection {
+func (s *Sphere) Init() {
+	s.transform = matrices.GetIdentity()
+}
+
+func (s *Sphere) SetTransform(m matrices.Matrix) {
+	s.transform = m
+}
+
+func (s *Sphere) Intersect(r Ray) []Intersection {
+	tInv, _ := s.transform.Inverse()
+	r = r.Transform(tInv)
+
 	sphereToRay := tuples.Subtract(r.Origin, tuples.Point(0, 0, 0))
 
 	a := tuples.Dot(r.Direction, r.Direction)
@@ -23,8 +36,8 @@ func Intersect(s Sphere, r Ray) []Intersection {
 	}
 
 	xs := []Intersection{
-		Intersection{(-b - math.Sqrt(discriminant)) / (2 * a), &s},
-		Intersection{(-b + math.Sqrt(discriminant)) / (2 * a), &s}}
+		Intersection{(-b - math.Sqrt(discriminant)) / (2 * a), s},
+		Intersection{(-b + math.Sqrt(discriminant)) / (2 * a), s}}
 
 	return xs
 }
