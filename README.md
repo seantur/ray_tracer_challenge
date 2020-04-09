@@ -1,3 +1,3 @@
-# ray_tracer_challenge
+# Ray Tracer Challenge
 
 Ray Tracer Challenge implemented in Go
