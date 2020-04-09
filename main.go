@@ -3,7 +3,9 @@ package main
 import (
 	"fmt"
 	"github.com/seantur/ray_tracer_challenge/canvas"
+	"github.com/seantur/ray_tracer_challenge/matrices"
 	"github.com/seantur/ray_tracer_challenge/tuples"
+	"math"
 )
 
 type projectile struct {
@@ -24,7 +26,7 @@ func tick(env environment, proj projectile) projectile {
 	return projectile{position, velocity}
 }
 
-func main() {
+func saveProjectile(path string) {
 	start := tuples.Point(0, 1, 0)
 	velocity := tuples.Vector(1, 1.8, 0)
 	velocity = velocity.Normalize()
@@ -47,6 +49,31 @@ func main() {
 		c.WritePixel(int(p.position.X), int(550-p.position.Y), color)
 	}
 
-	c.SavePPM("tmp.ppm")
+	c.SavePPM(path)
+}
 
+func saveClock(path string, size int) {
+
+	scale := 3 / 8. * float64(size)
+
+	c := canvas.Canvas{Height: size, Width: size}
+	c.Init()
+
+	rot := matrices.GetRotationY(math.Pi * 2 / 12.)
+
+	white := canvas.Color{Red: 255, Green: 255, Blue: 255}
+
+	offset := int(size / 2)
+	p := tuples.Point(0, 0, 1)
+
+	for i := 0; i < 12; i++ {
+		p = matrices.TupleMultiply(rot, p)
+		c.WritePixel(int(p.X*scale)+offset, int(p.Z*scale)+offset, white)
+	}
+
+	c.SavePPM(path)
+}
+
+func main() {
+	saveClock("clock.ppm", 200)
 }
