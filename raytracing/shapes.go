@@ -9,14 +9,30 @@ import (
 
 type Sphere struct {
 	transform matrices.Matrix
+	Material  Material
 }
 
-func (s *Sphere) Init() {
+func GetSphere() Sphere {
+	s := Sphere{}
 	s.transform = matrices.GetIdentity()
+	s.Material = GetMaterial()
+
+	return s
 }
 
 func (s *Sphere) SetTransform(m matrices.Matrix) {
 	s.transform = m
+}
+
+func (s *Sphere) GetNormal(world_p tuples.Tuple) tuples.Tuple {
+	s_transform_inv, _ := s.transform.Inverse()
+
+	obj_p := matrices.TupleMultiply(s_transform_inv, world_p)
+	obj_normal := tuples.Subtract(obj_p, tuples.Point(0, 0, 0))
+	world_normal := matrices.TupleMultiply(s_transform_inv.Transpose(), obj_normal)
+	world_normal.W = 0
+
+	return world_normal.Normalize()
 }
 
 func (s *Sphere) Intersect(r Ray) []Intersection {
@@ -43,8 +59,8 @@ func (s *Sphere) Intersect(r Ray) []Intersection {
 }
 
 type Intersection struct {
-	t      float64
-	object *Sphere
+	T      float64
+	Object *Sphere
 }
 
 func Hit(intersections []Intersection) (Intersection, error) {
@@ -53,9 +69,9 @@ func Hit(intersections []Intersection) (Intersection, error) {
 	hit_intersection := intersections[0]
 
 	for _, intersection := range intersections {
-		if intersection.t > 0 && (hit_val == 0 || intersection.t < hit_val) {
+		if intersection.T > 0 && (hit_val == 0 || intersection.T < hit_val) {
 			hit_intersection = intersection
-			hit_val = intersection.t
+			hit_val = intersection.T
 		}
 	}
 

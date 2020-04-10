@@ -25,6 +25,7 @@ func (t *Tuple) Negate() Tuple {
 	return Tuple{-t.X, -t.Y, -t.Z, -t.W}
 }
 
+// TODO make this variadic
 func (t *Tuple) Multiply(a float64) Tuple {
 	return Tuple{t.X * a, t.Y * a, t.Z * a, t.W * a}
 }
@@ -40,6 +41,14 @@ func (t *Tuple) Magnitude() float64 {
 func (t *Tuple) Normalize() Tuple {
 	magnitude := t.Magnitude()
 	return Tuple{t.X / magnitude, t.Y / magnitude, t.Z / magnitude, t.W / magnitude}
+}
+
+func (t *Tuple) Reflect(normal Tuple) Tuple {
+	tDotNormal := Dot(*t, normal)
+	normal = normal.Multiply(2)
+	normal = normal.Multiply(tDotNormal)
+
+	return Subtract(*t, normal)
 }
 
 func IsClose(a float64, b float64) bool {

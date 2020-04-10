@@ -23,13 +23,6 @@ func TestRays(t *testing.T) {
 		}
 	}
 
-	assertMatrixEqual := func(t *testing.T, got matrices.Matrix, want matrices.Matrix) {
-		t.Helper()
-		if !matrices.Equal(got, want) {
-			t.Error("wanted equal matrices are not equal")
-		}
-	}
-
 	t.Run("create and query a ray", func(t *testing.T) {
 		origin := tuples.Point(1, 2, 3)
 		direction := tuples.Vector(4, 5, 6)
@@ -53,34 +46,31 @@ func TestRays(t *testing.T) {
 
 	t.Run("A ray intersect a sphere at two points", func(t *testing.T) {
 		r := Ray{Origin: tuples.Point(0, 0, -5), Direction: tuples.Vector(0, 0, 1)}
-		s := Sphere{}
-		s.Init()
+		s := GetSphere()
 
 		xs := s.Intersect(r)
 
 		assertVal(t, float64(len(xs)), 2)
-		assertVal(t, xs[0].t, 4.0)
-		assertVal(t, xs[1].t, 6.0)
+		assertVal(t, xs[0].T, 4.0)
+		assertVal(t, xs[1].T, 6.0)
 
 	})
 
 	t.Run("A ray intersects a sphere at a tangent", func(t *testing.T) {
 		r := Ray{Origin: tuples.Point(0, 1, -5), Direction: tuples.Vector(0, 0, 1)}
-		s := Sphere{}
-		s.Init()
+		s := GetSphere()
 
 		xs := s.Intersect(r)
 
 		assertVal(t, float64(len(xs)), 2)
-		assertVal(t, xs[0].t, 5.0)
-		assertVal(t, xs[1].t, 5.0)
+		assertVal(t, xs[0].T, 5.0)
+		assertVal(t, xs[1].T, 5.0)
 
 	})
 
 	t.Run("A ray misses a sphere", func(t *testing.T) {
 		r := Ray{Origin: tuples.Point(0, 2, -5), Direction: tuples.Vector(0, 0, 1)}
-		s := Sphere{}
-		s.Init()
+		s := GetSphere()
 
 		xs := s.Intersect(r)
 
@@ -89,66 +79,62 @@ func TestRays(t *testing.T) {
 
 	t.Run("A ray originates inside a sphere", func(t *testing.T) {
 		r := Ray{Origin: tuples.Point(0, 0, 0), Direction: tuples.Vector(0, 0, 1)}
-		s := Sphere{}
-		s.Init()
+		s := GetSphere()
 
 		xs := s.Intersect(r)
 
 		assertVal(t, float64(len(xs)), 2)
-		assertVal(t, xs[0].t, -1.0)
-		assertVal(t, xs[1].t, 1.0)
+		assertVal(t, xs[0].T, -1.0)
+		assertVal(t, xs[1].T, 1.0)
 	})
 
 	t.Run("A ray is behind a ray", func(t *testing.T) {
 		r := Ray{Origin: tuples.Point(0, 0, 5), Direction: tuples.Vector(0, 0, 1)}
-		s := Sphere{}
-		s.Init()
+		s := GetSphere()
 
 		xs := s.Intersect(r)
 
 		assertVal(t, float64(len(xs)), 2)
-		assertVal(t, xs[0].t, -6.0)
-		assertVal(t, xs[1].t, -4.0)
+		assertVal(t, xs[0].T, -6.0)
+		assertVal(t, xs[1].T, -4.0)
 	})
 
 	t.Run("Aggregating intersections", func(t *testing.T) {
-		s := Sphere{}
-		s.Init()
+		s := GetSphere()
+
 		i1 := Intersection{1, &s}
 		i2 := Intersection{2, &s}
 
 		xs := [...]Intersection{i1, i2}
 
 		assertVal(t, float64(len(xs)), 2)
-		assertVal(t, xs[0].t, 1)
-		assertVal(t, xs[1].t, 2)
+		assertVal(t, xs[0].T, 1)
+		assertVal(t, xs[1].T, 2)
 
 	})
 
 	t.Run("Intersect sets the object on the intersection", func(t *testing.T) {
 		r := Ray{tuples.Point(0, 0, -5), tuples.Vector(0, 0, 1)}
-		s := Sphere{}
-		s.Init()
+		s := GetSphere()
 
 		xs := s.Intersect(r)
 
 		assertVal(t, float64(len(xs)), 2)
 
-		if &s != xs[0].object {
-			t.Errorf("expected equal pointers were not equal: %p %p", &s, xs[0].object)
+		if &s != xs[0].Object {
+			t.Errorf("expected equal pointers were not equal: %p %p", &s, xs[0].Object)
 			t.Fatal()
 		}
 
-		if &s != xs[1].object {
-			t.Errorf("expected equal pointers were not equal: %p %p", &s, xs[1].object)
+		if &s != xs[1].Object {
+			t.Errorf("expected equal pointers were not equal: %p %p", &s, xs[1].Object)
 			t.Fatal()
 		}
 
 	})
 
 	t.Run("The hit when all intersections have positive t", func(t *testing.T) {
-		s := Sphere{}
-		s.Init()
+		s := GetSphere()
 		i1 := Intersection{1, &s}
 		i2 := Intersection{2, &s}
 
@@ -162,8 +148,7 @@ func TestRays(t *testing.T) {
 	})
 
 	t.Run("The hit where some intersections have negative t", func(t *testing.T) {
-		s := Sphere{}
-		s.Init()
+		s := GetSphere()
 		i1 := Intersection{-1, &s}
 		i2 := Intersection{1, &s}
 
@@ -177,8 +162,7 @@ func TestRays(t *testing.T) {
 	})
 
 	t.Run("The hit where all intersections have negative t", func(t *testing.T) {
-		s := Sphere{}
-		s.Init()
+		s := GetSphere()
 		i1 := Intersection{-2, &s}
 		i2 := Intersection{-1, &s}
 
@@ -192,8 +176,7 @@ func TestRays(t *testing.T) {
 	})
 
 	t.Run("The hit is always the lower nonnegative intersection", func(t *testing.T) {
-		s := Sphere{}
-		s.Init()
+		s := GetSphere()
 		i1 := Intersection{5, &s}
 		i2 := Intersection{7, &s}
 		i3 := Intersection{-3, &s}
@@ -225,47 +208,6 @@ func TestRays(t *testing.T) {
 
 		assertTupleEqual(t, r2.Origin, tuples.Point(2, 6, 12))
 		assertTupleEqual(t, r2.Direction, tuples.Vector(0, 3, 0))
-	})
-
-	t.Run("Sphere's default transform is identity matrix", func(t *testing.T) {
-		s := Sphere{}
-		s.Init()
-
-		assertMatrixEqual(t, s.transform, matrices.GetIdentity())
-	})
-
-	t.Run("Changing a sphere's transformation", func(t *testing.T) {
-		s := Sphere{}
-		s.Init()
-		s.SetTransform(matrices.GetTranslation(2, 3, 4))
-
-		assertMatrixEqual(t, s.transform, matrices.GetTranslation(2, 3, 4))
-	})
-
-	t.Run("Intersecting a scaled sphere with a ray", func(t *testing.T) {
-		r := Ray{Origin: tuples.Point(0, 0, -5), Direction: tuples.Vector(0, 0, 1)}
-
-		s := Sphere{}
-		s.Init()
-
-		s.SetTransform(matrices.GetScaling(2, 2, 2))
-		xs := s.Intersect(r)
-
-		assertVal(t, float64(len(xs)), 2)
-		assertVal(t, xs[0].t, 3)
-		assertVal(t, xs[1].t, 7)
-	})
-
-	t.Run("Intsecting a translated sphere with a ray", func(t *testing.T) {
-		r := Ray{Origin: tuples.Point(0, 0, -5), Direction: tuples.Vector(0, 0, 1)}
-
-		s := Sphere{}
-		s.Init()
-
-		s.SetTransform(matrices.GetTranslation(5, 0, 0))
-		xs := s.Intersect(r)
-
-		assertVal(t, float64(len(xs)), 0)
 	})
 
 }

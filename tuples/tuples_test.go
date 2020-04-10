@@ -198,4 +198,21 @@ func TestTuples(t *testing.T) {
 		assertTupleEqual(t, Cross(a, b), Vector(-1, 2, -1))
 		assertTupleEqual(t, Cross(b, a), Vector(1, -2, 1))
 	})
+
+	t.Run("Reflecting a vector approaching at 45deg", func(t *testing.T) {
+		v := Vector(1, -1, 0)
+		n := Vector(0, 1, 0)
+		r := v.Reflect(n)
+
+		assertTupleEqual(t, r, Vector(1, 1, 0))
+	})
+
+	t.Run("Reflecting a vector off a slanted surface", func(t *testing.T) {
+		v := Vector(0, -1, 0)
+		n := Vector(math.Sqrt(2)/2, math.Sqrt(2)/2, 0)
+
+		r := v.Reflect(n)
+
+		assertTupleEqual(t, r, Vector(1, 0, 0))
+	})
 }

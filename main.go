@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/seantur/ray_tracer_challenge/canvas"
 	"github.com/seantur/ray_tracer_challenge/matrices"
 	"github.com/seantur/ray_tracer_challenge/raytracing"
@@ -84,8 +85,7 @@ func saveShadow(path string) {
 	c.Init()
 
 	red := canvas.Color{Red: 1, Green: 0, Blue: 0}
-	shape := raytracing.Sphere{}
-	shape.Init()
+	shape := raytracing.GetSphere()
 
 	ray_origin := tuples.Point(0, 0, -5)
 
@@ -112,6 +112,54 @@ func saveShadow(path string) {
 
 }
 
+func save3DSphere(path string) {
+	shape := raytracing.GetSphere()
+	shape.Material.Color = canvas.Color{Red: 1, Green: 0, Blue: 0}
+	shape.SetTransform(matrices.GetScaling(0.5, 0.5, 0.5))
+
+	light := raytracing.PointLight{Position: tuples.Point(10, 10, -10), Intensity: canvas.Color{Red: 1, Green: 1, Blue: 1}}
+
+	canvas_pixels := 1000
+	wall_z := 10.0
+	wall_size := 7.0
+	pixel_size := wall_size / float64(canvas_pixels)
+	half := wall_size / 2.0
+
+	c := canvas.Canvas{Height: canvas_pixels, Width: canvas_pixels}
+	c.Init()
+
+	ray_origin := tuples.Point(0, 0, -5)
+
+	for y := 0; y < canvas_pixels; y++ {
+		world_y := half - pixel_size*float64(y)
+		for x := 0; x < canvas_pixels; x++ {
+			world_x := half - pixel_size*float64(x)
+			position := tuples.Point(world_x, world_y, wall_z)
+
+			pos := tuples.Subtract(position, ray_origin)
+			r := raytracing.Ray{Origin: ray_origin, Direction: pos.Normalize()}
+			xs := shape.Intersect(r)
+
+			if len(xs) > 0 {
+				hit, err := raytracing.Hit(xs)
+				if err == nil {
+					point := r.Position(hit.T)
+					normal := hit.Object.GetNormal(point)
+					eye := r.Direction.Negate()
+
+					color := raytracing.Lighting(hit.Object.Material, light, point, eye, normal)
+					c.WritePixel(x, y, color)
+				}
+
+			}
+		}
+	}
+
+	fmt.Println("Saving...")
+	c.SavePPM(path)
+
+}
+
 func main() {
-	saveShadow("shadow.ppm")
+	save3DSphere("3Dsphere.ppm")
 }
