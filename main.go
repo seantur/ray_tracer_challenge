@@ -7,6 +7,7 @@ import (
 	"github.com/seantur/ray_tracer_challenge/raytracing"
 	"github.com/seantur/ray_tracer_challenge/tuples"
 	"math"
+	"time"
 )
 
 type projectile struct {
@@ -113,6 +114,9 @@ func saveShadow(path string) {
 }
 
 func save3DSphere(path string) {
+
+	start := time.Now()
+
 	shape := raytracing.GetSphere()
 	shape.Material.Color = canvas.Color{Red: 1, Green: 0, Blue: 0}
 	shape.SetTransform(matrices.GetScaling(0.5, 0.5, 0.5))
@@ -155,8 +159,15 @@ func save3DSphere(path string) {
 		}
 	}
 
+	elapsed := time.Since(start)
+
+	fmt.Printf("Rendering took %s\n", elapsed.Round(time.Millisecond))
 	fmt.Println("Saving...")
+
+	start = time.Now()
 	c.SavePPM(path)
+	elapsed = time.Since(start)
+	fmt.Printf("Saving took %s\n", elapsed.Round(time.Millisecond))
 
 }
 

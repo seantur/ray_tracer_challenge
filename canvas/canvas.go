@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"math"
 	"strconv"
+	"strings"
 )
 
 const (
@@ -78,7 +79,7 @@ func scale255(val float64) string {
 	}
 }
 
-func addColor(color float64, s *string, row *string) {
+func addColor(color float64, s *strings.Builder, row *string) {
 	colorStr := scale255(color)
 
 	if len([]rune(*row))+len([]rune(colorStr)) > PPMCharLen {
@@ -90,27 +91,29 @@ func addColor(color float64, s *string, row *string) {
 
 }
 
-func writeRow(s *string, row *string) {
-	*s += (*row)[:len((*row))-1] + "\n"
+func writeRow(s *strings.Builder, row *string) {
+	s.WriteString((*row)[:len((*row))-1] + "\n")
 }
 
 func (c *Canvas) toPPM() string {
-	s := fmt.Sprintf("%s\n%d %d\n255\n", PPMHeader, c.Width, c.Height)
+	var str strings.Builder
+
+	str.WriteString(fmt.Sprintf("%s\n%d %d\n255\n", PPMHeader, c.Width, c.Height))
 
 	for i := 0; i < c.Height; i++ {
 		row := ""
 		for j := 0; j < c.Width; j++ {
 			color, _ := c.ReadPixel(j, i)
 
-			addColor(color.Red, &s, &row)
-			addColor(color.Green, &s, &row)
-			addColor(color.Blue, &s, &row)
+			addColor(color.Red, &str, &row)
+			addColor(color.Green, &str, &row)
+			addColor(color.Blue, &str, &row)
 
 		}
-		writeRow(&s, &row)
+		writeRow(&str, &row)
 	}
 
-	return s
+	return str.String()
 }
 
 func (c *Canvas) SavePPM(path string) {
