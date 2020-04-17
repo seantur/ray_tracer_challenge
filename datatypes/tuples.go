@@ -1,8 +1,6 @@
-package tuples
+package datatypes
 
 import "math"
-
-const EPSILON = 0.00001
 
 type Tuple struct {
 	X float64
@@ -51,14 +49,6 @@ func (t *Tuple) Reflect(normal Tuple) Tuple {
 	return Subtract(*t, normal)
 }
 
-func IsClose(a float64, b float64) bool {
-	if math.Abs(a-b) < EPSILON {
-		return true
-	} else {
-		return false
-	}
-}
-
 func Point(X float64, Y float64, Z float64) Tuple {
 	return Tuple{X: X, Y: Y, Z: Z, W: 1}
 }
@@ -67,8 +57,8 @@ func Vector(X float64, Y float64, Z float64) Tuple {
 	return Tuple{X: X, Y: Y, Z: Z, W: 0}
 }
 
-func Equal(a Tuple, b Tuple) bool {
-	return IsClose(a.X, b.X) && IsClose(a.Y, b.Y) && IsClose(a.Z, b.Z) && IsClose(a.W, b.W)
+func (t *Tuple) equal(t2 Tuple) bool {
+	return IsClose(t.X, t2.X) && IsClose(t.Y, t2.Y) && IsClose(t.Z, t2.Z) && IsClose(t.W, t2.W)
 }
 
 func Add(a Tuple, b Tuple) Tuple {

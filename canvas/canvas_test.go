@@ -1,7 +1,7 @@
 package canvas
 
 import (
-	"github.com/seantur/ray_tracer_challenge/tuples"
+	"github.com/seantur/ray_tracer_challenge/datatypes"
 	"strings"
 	"testing"
 )
@@ -20,7 +20,7 @@ func TestCanvas(t *testing.T) {
 	assertColorsEqual := func(t *testing.T, got Color, want Color) {
 		t.Helper()
 
-		allClose := tuples.IsClose(got.Red, want.Red) && tuples.IsClose(got.Green, want.Green) && tuples.IsClose(got.Blue, want.Blue)
+		allClose := datatypes.IsClose(got.Red, want.Red) && datatypes.IsClose(got.Green, want.Green) && datatypes.IsClose(got.Blue, want.Blue)
 
 		if !allClose {
 			t.Error("wanted equal colors are not equal")

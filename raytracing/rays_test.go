@@ -1,8 +1,7 @@
 package raytracing
 
 import (
-	"github.com/seantur/ray_tracer_challenge/matrices"
-	"github.com/seantur/ray_tracer_challenge/tuples"
+	"github.com/seantur/ray_tracer_challenge/datatypes"
 	"reflect"
 	"testing"
 )
@@ -16,36 +15,29 @@ func TestRays(t *testing.T) {
 		}
 	}
 
-	assertTupleEqual := func(t *testing.T, got tuples.Tuple, want tuples.Tuple) {
-		t.Helper()
-		if !tuples.Equal(got, want) {
-			t.Error("wanted equal tuples are not equal")
-		}
-	}
-
 	t.Run("create and query a ray", func(t *testing.T) {
-		origin := tuples.Point(1, 2, 3)
-		direction := tuples.Vector(4, 5, 6)
+		origin := datatypes.Point(1, 2, 3)
+		direction := datatypes.Vector(4, 5, 6)
 
 		r := Ray{origin, direction}
 
-		assertTupleEqual(t, r.Origin, origin)
-		assertTupleEqual(t, r.Direction, direction)
+		datatypes.AssertTupleEqual(t, r.Origin, origin)
+		datatypes.AssertTupleEqual(t, r.Direction, direction)
 
 	})
 
 	t.Run("Compute a point from a distance", func(t *testing.T) {
-		r := Ray{Origin: tuples.Point(2, 3, 4), Direction: tuples.Vector(1, 0, 0)}
+		r := Ray{Origin: datatypes.Point(2, 3, 4), Direction: datatypes.Vector(1, 0, 0)}
 
-		assertTupleEqual(t, r.Position(0), tuples.Point(2, 3, 4))
-		assertTupleEqual(t, r.Position(1), tuples.Point(3, 3, 4))
-		assertTupleEqual(t, r.Position(-1), tuples.Point(1, 3, 4))
-		assertTupleEqual(t, r.Position(2.5), tuples.Point(4.5, 3, 4))
+		datatypes.AssertTupleEqual(t, r.Position(0), datatypes.Point(2, 3, 4))
+		datatypes.AssertTupleEqual(t, r.Position(1), datatypes.Point(3, 3, 4))
+		datatypes.AssertTupleEqual(t, r.Position(-1), datatypes.Point(1, 3, 4))
+		datatypes.AssertTupleEqual(t, r.Position(2.5), datatypes.Point(4.5, 3, 4))
 
 	})
 
 	t.Run("A ray intersect a sphere at two points", func(t *testing.T) {
-		r := Ray{Origin: tuples.Point(0, 0, -5), Direction: tuples.Vector(0, 0, 1)}
+		r := Ray{Origin: datatypes.Point(0, 0, -5), Direction: datatypes.Vector(0, 0, 1)}
 		s := GetSphere()
 
 		xs := s.Intersect(r)
@@ -57,7 +49,7 @@ func TestRays(t *testing.T) {
 	})
 
 	t.Run("A ray intersects a sphere at a tangent", func(t *testing.T) {
-		r := Ray{Origin: tuples.Point(0, 1, -5), Direction: tuples.Vector(0, 0, 1)}
+		r := Ray{Origin: datatypes.Point(0, 1, -5), Direction: datatypes.Vector(0, 0, 1)}
 		s := GetSphere()
 
 		xs := s.Intersect(r)
@@ -69,7 +61,7 @@ func TestRays(t *testing.T) {
 	})
 
 	t.Run("A ray misses a sphere", func(t *testing.T) {
-		r := Ray{Origin: tuples.Point(0, 2, -5), Direction: tuples.Vector(0, 0, 1)}
+		r := Ray{Origin: datatypes.Point(0, 2, -5), Direction: datatypes.Vector(0, 0, 1)}
 		s := GetSphere()
 
 		xs := s.Intersect(r)
@@ -78,7 +70,7 @@ func TestRays(t *testing.T) {
 	})
 
 	t.Run("A ray originates inside a sphere", func(t *testing.T) {
-		r := Ray{Origin: tuples.Point(0, 0, 0), Direction: tuples.Vector(0, 0, 1)}
+		r := Ray{Origin: datatypes.Point(0, 0, 0), Direction: datatypes.Vector(0, 0, 1)}
 		s := GetSphere()
 
 		xs := s.Intersect(r)
@@ -89,7 +81,7 @@ func TestRays(t *testing.T) {
 	})
 
 	t.Run("A ray is behind a ray", func(t *testing.T) {
-		r := Ray{Origin: tuples.Point(0, 0, 5), Direction: tuples.Vector(0, 0, 1)}
+		r := Ray{Origin: datatypes.Point(0, 0, 5), Direction: datatypes.Vector(0, 0, 1)}
 		s := GetSphere()
 
 		xs := s.Intersect(r)
@@ -114,7 +106,7 @@ func TestRays(t *testing.T) {
 	})
 
 	t.Run("Intersect sets the object on the intersection", func(t *testing.T) {
-		r := Ray{tuples.Point(0, 0, -5), tuples.Vector(0, 0, 1)}
+		r := Ray{datatypes.Point(0, 0, -5), datatypes.Vector(0, 0, 1)}
 		s := GetSphere()
 
 		xs := s.Intersect(r)
@@ -191,23 +183,23 @@ func TestRays(t *testing.T) {
 	})
 
 	t.Run("Translating a ray", func(t *testing.T) {
-		r := Ray{Origin: tuples.Point(1, 2, 3), Direction: tuples.Vector(0, 1, 0)}
-		m := matrices.GetTranslation(3, 4, 5)
+		r := Ray{Origin: datatypes.Point(1, 2, 3), Direction: datatypes.Vector(0, 1, 0)}
+		m := datatypes.GetTranslation(3, 4, 5)
 
 		r2 := r.Transform(m)
 
-		assertTupleEqual(t, r2.Origin, tuples.Point(4, 6, 8))
-		assertTupleEqual(t, r2.Direction, tuples.Vector(0, 1, 0))
+		datatypes.AssertTupleEqual(t, r2.Origin, datatypes.Point(4, 6, 8))
+		datatypes.AssertTupleEqual(t, r2.Direction, datatypes.Vector(0, 1, 0))
 	})
 
 	t.Run("Scaling a ray", func(t *testing.T) {
-		r := Ray{Origin: tuples.Point(1, 2, 3), Direction: tuples.Vector(0, 1, 0)}
-		m := matrices.GetScaling(2, 3, 4)
+		r := Ray{Origin: datatypes.Point(1, 2, 3), Direction: datatypes.Vector(0, 1, 0)}
+		m := datatypes.GetScaling(2, 3, 4)
 
 		r2 := r.Transform(m)
 
-		assertTupleEqual(t, r2.Origin, tuples.Point(2, 6, 12))
-		assertTupleEqual(t, r2.Direction, tuples.Vector(0, 3, 0))
+		datatypes.AssertTupleEqual(t, r2.Origin, datatypes.Point(2, 6, 12))
+		datatypes.AssertTupleEqual(t, r2.Direction, datatypes.Vector(0, 3, 0))
 	})
 
 }

@@ -1,4 +1,4 @@
-package matrices
+package datatypes
 
 import "math"
 

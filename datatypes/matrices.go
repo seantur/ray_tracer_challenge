@@ -1,11 +1,8 @@
-package matrices
+package datatypes
 
 import (
 	"errors"
-	"github.com/seantur/ray_tracer_challenge/tuples"
 )
-
-const EPSILON = 0.00001
 
 type Matrix struct {
 	Row  int
@@ -113,14 +110,14 @@ func (m *Matrix) Inverse() (Matrix, error) {
 	return M, nil
 }
 
-func Equal(m1 Matrix, m2 Matrix) bool {
+func (m *Matrix) equal(m2 Matrix) bool {
 
-	if m1.Row != m2.Row || m1.Col != m2.Col {
+	if m.Row != m2.Row || m.Col != m2.Col {
 		return false
 	}
 
-	for i := 0; i < len(m1.Vals); i++ {
-		if (m1.Vals[i] - m2.Vals[i]) > EPSILON {
+	for i := 0; i < len(m.Vals); i++ {
+		if !IsClose(m.Vals[i], m2.Vals[i]) {
 			return false
 		}
 	}
@@ -155,7 +152,7 @@ func Multiply(m1 Matrix, m2 Matrix) Matrix {
 	return M
 }
 
-func TupleMultiply(m Matrix, t tuples.Tuple) tuples.Tuple {
+func TupleMultiply(m Matrix, t Tuple) Tuple {
 	tMat := Matrix{Row: 4, Col: 1, Vals: []float64{t.X, t.Y, t.Z, t.W}}
 
 	out := Multiply(m, tMat)
@@ -165,7 +162,7 @@ func TupleMultiply(m Matrix, t tuples.Tuple) tuples.Tuple {
 	z, _ := out.At(2, 0)
 	w, _ := out.At(3, 0)
 
-	return tuples.Tuple{X: x, Y: y, Z: z, W: w}
+	return Tuple{X: x, Y: y, Z: z, W: w}
 }
 
 func GetIdentity() Matrix {
