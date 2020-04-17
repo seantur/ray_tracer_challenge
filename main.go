@@ -3,40 +3,39 @@ package main
 import (
 	"fmt"
 	"github.com/seantur/ray_tracer_challenge/canvas"
-	"github.com/seantur/ray_tracer_challenge/matrices"
+	"github.com/seantur/ray_tracer_challenge/datatypes"
 	"github.com/seantur/ray_tracer_challenge/raytracing"
-	"github.com/seantur/ray_tracer_challenge/tuples"
 	"math"
 	"time"
 )
 
 type projectile struct {
-	position tuples.Tuple
-	velocity tuples.Tuple
+	position datatypes.Tuple
+	velocity datatypes.Tuple
 }
 
 type environment struct {
-	gravity tuples.Tuple
-	wind    tuples.Tuple
+	gravity datatypes.Tuple
+	wind    datatypes.Tuple
 }
 
 func tick(env environment, proj projectile) projectile {
-	position := tuples.Add(proj.position, proj.velocity)
-	velocity := tuples.Add(proj.velocity, env.gravity)
-	velocity = tuples.Add(velocity, env.wind)
+	position := datatypes.Add(proj.position, proj.velocity)
+	velocity := datatypes.Add(proj.velocity, env.gravity)
+	velocity = datatypes.Add(velocity, env.wind)
 
 	return projectile{position, velocity}
 }
 
 func saveProjectile(path string) {
-	start := tuples.Point(0, 1, 0)
-	velocity := tuples.Vector(1, 1.8, 0)
+	start := datatypes.Point(0, 1, 0)
+	velocity := datatypes.Vector(1, 1.8, 0)
 	velocity = velocity.Normalize()
 	velocity = velocity.Multiply(11.25)
 
 	p := projectile{start, velocity}
-	gravity := tuples.Vector(0, -0.1, 0)
-	wind := tuples.Vector(-0.01, 0, 0)
+	gravity := datatypes.Vector(0, -0.1, 0)
+	wind := datatypes.Vector(-0.01, 0, 0)
 
 	color := canvas.Color{Red: 1, Green: 0, Blue: 0}
 
@@ -60,15 +59,15 @@ func saveClock(path string, size int) {
 	c := canvas.Canvas{Height: size, Width: size}
 	c.Init()
 
-	rot := matrices.GetRotationY(math.Pi * 2 / 12.)
+	rot := datatypes.GetRotationY(math.Pi * 2 / 12.)
 
 	white := canvas.Color{Red: 255, Green: 255, Blue: 255}
 
 	offset := int(size / 2)
-	p := tuples.Point(0, 0, 1)
+	p := datatypes.Point(0, 0, 1)
 
 	for i := 0; i < 12; i++ {
-		p = matrices.TupleMultiply(rot, p)
+		p = datatypes.TupleMultiply(rot, p)
 		c.WritePixel(int(p.X*scale)+offset, int(p.Z*scale)+offset, white)
 	}
 
@@ -88,15 +87,15 @@ func saveShadow(path string) {
 	red := canvas.Color{Red: 1, Green: 0, Blue: 0}
 	shape := raytracing.GetSphere()
 
-	ray_origin := tuples.Point(0, 0, -5)
+	ray_origin := datatypes.Point(0, 0, -5)
 
 	for y := 0; y < canvas_pixels; y++ {
 		world_y := half - pixel_size*float64(y)
 		for x := 0; x < canvas_pixels; x++ {
 			world_x := half - pixel_size*float64(x)
-			position := tuples.Point(world_x, world_y, wall_z)
+			position := datatypes.Point(world_x, world_y, wall_z)
 
-			pos := tuples.Subtract(position, ray_origin)
+			pos := datatypes.Subtract(position, ray_origin)
 			r := raytracing.Ray{Origin: ray_origin, Direction: pos.Normalize()}
 			xs := shape.Intersect(r)
 
@@ -119,9 +118,9 @@ func save3DSphere(path string) {
 
 	shape := raytracing.GetSphere()
 	shape.Material.Color = canvas.Color{Red: 1, Green: 0, Blue: 0}
-	shape.SetTransform(matrices.GetScaling(0.5, 0.5, 0.5))
+	shape.SetTransform(datatypes.GetScaling(0.5, 0.5, 0.5))
 
-	light := raytracing.PointLight{Position: tuples.Point(10, 10, -10), Intensity: canvas.Color{Red: 1, Green: 1, Blue: 1}}
+	light := raytracing.PointLight{Position: datatypes.Point(10, 10, -10), Intensity: canvas.Color{Red: 1, Green: 1, Blue: 1}}
 
 	canvas_pixels := 1000
 	wall_z := 10.0
@@ -132,15 +131,15 @@ func save3DSphere(path string) {
 	c := canvas.Canvas{Height: canvas_pixels, Width: canvas_pixels}
 	c.Init()
 
-	ray_origin := tuples.Point(0, 0, -5)
+	ray_origin := datatypes.Point(0, 0, -5)
 
 	for y := 0; y < canvas_pixels; y++ {
 		world_y := half - pixel_size*float64(y)
 		for x := 0; x < canvas_pixels; x++ {
 			world_x := half - pixel_size*float64(x)
-			position := tuples.Point(world_x, world_y, wall_z)
+			position := datatypes.Point(world_x, world_y, wall_z)
 
-			pos := tuples.Subtract(position, ray_origin)
+			pos := datatypes.Subtract(position, ray_origin)
 			r := raytracing.Ray{Origin: ray_origin, Direction: pos.Normalize()}
 			xs := shape.Intersect(r)
 
