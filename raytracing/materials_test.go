@@ -1,7 +1,6 @@
 package raytracing
 
 import (
-	"github.com/seantur/ray_tracer_challenge/canvas"
 	"reflect"
 	"testing"
 )
@@ -18,7 +17,7 @@ func TestMaterials(t *testing.T) {
 	t.Run("Test the default material", func(t *testing.T) {
 		m := GetMaterial()
 
-		if !reflect.DeepEqual(m.Color, canvas.Color{Red: 1, Green: 1, Blue: 1}) {
+		if !reflect.DeepEqual(m.Color, Color{Red: 1, Green: 1, Blue: 1}) {
 			t.Error("Expected default material color did not match")
 		}
 
@@ -31,13 +30,13 @@ func TestMaterials(t *testing.T) {
 	t.Run("Can set the values of materials", func(t *testing.T) {
 		m := GetMaterial()
 
-		m.Color = canvas.Color{Red: 0.5, Green: 0.5, Blue: 0.5}
+		m.Color = Color{Red: 0.5, Green: 0.5, Blue: 0.5}
 		m.Ambient = 0.2
 		m.Diffuse = 0.2
 		m.Specular = 0.2
 		m.Shininess = 500.0
 
-		if !reflect.DeepEqual(m.Color, canvas.Color{Red: 0.5, Green: 0.5, Blue: 0.5}) {
+		if !reflect.DeepEqual(m.Color, Color{Red: 0.5, Green: 0.5, Blue: 0.5}) {
 			t.Error("Expected default material color did not match")
 		}
 

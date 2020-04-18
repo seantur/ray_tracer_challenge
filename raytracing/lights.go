@@ -1,22 +1,21 @@
 package raytracing
 
 import (
-	"github.com/seantur/ray_tracer_challenge/canvas"
 	"github.com/seantur/ray_tracer_challenge/datatypes"
 	"math"
 )
 
 type PointLight struct {
-	Intensity canvas.Color
+	Intensity Color
 	Position  datatypes.Tuple
 }
 
-func Lighting(material Material, light PointLight, point datatypes.Tuple, eyev datatypes.Tuple, normalv datatypes.Tuple) canvas.Color {
+func Lighting(material Material, light PointLight, point datatypes.Tuple, eyev datatypes.Tuple, normalv datatypes.Tuple) Color {
 
-	diffuse := canvas.Color{}
-	specular := canvas.Color{}
+	diffuse := Color{}
+	specular := Color{}
 
-	effective_color := canvas.Hadamard(material.Color, light.Intensity)
+	effective_color := Hadamard(material.Color, light.Intensity)
 
 	lightv := datatypes.Subtract(light.Position, point)
 	lightv = lightv.Normalize()
@@ -35,7 +34,7 @@ func Lighting(material Material, light PointLight, point datatypes.Tuple, eyev d
 		reflect_dot_eye := datatypes.Dot(reflectv, eyev)
 
 		if reflect_dot_eye <= 0 {
-			specular = canvas.Color{}
+			specular = Color{}
 		} else {
 
 			factor := math.Pow(reflect_dot_eye, material.Shininess)
@@ -45,8 +44,8 @@ func Lighting(material Material, light PointLight, point datatypes.Tuple, eyev d
 		}
 	}
 
-	output := canvas.Add(ambient, diffuse)
-	output = canvas.Add(output, specular)
+	output := Add(ambient, diffuse)
+	output = Add(output, specular)
 
 	return output
 

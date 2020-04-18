@@ -3,6 +3,7 @@ package canvas
 import (
 	"errors"
 	"fmt"
+	"github.com/seantur/ray_tracer_challenge/raytracing"
 	"io/ioutil"
 	"math"
 	"strconv"
@@ -18,39 +19,17 @@ const (
 	ErrOutOfBounds = "trying to access out of bounds"
 )
 
-type Color struct {
-	Red   float64
-	Green float64
-	Blue  float64
-}
-
-func (c *Color) Multiply(a float64) Color {
-	return Color{c.Red * a, c.Green * a, c.Blue * a}
-}
-
-func Add(a Color, b Color) Color {
-	return Color{a.Red + b.Red, a.Green + b.Green, a.Blue + b.Blue}
-}
-
-func Subtract(a Color, b Color) Color {
-	return Color{a.Red - b.Red, a.Green - b.Green, a.Blue - b.Blue}
-}
-
-func Hadamard(a Color, b Color) Color {
-	return Color{a.Red * b.Red, a.Green * b.Green, a.Blue * b.Blue}
-}
-
 type Canvas struct {
 	Height int
 	Width  int
-	pixels []Color
+	pixels []raytracing.Color
 }
 
 func (c *Canvas) Init() {
-	c.pixels = make([]Color, c.Height*c.Width)
+	c.pixels = make([]raytracing.Color, c.Height*c.Width)
 }
 
-func (c *Canvas) WritePixel(x int, y int, color Color) error {
+func (c *Canvas) WritePixel(x int, y int, color raytracing.Color) error {
 	if x > c.Width || y > c.Height {
 		return errors.New(ErrOutOfBounds)
 	}
@@ -60,9 +39,9 @@ func (c *Canvas) WritePixel(x int, y int, color Color) error {
 	return nil
 }
 
-func (c *Canvas) ReadPixel(x int, y int) (Color, error) {
+func (c *Canvas) ReadPixel(x int, y int) (raytracing.Color, error) {
 	if x > c.Width || y > c.Height {
-		return Color{}, errors.New(ErrOutOfBounds)
+		return raytracing.Color{}, errors.New(ErrOutOfBounds)
 	}
 	return c.pixels[x*c.Height+y], nil
 }

@@ -1,7 +1,7 @@
 package canvas
 
 import (
-	"github.com/seantur/ray_tracer_challenge/datatypes"
+	"github.com/seantur/ray_tracer_challenge/raytracing"
 	"strings"
 	"testing"
 )
@@ -14,16 +14,6 @@ func TestCanvas(t *testing.T) {
 		t.Helper()
 		if got != want {
 			t.Errorf("got %f want %f", got, want)
-		}
-	}
-
-	assertColorsEqual := func(t *testing.T, got Color, want Color) {
-		t.Helper()
-
-		allClose := datatypes.IsClose(got.Red, want.Red) && datatypes.IsClose(got.Green, want.Green) && datatypes.IsClose(got.Blue, want.Blue)
-
-		if !allClose {
-			t.Error("wanted equal colors are not equal")
 		}
 	}
 
@@ -44,41 +34,6 @@ func TestCanvas(t *testing.T) {
 
 	}
 
-	t.Run("Colors are a tuple", func(t *testing.T) {
-		c := Color{-0.5, 0.4, 1.7}
-
-		assertVal(t, c.Red, -0.5)
-		assertVal(t, c.Green, 0.4)
-		assertVal(t, c.Blue, 1.7)
-	})
-
-	t.Run("Adding colors", func(t *testing.T) {
-		c1 := Color{0.9, 0.6, 0.75}
-		c2 := Color{0.7, 0.1, 0.25}
-
-		assertColorsEqual(t, Add(c1, c2), Color{1.6, 0.7, 1.0})
-	})
-
-	t.Run("Subtracting colors", func(t *testing.T) {
-		c1 := Color{0.9, 0.6, 0.75}
-		c2 := Color{0.7, 0.1, 0.25}
-
-		assertColorsEqual(t, Subtract(c1, c2), Color{0.2, 0.5, 0.5})
-	})
-
-	t.Run("Multiply a color by a scalar", func(t *testing.T) {
-		c := Color{0.2, 0.3, 0.4}
-
-		assertColorsEqual(t, c.Multiply(2.), Color{0.4, 0.6, 0.8})
-	})
-
-	t.Run("Multiply 2 colors together", func(t *testing.T) {
-		c1 := Color{1, 0.2, 0.4}
-		c2 := Color{0.9, 1, 0.1}
-
-		assertColorsEqual(t, Hadamard(c1, c2), Color{0.9, 0.2, 0.04})
-	})
-
 	t.Run("Create a canvas", func(t *testing.T) {
 		c := Canvas{Height: 10, Width: 20}
 		c.Init()
@@ -89,7 +44,7 @@ func TestCanvas(t *testing.T) {
 		for i := 0; i < c.Width; i++ {
 			for j := 0; j < c.Height; j++ {
 				val, _ := c.ReadPixel(i, j)
-				assertColorsEqual(t, val, Color{0, 0, 0})
+				raytracing.AssertColorsEqual(t, val, raytracing.Color{0, 0, 0})
 			}
 		}
 
@@ -99,12 +54,12 @@ func TestCanvas(t *testing.T) {
 		c := Canvas{Height: 20, Width: 10}
 		c.Init()
 
-		Red := Color{1, 0, 0}
+		Red := raytracing.Color{1, 0, 0}
 
 		c.WritePixel(2, 3, Red)
 
 		val, _ := c.ReadPixel(2, 3)
-		assertColorsEqual(t, val, Red)
+		raytracing.AssertColorsEqual(t, val, Red)
 	})
 
 	t.Run("construct PPM header", func(t *testing.T) {
@@ -121,9 +76,9 @@ func TestCanvas(t *testing.T) {
 		c := Canvas{Height: 3, Width: 5}
 		c.Init()
 
-		c1 := Color{1.5, 0, 0}
-		c2 := Color{0, 0.5, 0}
-		c3 := Color{-0.5, 0, 1}
+		c1 := raytracing.Color{1.5, 0, 0}
+		c2 := raytracing.Color{0, 0.5, 0}
+		c3 := raytracing.Color{-0.5, 0, 1}
 
 		c.WritePixel(0, 0, c1)
 		c.WritePixel(2, 1, c2)
@@ -141,7 +96,7 @@ func TestCanvas(t *testing.T) {
 		c := Canvas{Height: 2, Width: 10}
 		c.Init()
 
-		color := Color{1, 0.8, 0.6}
+		color := raytracing.Color{1, 0.8, 0.6}
 
 		for i := 0; i < c.Width; i++ {
 			for j := 0; j < c.Height; j++ {

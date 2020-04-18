@@ -37,7 +37,7 @@ func saveProjectile(path string) {
 	gravity := datatypes.Vector(0, -0.1, 0)
 	wind := datatypes.Vector(-0.01, 0, 0)
 
-	color := canvas.Color{Red: 1, Green: 0, Blue: 0}
+	color := raytracing.Color{Red: 1, Green: 0, Blue: 0}
 
 	e := environment{gravity, wind}
 
@@ -61,7 +61,7 @@ func saveClock(path string, size int) {
 
 	rot := datatypes.GetRotationY(math.Pi * 2 / 12.)
 
-	white := canvas.Color{Red: 255, Green: 255, Blue: 255}
+	white := raytracing.Color{Red: 255, Green: 255, Blue: 255}
 
 	offset := int(size / 2)
 	p := datatypes.Point(0, 0, 1)
@@ -84,7 +84,7 @@ func saveShadow(path string) {
 	c := canvas.Canvas{Height: canvas_pixels, Width: canvas_pixels}
 	c.Init()
 
-	red := canvas.Color{Red: 1, Green: 0, Blue: 0}
+	red := raytracing.Color{Red: 1, Green: 0, Blue: 0}
 	shape := raytracing.GetSphere()
 
 	ray_origin := datatypes.Point(0, 0, -5)
@@ -92,7 +92,7 @@ func saveShadow(path string) {
 	for y := 0; y < canvas_pixels; y++ {
 		world_y := half - pixel_size*float64(y)
 		for x := 0; x < canvas_pixels; x++ {
-			world_x := half - pixel_size*float64(x)
+			world_x := -half + pixel_size*float64(x)
 			position := datatypes.Point(world_x, world_y, wall_z)
 
 			pos := datatypes.Subtract(position, ray_origin)
@@ -117,10 +117,10 @@ func save3DSphere(path string) {
 	start := time.Now()
 
 	shape := raytracing.GetSphere()
-	shape.Material.Color = canvas.Color{Red: 1, Green: 0, Blue: 0}
+	shape.Material.Color = raytracing.Color{Red: 1, Green: 0, Blue: 0}
 	shape.SetTransform(datatypes.GetScaling(0.5, 0.5, 0.5))
 
-	light := raytracing.PointLight{Position: datatypes.Point(10, 10, -10), Intensity: canvas.Color{Red: 1, Green: 1, Blue: 1}}
+	light := raytracing.PointLight{Position: datatypes.Point(-10, 10, -10), Intensity: raytracing.Color{Red: 1, Green: 1, Blue: 1}}
 
 	canvas_pixels := 1000
 	wall_z := 10.0
@@ -136,7 +136,7 @@ func save3DSphere(path string) {
 	for y := 0; y < canvas_pixels; y++ {
 		world_y := half - pixel_size*float64(y)
 		for x := 0; x < canvas_pixels; x++ {
-			world_x := half - pixel_size*float64(x)
+			world_x := -half + pixel_size*float64(x)
 			position := datatypes.Point(world_x, world_y, wall_z)
 
 			pos := datatypes.Subtract(position, ray_origin)
