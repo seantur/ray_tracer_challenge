@@ -19,14 +19,14 @@ func TestShapes(t *testing.T) {
 	t.Run("Sphere's default transform is identity matrix", func(t *testing.T) {
 		s := GetSphere()
 
-		datatypes.AssertMatrixEqual(t, s.transform, datatypes.GetIdentity())
+		datatypes.AssertMatrixEqual(t, s.Transform, datatypes.GetIdentity())
 	})
 
 	t.Run("Changing a sphere's transformation", func(t *testing.T) {
 		s := GetSphere()
 		s.SetTransform(datatypes.GetTranslation(2, 3, 4))
 
-		datatypes.AssertMatrixEqual(t, s.transform, datatypes.GetTranslation(2, 3, 4))
+		datatypes.AssertMatrixEqual(t, s.Transform, datatypes.GetTranslation(2, 3, 4))
 	})
 
 	t.Run("Intersecting a scaled sphere with a ray", func(t *testing.T) {

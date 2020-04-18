@@ -7,24 +7,36 @@ import (
 )
 
 type Sphere struct {
-	transform datatypes.Matrix
-	Material  Material
+	Transform datatypes.Matrix
+	Material
 }
+
+type Intersection struct {
+	T      float64
+	Object *Sphere
+}
+
+// ByT implements sort.Interface for []Intersection based on the T field
+type ByT []Intersection
+
+func (in ByT) Len() int           { return len(in) }
+func (in ByT) Swap(i, j int)      { in[i], in[j] = in[j], in[i] }
+func (in ByT) Less(i, j int) bool { return in[i].T < in[j].T }
 
 func GetSphere() Sphere {
 	s := Sphere{}
-	s.transform = datatypes.GetIdentity()
+	s.Transform = datatypes.GetIdentity()
 	s.Material = GetMaterial()
 
 	return s
 }
 
 func (s *Sphere) SetTransform(m datatypes.Matrix) {
-	s.transform = m
+	s.Transform = m
 }
 
 func (s *Sphere) GetNormal(world_p datatypes.Tuple) datatypes.Tuple {
-	s_transform_inv, _ := s.transform.Inverse()
+	s_transform_inv, _ := s.Transform.Inverse()
 
 	obj_p := datatypes.TupleMultiply(s_transform_inv, world_p)
 	obj_normal := datatypes.Subtract(obj_p, datatypes.Point(0, 0, 0))
@@ -35,7 +47,7 @@ func (s *Sphere) GetNormal(world_p datatypes.Tuple) datatypes.Tuple {
 }
 
 func (s *Sphere) Intersect(r Ray) []Intersection {
-	tInv, _ := s.transform.Inverse()
+	tInv, _ := s.Transform.Inverse()
 	r = r.Transform(tInv)
 
 	sphereToRay := datatypes.Subtract(r.Origin, datatypes.Point(0, 0, 0))
@@ -55,11 +67,6 @@ func (s *Sphere) Intersect(r Ray) []Intersection {
 		Intersection{(-b + math.Sqrt(discriminant)) / (2 * a), s}}
 
 	return xs
-}
-
-type Intersection struct {
-	T      float64
-	Object *Sphere
 }
 
 func Hit(intersections []Intersection) (Intersection, error) {
