@@ -49,4 +49,59 @@ func TestWorld(t *testing.T) {
 		datatypes.AssertVal(t, xs[3].T, 6)
 	})
 
+	t.Run("shading an intersection", func(t *testing.T) {
+		w := GetWorld()
+		r := raytracing.Ray{Origin: datatypes.Point(0, 0, -5), Direction: datatypes.Vector(0, 0, 1)}
+
+		sphere := w.Shapes[0]
+		i := raytracing.Intersection{T: 4, Object: &sphere}
+
+		comps := i.PrepareComputations(r)
+
+		c := w.ShadeHit(comps)
+
+		raytracing.AssertColorsEqual(t, c, raytracing.Color{Red: 0.38066, Green: 0.47583, Blue: 0.2855})
+	})
+
+	t.Run("shading an intersection from the inside", func(t *testing.T) {
+		w := GetWorld()
+		w.Light = raytracing.PointLight{Intensity: raytracing.Color{Red: 1, Green: 1, Blue: 1}, Position: datatypes.Point(0, 0.25, 0)}
+		r := raytracing.Ray{Origin: datatypes.Point(0, 0, 0), Direction: datatypes.Vector(0, 0, 1)}
+
+		sphere := w.Shapes[1]
+		i := raytracing.Intersection{T: 0.5, Object: &sphere}
+
+		comps := i.PrepareComputations(r)
+		c := w.ShadeHit(comps)
+
+		raytracing.AssertColorsEqual(t, c, raytracing.Color{Red: 0.90498, Green: 0.90498, Blue: 0.90498})
+	})
+
+	t.Run("The color when a ray misses", func(t *testing.T) {
+		w := GetWorld()
+		r := raytracing.Ray{Origin: datatypes.Point(0, 0, -5), Direction: datatypes.Vector(0, 1, 0)}
+
+		c := w.ColorAt(r)
+		raytracing.AssertColorsEqual(t, c, raytracing.Color{Red: 0, Green: 0, Blue: 0})
+	})
+
+	t.Run("The color when a ray hits", func(t *testing.T) {
+		w := GetWorld()
+		r := raytracing.Ray{Origin: datatypes.Point(0, 0, -5), Direction: datatypes.Vector(0, 0, 1)}
+
+		c := w.ColorAt(r)
+		raytracing.AssertColorsEqual(t, c, raytracing.Color{Red: 0.38066, Green: 0.47583, Blue: 0.2855})
+	})
+
+	t.Run("The color with an intersection behind the ray", func(t *testing.T) {
+		w := GetWorld()
+		w.Shapes[0].Ambient = 1
+		w.Shapes[1].Ambient = 1
+
+		r := raytracing.Ray{Origin: datatypes.Point(0, 0, 0.75), Direction: datatypes.Vector(0, 0, -1)}
+
+		c := w.ColorAt(r)
+		raytracing.AssertColorsEqual(t, c, w.Shapes[1].Color)
+	})
+
 }

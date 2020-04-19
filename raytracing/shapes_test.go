@@ -125,4 +125,49 @@ func TestShapes(t *testing.T) {
 		}
 	})
 
+	t.Run("Precompute the state of an intersection", func(t *testing.T) {
+		r := Ray{Origin: datatypes.Point(0, 0, -5), Direction: datatypes.Vector(0, 0, 1)}
+
+		sphere := GetSphere()
+		i := Intersection{T: 4, Object: &sphere}
+
+		comps := i.PrepareComputations(r)
+
+		datatypes.AssertVal(t, comps.T, i.T)
+		datatypes.AssertTupleEqual(t, comps.Point, datatypes.Point(0, 0, -1))
+		datatypes.AssertTupleEqual(t, comps.Eyev, datatypes.Vector(0, 0, -1))
+		datatypes.AssertTupleEqual(t, comps.Normalv, datatypes.Vector(0, 0, -1))
+
+		if !reflect.DeepEqual(comps.Object, &sphere) {
+			t.Error("spheres are not equal")
+		}
+
+		if comps.IsInside {
+			t.Error("comp.IsInside is true, should be false")
+		}
+
+	})
+
+	t.Run("The hit, when an intersection occurs on the outside", func(t *testing.T) {
+		r := Ray{Origin: datatypes.Point(0, 0, 0), Direction: datatypes.Vector(0, 0, 1)}
+
+		sphere := GetSphere()
+		i := Intersection{T: 1, Object: &sphere}
+
+		comps := i.PrepareComputations(r)
+
+		if !comps.IsInside {
+			t.Error("comp.IsInside is false, should be true")
+		}
+
+		datatypes.AssertTupleEqual(t, comps.Point, datatypes.Point(0, 0, 1))
+		datatypes.AssertTupleEqual(t, comps.Eyev, datatypes.Vector(0, 0, -1))
+		datatypes.AssertTupleEqual(t, comps.Normalv, datatypes.Vector(0, 0, -1))
+
+		if !reflect.DeepEqual(comps.Object, &sphere) {
+			t.Error("spheres are not equal")
+		}
+
+	})
+
 }

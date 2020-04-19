@@ -31,12 +31,32 @@ func (w *World) Intersect(r raytracing.Ray) []raytracing.Intersection {
 
 	intersections := []raytracing.Intersection{}
 
-	for _, shape := range w.Shapes {
-		intersections = append(intersections, shape.Intersect(r)...)
+	for i, _ := range w.Shapes {
+		intersection := w.Shapes[i].Intersect(r)
+		intersections = append(intersections, intersection...)
 	}
-
 	sort.Sort(raytracing.ByT(intersections))
 
 	return intersections
 
+}
+
+func (w *World) ShadeHit(c raytracing.Computation) raytracing.Color {
+	return raytracing.Lighting(c.Object.Material, w.Light, c.Point, c.Eyev, c.Normalv)
+}
+
+func (w *World) ColorAt(r raytracing.Ray) raytracing.Color {
+	intersections := w.Intersect(r)
+
+	hit, err := raytracing.Hit(intersections)
+
+	if err != nil {
+		return raytracing.Color{}
+	}
+
+	comp := hit.PrepareComputations(r)
+
+	c := w.ShadeHit(comp)
+
+	return c
 }

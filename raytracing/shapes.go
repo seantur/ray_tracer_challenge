@@ -16,6 +16,32 @@ type Intersection struct {
 	Object *Sphere
 }
 
+type Computation struct {
+	T                    float64
+	Object               *Sphere
+	Point, Eyev, Normalv datatypes.Tuple
+	IsInside             bool
+}
+
+func (i *Intersection) PrepareComputations(r Ray) Computation {
+	c := Computation{}
+
+	c.T = i.T
+	c.Object = i.Object
+	c.Point = r.Position(c.T)
+	c.Eyev = r.Direction.Negate()
+	c.Normalv = c.Object.GetNormal(c.Point)
+
+	if datatypes.Dot(c.Normalv, c.Eyev) < 0 {
+		c.IsInside = true
+		c.Normalv = c.Normalv.Negate()
+	} else {
+		c.IsInside = false
+	}
+
+	return c
+}
+
 // ByT implements sort.Interface for []Intersection based on the T field
 type ByT []Intersection
 
@@ -71,6 +97,10 @@ func (s *Sphere) Intersect(r Ray) []Intersection {
 
 func Hit(intersections []Intersection) (Intersection, error) {
 
+	if len(intersections) == 0 {
+		return Intersection{}, errors.New("did not find hit")
+	}
+
 	var hit_val float64
 	hit_intersection := intersections[0]
 
@@ -82,7 +112,7 @@ func Hit(intersections []Intersection) (Intersection, error) {
 	}
 
 	if hit_val == 0 {
-		return hit_intersection, errors.New("did not find hit")
+		return Intersection{}, errors.New("did not find hit")
 	}
 
 	return hit_intersection, nil

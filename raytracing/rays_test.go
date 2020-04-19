@@ -182,6 +182,15 @@ func TestRays(t *testing.T) {
 		}
 	})
 
+	t.Run("The hit returns an error when passed an empty Intersection slice", func(t *testing.T) {
+		i := make([]Intersection, 0)
+		_, err := Hit(i)
+
+		if err == nil {
+			t.Errorf("expected no hits, but got one")
+		}
+	})
+
 	t.Run("Translating a ray", func(t *testing.T) {
 		r := Ray{Origin: datatypes.Point(1, 2, 3), Direction: datatypes.Vector(0, 1, 0)}
 		m := datatypes.GetTranslation(3, 4, 5)
