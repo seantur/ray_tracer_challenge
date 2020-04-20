@@ -170,4 +170,22 @@ func TestShapes(t *testing.T) {
 
 	})
 
+	t.Run("The hit should offset the point", func(t *testing.T) {
+		r := Ray{Origin: datatypes.Point(0, 0, -5), Direction: datatypes.Vector(0, 0, 1)}
+
+		sphere := GetSphere()
+		sphere.Transform = datatypes.GetTranslation(0, 0, 1)
+
+		i := Intersection{T: 5, Object: &sphere}
+
+		comps := i.PrepareComputations(r)
+
+		if comps.OverPoint.Z >= -datatypes.EPSILON/2 {
+			t.Error("over point is larger than expected")
+		}
+
+		if comps.Point.Z <= comps.OverPoint.Z {
+			t.Error("over point is not larger than original point")
+		}
+	})
 }

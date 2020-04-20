@@ -17,10 +17,10 @@ type Intersection struct {
 }
 
 type Computation struct {
-	T                    float64
-	Object               *Sphere
-	Point, Eyev, Normalv datatypes.Tuple
-	IsInside             bool
+	T                               float64
+	Object                          *Sphere
+	Point, Eyev, Normalv, OverPoint datatypes.Tuple
+	IsInside                        bool
 }
 
 func (i *Intersection) PrepareComputations(r Ray) Computation {
@@ -38,6 +38,8 @@ func (i *Intersection) PrepareComputations(r Ray) Computation {
 	} else {
 		c.IsInside = false
 	}
+
+	c.OverPoint = datatypes.Add(c.Point, c.Normalv.Multiply(datatypes.EPSILON))
 
 	return c
 }

@@ -41,8 +41,9 @@ func TestLight(t *testing.T) {
 		eyev := datatypes.Vector(0, 0, -1)
 		normalv := datatypes.Vector(0, 0, -1)
 		light := PointLight{Position: datatypes.Point(0, 0, -10), Intensity: Color{Red: 1, Green: 1, Blue: 1}}
+		in_shadow := false
 
-		result := Lighting(m, light, p, eyev, normalv)
+		result := Lighting(m, light, p, eyev, normalv, in_shadow)
 
 		assertColorsEqual(t, result, Color{Red: 1.9, Green: 1.9, Blue: 1.9})
 	})
@@ -54,8 +55,9 @@ func TestLight(t *testing.T) {
 		eyev := datatypes.Vector(0, math.Sqrt(2)/2, -math.Sqrt(2)/2)
 		normalv := datatypes.Vector(0, 0, -1)
 		light := PointLight{Position: datatypes.Point(0, 0, -10), Intensity: Color{Red: 1, Green: 1, Blue: 1}}
+		in_shadow := false
 
-		result := Lighting(m, light, p, eyev, normalv)
+		result := Lighting(m, light, p, eyev, normalv, in_shadow)
 
 		assertColorsEqual(t, result, Color{Red: 1.0, Green: 1.0, Blue: 1.0})
 	})
@@ -67,8 +69,9 @@ func TestLight(t *testing.T) {
 		eyev := datatypes.Vector(0, 0, -1)
 		normalv := datatypes.Vector(0, 0, -1)
 		light := PointLight{Position: datatypes.Point(0, 10, -10), Intensity: Color{Red: 1, Green: 1, Blue: 1}}
+		in_shadow := false
 
-		result := Lighting(m, light, p, eyev, normalv)
+		result := Lighting(m, light, p, eyev, normalv, in_shadow)
 
 		assertColorsEqual(t, result, Color{Red: 0.7364, Green: 0.7364, Blue: 0.7364})
 	})
@@ -80,8 +83,9 @@ func TestLight(t *testing.T) {
 		eyev := datatypes.Vector(0, -math.Sqrt(2)/2, -math.Sqrt(2)/2)
 		normalv := datatypes.Vector(0, 0, -1)
 		light := PointLight{Position: datatypes.Point(0, 10, -10), Intensity: Color{Red: 1, Green: 1, Blue: 1}}
+		in_shadow := false
 
-		result := Lighting(m, light, p, eyev, normalv)
+		result := Lighting(m, light, p, eyev, normalv, in_shadow)
 
 		assertColorsEqual(t, result, Color{Red: 1.6364, Green: 1.6364, Blue: 1.6364})
 	})
@@ -93,10 +97,25 @@ func TestLight(t *testing.T) {
 		eyev := datatypes.Vector(0, 0, -1)
 		normalv := datatypes.Vector(0, 0, -1)
 		light := PointLight{Position: datatypes.Point(0, 0, 10), Intensity: Color{Red: 1, Green: 1, Blue: 1}}
+		in_shadow := false
 
-		result := Lighting(m, light, p, eyev, normalv)
+		result := Lighting(m, light, p, eyev, normalv, in_shadow)
 
 		assertColorsEqual(t, result, Color{Red: 0.1, Green: 0.1, Blue: 0.1})
+	})
+
+	t.Run("Lighting with the surface in shadow", func(t *testing.T) {
+		m := GetMaterial()
+		p := datatypes.Point(0, 0, 0)
+
+		eyev := datatypes.Vector(0, 0, -1)
+		normalv := datatypes.Vector(0, 0, -1)
+		light := PointLight{Position: datatypes.Point(0, 0, -1), Intensity: Color{Red: 1, Green: 1, Blue: 1}}
+		in_shadow := true
+
+		result := Lighting(m, light, p, eyev, normalv, in_shadow)
+		assertColorsEqual(t, result, Color{Red: 0.1, Green: 0.1, Blue: 0.1})
+
 	})
 
 }

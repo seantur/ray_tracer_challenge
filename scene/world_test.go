@@ -104,4 +104,59 @@ func TestWorld(t *testing.T) {
 		raytracing.AssertColorsEqual(t, c, w.Shapes[1].Color)
 	})
 
+	t.Run("There is no shadow when nothing is colinear with point and light", func(t *testing.T) {
+		w := GetWorld()
+		p := datatypes.Point(0, 10, 0)
+
+		if w.IsShadowed(p) {
+			t.Error("expected IsShadowed to return false")
+		}
+	})
+
+	t.Run("The shadow when an object is between the point and the light", func(t *testing.T) {
+		w := GetWorld()
+		p := datatypes.Point(10, -10, 10)
+
+		if !w.IsShadowed(p) {
+			t.Error("expected IsShadowed to return true")
+		}
+	})
+
+	t.Run("There is no shadow when an object is behind the light", func(t *testing.T) {
+		w := GetWorld()
+		p := datatypes.Point(-20, 20, -20)
+
+		if w.IsShadowed(p) {
+			t.Error("expected IsShadowed to return false")
+		}
+	})
+
+	t.Run("There is no shadow when an object is behind the light", func(t *testing.T) {
+		w := GetWorld()
+		p := datatypes.Point(-2, 2, -2)
+
+		if w.IsShadowed(p) {
+			t.Error("expected IsShadowed to return false")
+		}
+	})
+
+	t.Run("Shade hit correctly shades shadows", func(t *testing.T) {
+		w := GetWorld()
+		w.Light = raytracing.PointLight{Intensity: raytracing.Color{Red: 1, Green: 1, Blue: 1}, Position: datatypes.Point(0, 0, -10)}
+
+		s1 := raytracing.GetSphere()
+		s2 := raytracing.GetSphere()
+		s2.Transform = datatypes.GetTranslation(0, 0, 10)
+
+		w.Shapes = []raytracing.Sphere{s1, s2}
+
+		r := raytracing.Ray{Origin: datatypes.Point(0, 0, 5), Direction: datatypes.Vector(0, 0, 1)}
+		i := raytracing.Intersection{T: 4, Object: &s2}
+
+		comps := i.PrepareComputations(r)
+		c := w.ShadeHit(comps)
+
+		raytracing.AssertColorsEqual(t, c, raytracing.Color{Red: 0.1, Green: 0.1, Blue: 0.1})
+	})
+
 }

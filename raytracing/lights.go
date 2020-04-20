@@ -10,7 +10,7 @@ type PointLight struct {
 	Position  datatypes.Tuple
 }
 
-func Lighting(material Material, light PointLight, point datatypes.Tuple, eyev datatypes.Tuple, normalv datatypes.Tuple) Color {
+func Lighting(material Material, light PointLight, point datatypes.Tuple, eyev datatypes.Tuple, normalv datatypes.Tuple, is_shadow bool) Color {
 
 	diffuse := Color{}
 	specular := Color{}
@@ -21,6 +21,10 @@ func Lighting(material Material, light PointLight, point datatypes.Tuple, eyev d
 	lightv = lightv.Normalize()
 
 	ambient := effective_color.Multiply(material.Ambient)
+
+	if is_shadow {
+		return ambient
+	}
 
 	light_dot_normal := datatypes.Dot(lightv, normalv)
 

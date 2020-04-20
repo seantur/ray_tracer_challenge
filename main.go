@@ -151,7 +151,7 @@ func save3DSphere(path string) {
 					normal := hit.Object.GetNormal(point)
 					eye := r.Direction.Negate()
 
-					color := raytracing.Lighting(hit.Object.Material, light, point, eye, normal)
+					color := raytracing.Lighting(hit.Object.Material, light, point, eye, normal, false)
 					c.WritePixel(x, y, color)
 				}
 
