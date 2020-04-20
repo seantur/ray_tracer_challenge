@@ -95,7 +95,7 @@ func (m *Matrix) Inverse() (Matrix, error) {
 	det := GetDeterminant(*m)
 
 	if !m.isInvertible() {
-		return Matrix{}, errors.New("trying to invert and non-invertible matrix")
+		return Matrix{}, errors.New("trying to invert an non-invertible matrix")
 	}
 
 	M := Matrix{Row: m.Row, Col: m.Col}

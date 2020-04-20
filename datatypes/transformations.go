@@ -1,6 +1,8 @@
 package datatypes
 
-import "math"
+import (
+	"math"
+)
 
 func GetTranslation(x float64, y float64, z float64) Matrix {
 	return Matrix{4, 4, []float64{
@@ -48,4 +50,21 @@ func GetShearing(xy float64, xz float64, yx float64, yz float64, zx float64, zy 
 		yx, 1, yz, 0,
 		zx, zy, 1, 0,
 		0, 0, 0, 1}}
+}
+
+func ViewTransform(from Tuple, to Tuple, up Tuple) Matrix {
+	forward := Subtract(to, from)
+	forward = forward.Normalize()
+
+	left := Cross(forward, up.Normalize())
+
+	true_up := Cross(left, forward)
+
+	orientation := Matrix{4, 4, []float64{
+		left.X, left.Y, left.Z, 0,
+		true_up.X, true_up.Y, true_up.Z, 0,
+		-forward.X, -forward.Y, -forward.Z, 0,
+		0, 0, 0, 1}}
+
+	return Multiply(orientation, GetTranslation(-from.X, -from.Y, -from.Z))
 }

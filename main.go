@@ -5,6 +5,7 @@ import (
 	"github.com/seantur/ray_tracer_challenge/canvas"
 	"github.com/seantur/ray_tracer_challenge/datatypes"
 	"github.com/seantur/ray_tracer_challenge/raytracing"
+	"github.com/seantur/ray_tracer_challenge/scene"
 	"math"
 	"time"
 )
@@ -170,6 +171,52 @@ func save3DSphere(path string) {
 
 }
 
+func saveScene(path string) {
+	floor := raytracing.GetSphere()
+	floor.Transform = datatypes.GetScaling(10, 0.01, 10)
+	floor.Color = raytracing.Color{Red: 1, Green: 0.9, Blue: 0.9}
+	floor.Specular = 0
+
+	left_wall := raytracing.GetSphere()
+	left_wall.Transform = datatypes.Multiply(datatypes.GetTranslation(0, 0, 5), datatypes.GetRotationY(-math.Pi/4))
+	left_wall.Transform = datatypes.Multiply(left_wall.Transform, datatypes.GetRotationX(math.Pi/2))
+	left_wall.Transform = datatypes.Multiply(left_wall.Transform, datatypes.GetScaling(10, 0.01, 10))
+	left_wall.Material = floor.Material
+
+	right_wall := raytracing.GetSphere()
+	right_wall.Transform = datatypes.Multiply(datatypes.GetTranslation(0, 0, 5), datatypes.GetRotationY(math.Pi/4))
+	right_wall.Transform = datatypes.Multiply(right_wall.Transform, datatypes.GetRotationX(math.Pi/2))
+	right_wall.Transform = datatypes.Multiply(right_wall.Transform, datatypes.GetScaling(10, 0.01, 10))
+	right_wall.Material = floor.Material
+
+	middle := raytracing.GetSphere()
+	middle.Transform = datatypes.GetTranslation(-0.5, 1, 0.5)
+	middle.Color = raytracing.Color{Red: 1, Green: 0, Blue: 0}
+	middle.Diffuse = 0.7
+	middle.Specular = 0.3
+
+	right := raytracing.GetSphere()
+	right.Transform = datatypes.Multiply(datatypes.GetTranslation(1.5, 0.5, -0.5), datatypes.GetScaling(0.5, 0.5, 0.5))
+	right.Color = raytracing.Color{Red: 0.5, Green: 1, Blue: 0.1}
+	right.Diffuse = 0.7
+	right.Specular = 0.3
+
+	left := raytracing.GetSphere()
+	left.Transform = datatypes.Multiply(datatypes.GetTranslation(-1.5, 0.33, -0.75), datatypes.GetScaling(0.33, 0.33, 0.33))
+	left.Color = raytracing.Color{Red: 1, Green: 0.8, Blue: 0.1}
+	left.Diffuse = 0.7
+	left.Specular = 0.3
+
+	world := scene.GetWorld()
+	world.Shapes = []raytracing.Sphere{floor, left_wall, right_wall, middle, right, left}
+
+	camera := scene.GetCamera(1000, 500, math.Pi/3)
+	camera.Transform = datatypes.ViewTransform(datatypes.Point(0, 1.5, -5), datatypes.Point(0, 1, 0), datatypes.Vector(0, 1, 0))
+
+	canvas := camera.Render(world)
+	canvas.SavePPM(path)
+}
+
 func main() {
-	save3DSphere("3Dsphere.ppm")
+	saveScene("1st_scene.ppm")
 }

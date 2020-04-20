@@ -142,7 +142,6 @@ func TestTransformations(t *testing.T) {
 		p := Point(2, 3, 4)
 
 		AssertTupleEqual(t, TupleMultiply(T, p), Point(2, 3, 6))
-
 	})
 
 	t.Run("A shearing transformation moves z in proportion to y", func(t *testing.T) {
@@ -150,7 +149,6 @@ func TestTransformations(t *testing.T) {
 		p := Point(2, 3, 4)
 
 		AssertTupleEqual(t, TupleMultiply(T, p), Point(2, 3, 7))
-
 	})
 
 	t.Run("Individual transformations are applied in sequence", func(t *testing.T) {
@@ -167,7 +165,6 @@ func TestTransformations(t *testing.T) {
 
 		p4 := TupleMultiply(C, p3)
 		AssertTupleEqual(t, p4, Point(15, 0, 7))
-
 	})
 
 	t.Run("Chained transformations must be applied in reverse order", func(t *testing.T) {
@@ -180,6 +177,49 @@ func TestTransformations(t *testing.T) {
 		T = Multiply(T, A)
 
 		AssertTupleEqual(t, TupleMultiply(T, p), Point(15, 0, 7))
+	})
+
+	t.Run("The transformation matrix for the default orientation", func(t *testing.T) {
+		from := Point(0, 0, 0)
+		to := Point(0, 0, -1)
+		up := Vector(0, 1, 0)
+
+		T := ViewTransform(from, to, up)
+
+		AssertMatrixEqual(t, T, GetIdentity())
+	})
+
+	t.Run("A view transformations matrix looking in positive z direction", func(t *testing.T) {
+		from := Point(0, 0, 0)
+		to := Point(0, 0, 1)
+		up := Vector(0, 1, 0)
+
+		T := ViewTransform(from, to, up)
+
+		AssertMatrixEqual(t, T, GetScaling(-1, 1, -1))
+	})
+
+	t.Run("The view transformation moves the world", func(t *testing.T) {
+		from := Point(0, 0, 8)
+		to := Point(0, 0, 0)
+		up := Vector(0, 1, 0)
+
+		T := ViewTransform(from, to, up)
+		AssertMatrixEqual(t, T, GetTranslation(0, 0, -8))
+	})
+
+	t.Run("An arbitrary view transform", func(t *testing.T) {
+		from := Point(1, 3, 2)
+		to := Point(4, -2, 8)
+		up := Vector(1, 1, 0)
+
+		T := ViewTransform(from, to, up)
+		want := Matrix{4, 4, []float64{
+			-0.50709, 0.50709, 0.67612, -2.36643,
+			0.76772, 0.60609, 0.12122, -2.82843,
+			-0.35857, 0.59761, -0.71714, 0.0,
+			0.0, 0.0, 0.0, 1.0}}
+		AssertMatrixEqual(t, T, want)
 	})
 
 }

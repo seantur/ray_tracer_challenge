@@ -39,6 +39,10 @@ func (c *Canvas) WritePixel(x int, y int, color raytracing.Color) error {
 	return nil
 }
 
+func (c *Canvas) At(x, y int) raytracing.Color {
+	return c.pixels[x*c.Height+y]
+}
+
 func (c *Canvas) ReadPixel(x int, y int) (raytracing.Color, error) {
 	if x > c.Width || y > c.Height {
 		return raytracing.Color{}, errors.New(ErrOutOfBounds)
