@@ -5,9 +5,14 @@ import (
 	"github.com/seantur/ray_tracer_challenge/raytracing"
 	"github.com/seantur/ray_tracer_challenge/scene"
 	"math"
+	"os"
+	"runtime/pprof"
 )
 
 func saveScene(path string) {
+	pprof.StartCPUProfile(os.Stdout)
+	defer pprof.StopCPUProfile()
+
 	floor := raytracing.GetSphere()
 	floor.SetTransform(datatypes.GetScaling(10, 0.01, 10))
 	mat := floor.GetMaterial()
@@ -56,8 +61,8 @@ func saveScene(path string) {
 	world := scene.GetWorld()
 	world.Shapes = []raytracing.Shape{floor, leftWall, rightWall, middle, right, left}
 
-	camera := scene.GetCamera(1000, 500, math.Pi/3)
-	camera.Transform = datatypes.ViewTransform(datatypes.Point(0, 1.5, -5), datatypes.Point(0, 1, 0), datatypes.Vector(0, 1, 0))
+	camera := scene.GetCamera(1000, 500, math.Pi/2)
+	camera.Transform = datatypes.ViewTransform(datatypes.Point(0, 3.5, -5), datatypes.Point(0, 1, 0), datatypes.Vector(0, 1, 0))
 
 	canvas := camera.Render(world)
 	canvas.SavePPM(path)
