@@ -13,12 +13,14 @@ func TestWorld(t *testing.T) {
 		light := raytracing.PointLight{Intensity: raytracing.Color{Red: 1, Green: 1, Blue: 1}, Position: datatypes.Point(-10, 10, -10)}
 		s1 := raytracing.GetSphere()
 
-		s1.Color = raytracing.Color{Red: 0.8, Green: 1.0, Blue: 0.6}
-		s1.Diffuse = 0.7
-		s1.Specular = 0.2
+		mat := s1.GetMaterial()
+		mat.Color = raytracing.Color{Red: 0.8, Green: 1.0, Blue: 0.6}
+		mat.Diffuse = 0.7
+		mat.Specular = 0.2
+		s1.SetMaterial(mat)
 
 		s2 := raytracing.GetSphere()
-		s2.Transform = datatypes.GetScaling(0.5, 0.5, 0.5)
+		s2.SetTransform(datatypes.GetScaling(0.5, 0.5, 0.5))
 
 		w := GetWorld()
 
@@ -54,7 +56,7 @@ func TestWorld(t *testing.T) {
 		r := raytracing.Ray{Origin: datatypes.Point(0, 0, -5), Direction: datatypes.Vector(0, 0, 1)}
 
 		sphere := w.Shapes[0]
-		i := raytracing.Intersection{T: 4, Object: &sphere}
+		i := raytracing.Intersection{T: 4, Object: sphere}
 
 		comps := i.PrepareComputations(r)
 
@@ -69,7 +71,7 @@ func TestWorld(t *testing.T) {
 		r := raytracing.Ray{Origin: datatypes.Point(0, 0, 0), Direction: datatypes.Vector(0, 0, 1)}
 
 		sphere := w.Shapes[1]
-		i := raytracing.Intersection{T: 0.5, Object: &sphere}
+		i := raytracing.Intersection{T: 0.5, Object: sphere}
 
 		comps := i.PrepareComputations(r)
 		c := w.ShadeHit(comps)
@@ -95,13 +97,15 @@ func TestWorld(t *testing.T) {
 
 	t.Run("The color with an intersection behind the ray", func(t *testing.T) {
 		w := GetWorld()
-		w.Shapes[0].Ambient = 1
-		w.Shapes[1].Ambient = 1
+		mat := w.Shapes[0].GetMaterial()
+		mat.Ambient = 1
+		w.Shapes[0].SetMaterial(mat)
+		w.Shapes[1].SetMaterial(mat)
 
 		r := raytracing.Ray{Origin: datatypes.Point(0, 0, 0.75), Direction: datatypes.Vector(0, 0, -1)}
 
 		c := w.ColorAt(r)
-		raytracing.AssertColorsEqual(t, c, w.Shapes[1].Color)
+		raytracing.AssertColorsEqual(t, c, w.Shapes[1].GetMaterial().Color)
 	})
 
 	t.Run("There is no shadow when nothing is colinear with point and light", func(t *testing.T) {
@@ -146,12 +150,12 @@ func TestWorld(t *testing.T) {
 
 		s1 := raytracing.GetSphere()
 		s2 := raytracing.GetSphere()
-		s2.Transform = datatypes.GetTranslation(0, 0, 10)
+		s2.SetTransform(datatypes.GetTranslation(0, 0, 10))
 
-		w.Shapes = []raytracing.Sphere{s1, s2}
+		w.Shapes = []raytracing.Shape{s1, s2}
 
 		r := raytracing.Ray{Origin: datatypes.Point(0, 0, 5), Direction: datatypes.Vector(0, 0, 1)}
-		i := raytracing.Intersection{T: 4, Object: &s2}
+		i := raytracing.Intersection{T: 4, Object: s2}
 
 		comps := i.PrepareComputations(r)
 		c := w.ShadeHit(comps)

@@ -40,7 +40,7 @@ func TestRays(t *testing.T) {
 		r := Ray{Origin: datatypes.Point(0, 0, -5), Direction: datatypes.Vector(0, 0, 1)}
 		s := GetSphere()
 
-		xs := s.Intersect(r)
+		xs := Intersect(s, r)
 
 		assertVal(t, float64(len(xs)), 2)
 		assertVal(t, xs[0].T, 4.0)
@@ -52,7 +52,7 @@ func TestRays(t *testing.T) {
 		r := Ray{Origin: datatypes.Point(0, 1, -5), Direction: datatypes.Vector(0, 0, 1)}
 		s := GetSphere()
 
-		xs := s.Intersect(r)
+		xs := Intersect(s, r)
 
 		assertVal(t, float64(len(xs)), 2)
 		assertVal(t, xs[0].T, 5.0)
@@ -64,7 +64,7 @@ func TestRays(t *testing.T) {
 		r := Ray{Origin: datatypes.Point(0, 2, -5), Direction: datatypes.Vector(0, 0, 1)}
 		s := GetSphere()
 
-		xs := s.Intersect(r)
+		xs := Intersect(s, r)
 
 		assertVal(t, float64(len(xs)), 0)
 	})
@@ -73,7 +73,7 @@ func TestRays(t *testing.T) {
 		r := Ray{Origin: datatypes.Point(0, 0, 0), Direction: datatypes.Vector(0, 0, 1)}
 		s := GetSphere()
 
-		xs := s.Intersect(r)
+		xs := Intersect(s, r)
 
 		assertVal(t, float64(len(xs)), 2)
 		assertVal(t, xs[0].T, -1.0)
@@ -84,7 +84,7 @@ func TestRays(t *testing.T) {
 		r := Ray{Origin: datatypes.Point(0, 0, 5), Direction: datatypes.Vector(0, 0, 1)}
 		s := GetSphere()
 
-		xs := s.Intersect(r)
+		xs := Intersect(s, r)
 
 		assertVal(t, float64(len(xs)), 2)
 		assertVal(t, xs[0].T, -6.0)
@@ -94,8 +94,8 @@ func TestRays(t *testing.T) {
 	t.Run("Aggregating intersections", func(t *testing.T) {
 		s := GetSphere()
 
-		i1 := Intersection{1, &s}
-		i2 := Intersection{2, &s}
+		i1 := Intersection{1, s}
+		i2 := Intersection{2, s}
 
 		xs := [...]Intersection{i1, i2}
 
@@ -109,16 +109,16 @@ func TestRays(t *testing.T) {
 		r := Ray{datatypes.Point(0, 0, -5), datatypes.Vector(0, 0, 1)}
 		s := GetSphere()
 
-		xs := s.Intersect(r)
+		xs := Intersect(s, r)
 
 		assertVal(t, float64(len(xs)), 2)
 
-		if &s != xs[0].Object {
+		if s != xs[0].Object {
 			t.Errorf("expected equal pointers were not equal: %p %p", &s, xs[0].Object)
 			t.Fatal()
 		}
 
-		if &s != xs[1].Object {
+		if s != xs[1].Object {
 			t.Errorf("expected equal pointers were not equal: %p %p", &s, xs[1].Object)
 			t.Fatal()
 		}
@@ -127,8 +127,8 @@ func TestRays(t *testing.T) {
 
 	t.Run("The hit when all intersections have positive t", func(t *testing.T) {
 		s := GetSphere()
-		i1 := Intersection{1, &s}
-		i2 := Intersection{2, &s}
+		i1 := Intersection{1, s}
+		i2 := Intersection{2, s}
 
 		xs := []Intersection{i1, i2}
 
@@ -141,8 +141,8 @@ func TestRays(t *testing.T) {
 
 	t.Run("The hit where some intersections have negative t", func(t *testing.T) {
 		s := GetSphere()
-		i1 := Intersection{-1, &s}
-		i2 := Intersection{1, &s}
+		i1 := Intersection{-1, s}
+		i2 := Intersection{1, s}
 
 		xs := []Intersection{i1, i2}
 
@@ -155,8 +155,8 @@ func TestRays(t *testing.T) {
 
 	t.Run("The hit where all intersections have negative t", func(t *testing.T) {
 		s := GetSphere()
-		i1 := Intersection{-2, &s}
-		i2 := Intersection{-1, &s}
+		i1 := Intersection{-2, s}
+		i2 := Intersection{-1, s}
 
 		xs := []Intersection{i1, i2}
 
@@ -169,10 +169,10 @@ func TestRays(t *testing.T) {
 
 	t.Run("The hit is always the lower nonnegative intersection", func(t *testing.T) {
 		s := GetSphere()
-		i1 := Intersection{5, &s}
-		i2 := Intersection{7, &s}
-		i3 := Intersection{-3, &s}
-		i4 := Intersection{2, &s}
+		i1 := Intersection{5, s}
+		i2 := Intersection{7, s}
+		i3 := Intersection{-3, s}
+		i4 := Intersection{2, s}
 
 		xs := []Intersection{i1, i2, i3, i4}
 		i, _ := Hit(xs)

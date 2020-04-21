@@ -19,14 +19,14 @@ func TestShapes(t *testing.T) {
 	t.Run("Sphere's default transform is identity matrix", func(t *testing.T) {
 		s := GetSphere()
 
-		datatypes.AssertMatrixEqual(t, s.Transform, datatypes.GetIdentity())
+		datatypes.AssertMatrixEqual(t, s.GetTransform(), datatypes.GetIdentity())
 	})
 
 	t.Run("Changing a sphere's transformation", func(t *testing.T) {
 		s := GetSphere()
 		s.SetTransform(datatypes.GetTranslation(2, 3, 4))
 
-		datatypes.AssertMatrixEqual(t, s.Transform, datatypes.GetTranslation(2, 3, 4))
+		datatypes.AssertMatrixEqual(t, s.GetTransform(), datatypes.GetTranslation(2, 3, 4))
 	})
 
 	t.Run("Intersecting a scaled sphere with a ray", func(t *testing.T) {
@@ -35,7 +35,7 @@ func TestShapes(t *testing.T) {
 		s := GetSphere()
 
 		s.SetTransform(datatypes.GetScaling(2, 2, 2))
-		xs := s.Intersect(r)
+		xs := Intersect(s, r)
 
 		assertVal(t, float64(len(xs)), 2)
 		assertVal(t, xs[0].T, 3)
@@ -48,7 +48,7 @@ func TestShapes(t *testing.T) {
 		s := GetSphere()
 
 		s.SetTransform(datatypes.GetTranslation(5, 0, 0))
-		xs := s.Intersect(r)
+		xs := Intersect(s, r)
 
 		assertVal(t, float64(len(xs)), 0)
 	})
@@ -108,7 +108,7 @@ func TestShapes(t *testing.T) {
 		s := GetSphere()
 		m := GetMaterial()
 
-		if !reflect.DeepEqual(s.Material, m) {
+		if !reflect.DeepEqual(s.GetMaterial(), m) {
 			t.Error("expected sphere material is not the default")
 		}
 	})
@@ -118,9 +118,9 @@ func TestShapes(t *testing.T) {
 		m := GetMaterial()
 
 		m.Ambient = 1
-		s.Material = m
+		s.SetMaterial(m)
 
-		if !reflect.DeepEqual(s.Material, m) {
+		if !reflect.DeepEqual(s.GetMaterial(), m) {
 			t.Error("sphere material is not expected")
 		}
 	})
@@ -129,7 +129,7 @@ func TestShapes(t *testing.T) {
 		r := Ray{Origin: datatypes.Point(0, 0, -5), Direction: datatypes.Vector(0, 0, 1)}
 
 		sphere := GetSphere()
-		i := Intersection{T: 4, Object: &sphere}
+		i := Intersection{T: 4, Object: sphere}
 
 		comps := i.PrepareComputations(r)
 
@@ -138,7 +138,7 @@ func TestShapes(t *testing.T) {
 		datatypes.AssertTupleEqual(t, comps.Eyev, datatypes.Vector(0, 0, -1))
 		datatypes.AssertTupleEqual(t, comps.Normalv, datatypes.Vector(0, 0, -1))
 
-		if !reflect.DeepEqual(comps.Object, &sphere) {
+		if !reflect.DeepEqual(comps.Object, sphere) {
 			t.Error("spheres are not equal")
 		}
 
@@ -152,7 +152,7 @@ func TestShapes(t *testing.T) {
 		r := Ray{Origin: datatypes.Point(0, 0, 0), Direction: datatypes.Vector(0, 0, 1)}
 
 		sphere := GetSphere()
-		i := Intersection{T: 1, Object: &sphere}
+		i := Intersection{T: 1, Object: sphere}
 
 		comps := i.PrepareComputations(r)
 
@@ -164,7 +164,7 @@ func TestShapes(t *testing.T) {
 		datatypes.AssertTupleEqual(t, comps.Eyev, datatypes.Vector(0, 0, -1))
 		datatypes.AssertTupleEqual(t, comps.Normalv, datatypes.Vector(0, 0, -1))
 
-		if !reflect.DeepEqual(comps.Object, &sphere) {
+		if !reflect.DeepEqual(comps.Object, sphere) {
 			t.Error("spheres are not equal")
 		}
 
@@ -174,9 +174,9 @@ func TestShapes(t *testing.T) {
 		r := Ray{Origin: datatypes.Point(0, 0, -5), Direction: datatypes.Vector(0, 0, 1)}
 
 		sphere := GetSphere()
-		sphere.Transform = datatypes.GetTranslation(0, 0, 1)
+		sphere.SetTransform(datatypes.GetTranslation(0, 0, 1))
 
-		i := Intersection{T: 5, Object: &sphere}
+		i := Intersection{T: 5, Object: sphere}
 
 		comps := i.PrepareComputations(r)
 

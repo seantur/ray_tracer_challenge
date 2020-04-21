@@ -6,6 +6,14 @@ import (
 	"math"
 )
 
+type Shape interface {
+	GetMaterial() Material
+	SetMaterial(Material)
+	GetTransform() datatypes.Matrix
+	SetTransform(datatypes.Matrix)
+	GetNormal(datatypes.Tuple) datatypes.Tuple
+}
+
 type Sphere struct {
 	Transform datatypes.Matrix
 	Material
@@ -13,12 +21,12 @@ type Sphere struct {
 
 type Intersection struct {
 	T      float64
-	Object *Sphere
+	Object Shape
 }
 
 type Computation struct {
 	T                               float64
-	Object                          *Sphere
+	Object                          Shape
 	Point, Eyev, Normalv, OverPoint datatypes.Tuple
 	IsInside                        bool
 }
@@ -51,12 +59,24 @@ func (in ByT) Len() int           { return len(in) }
 func (in ByT) Swap(i, j int)      { in[i], in[j] = in[j], in[i] }
 func (in ByT) Less(i, j int) bool { return in[i].T < in[j].T }
 
-func GetSphere() Sphere {
+func GetSphere() Shape {
 	s := Sphere{}
 	s.Transform = datatypes.GetIdentity()
 	s.Material = GetMaterial()
 
-	return s
+	return &s
+}
+
+func (s *Sphere) GetMaterial() Material {
+	return s.Material
+}
+
+func (s *Sphere) SetMaterial(m Material) {
+	s.Material = m
+}
+
+func (s *Sphere) GetTransform() datatypes.Matrix {
+	return s.Transform
 }
 
 func (s *Sphere) SetTransform(m datatypes.Matrix) {
@@ -74,8 +94,9 @@ func (s *Sphere) GetNormal(world_p datatypes.Tuple) datatypes.Tuple {
 	return world_normal.Normalize()
 }
 
-func (s *Sphere) Intersect(r Ray) []Intersection {
-	tInv, _ := s.Transform.Inverse()
+func Intersect(s Shape, r Ray) []Intersection {
+	transform := s.GetTransform()
+	tInv, _ := transform.Inverse()
 	r = r.Transform(tInv)
 
 	sphereToRay := datatypes.Subtract(r.Origin, datatypes.Point(0, 0, 0))

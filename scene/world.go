@@ -8,21 +8,24 @@ import (
 
 type World struct {
 	Light  raytracing.PointLight
-	Shapes []raytracing.Sphere
+	Shapes []raytracing.Shape
 }
 
 func GetWorld() World {
 	w := World{Light: raytracing.PointLight{Position: datatypes.Point(-10, 10, -10), Intensity: raytracing.Color{Red: 1, Green: 1, Blue: 1}}}
 
 	s1 := raytracing.GetSphere()
-	s1.Material.Color = raytracing.Color{Red: 0.8, Green: 1.0, Blue: 0.6}
-	s1.Material.Diffuse = 0.7
-	s1.Material.Specular = 0.2
+
+	mat := s1.GetMaterial()
+	mat.Color = raytracing.Color{Red: 0.8, Green: 1.0, Blue: 0.6}
+	mat.Diffuse = 0.7
+	mat.Specular = 0.2
+	s1.SetMaterial(mat)
 
 	s2 := raytracing.GetSphere()
-	s2.Transform = datatypes.GetScaling(0.5, 0.5, 0.5)
+	s2.SetTransform(datatypes.GetScaling(0.5, 0.5, 0.5))
 
-	w.Shapes = []raytracing.Sphere{s1, s2}
+	w.Shapes = []raytracing.Shape{s1, s2}
 
 	return w
 }
@@ -32,7 +35,7 @@ func (w *World) Intersect(r raytracing.Ray) []raytracing.Intersection {
 	intersections := []raytracing.Intersection{}
 
 	for i, _ := range w.Shapes {
-		intersection := w.Shapes[i].Intersect(r)
+		intersection := raytracing.Intersect(w.Shapes[i], r)
 		intersections = append(intersections, intersection...)
 	}
 	sort.Sort(raytracing.ByT(intersections))
@@ -44,7 +47,7 @@ func (w *World) Intersect(r raytracing.Ray) []raytracing.Intersection {
 func (w *World) ShadeHit(c raytracing.Computation) raytracing.Color {
 	shadowed := w.IsShadowed(c.OverPoint)
 
-	return raytracing.Lighting(c.Object.Material, w.Light, c.Point, c.Eyev, c.Normalv, shadowed)
+	return raytracing.Lighting(c.Object.GetMaterial(), w.Light, c.Point, c.Eyev, c.Normalv, shadowed)
 }
 
 func (w *World) ColorAt(r raytracing.Ray) raytracing.Color {
