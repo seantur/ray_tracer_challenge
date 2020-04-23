@@ -7,14 +7,7 @@ import (
 	"testing"
 )
 
-func TestShapes(t *testing.T) {
-
-	assertVal := func(t *testing.T, got float64, want float64) {
-		t.Helper()
-		if got != want {
-			t.Errorf("got %f want %f", got, want)
-		}
-	}
+func TestSpheres(t *testing.T) {
 
 	t.Run("Sphere's default transform is identity matrix", func(t *testing.T) {
 		s := GetSphere()
@@ -37,9 +30,9 @@ func TestShapes(t *testing.T) {
 		s.SetTransform(datatypes.GetScaling(2, 2, 2))
 		xs := Intersect(s, r)
 
-		assertVal(t, float64(len(xs)), 2)
-		assertVal(t, xs[0].T, 3)
-		assertVal(t, xs[1].T, 7)
+		datatypes.AssertVal(t, float64(len(xs)), 2)
+		datatypes.AssertVal(t, xs[0].T, 3)
+		datatypes.AssertVal(t, xs[1].T, 7)
 	})
 
 	t.Run("Intersecting a translated sphere with a ray", func(t *testing.T) {
@@ -50,7 +43,7 @@ func TestShapes(t *testing.T) {
 		s.SetTransform(datatypes.GetTranslation(5, 0, 0))
 		xs := Intersect(s, r)
 
-		assertVal(t, float64(len(xs)), 0)
+		datatypes.AssertVal(t, float64(len(xs)), 0)
 	})
 
 	t.Run("The normal on a sphere at a point on the x axis", func(t *testing.T) {
