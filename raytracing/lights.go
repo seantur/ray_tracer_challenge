@@ -12,10 +12,19 @@ type PointLight struct {
 
 func Lighting(material Material, light PointLight, point datatypes.Tuple, eyev datatypes.Tuple, normalv datatypes.Tuple, is_shadow bool) Color {
 
+	var materialColor Color
+
+	// TODO Right now to test of the material is set, we just check to see if stripe colors are the same
+	if material.Pattern.A != material.Pattern.B {
+		materialColor = material.Pattern.At(point)
+	} else {
+		materialColor = material.Color
+	}
+
 	diffuse := Color{}
 	specular := Color{}
 
-	effective_color := Hadamard(material.Color, light.Intensity)
+	effective_color := Hadamard(materialColor, light.Intensity)
 
 	lightv := datatypes.Subtract(light.Position, point)
 	lightv = lightv.Normalize()

@@ -118,4 +118,22 @@ func TestLight(t *testing.T) {
 
 	})
 
+	t.Run("Lighting with a pattern applied", func(t *testing.T) {
+		m := GetMaterial()
+		m.Pattern = GetStripe(Color{Red: 1, Green: 1, Blue: 1}, Color{Red: 0, Green: 0, Blue: 0})
+		m.Ambient = 1
+		m.Diffuse = 0
+		m.Specular = 0
+
+		eyev := datatypes.Vector(0, 0, -1)
+		normalv := datatypes.Vector(0, 0, -1)
+		light := PointLight{Position: datatypes.Point(0, 0, -10), Intensity: Color{Red: 1, Green: 1, Blue: 1}}
+
+		c1 := Lighting(m, light, datatypes.Point(0.9, 0, 0), eyev, normalv, false)
+		c2 := Lighting(m, light, datatypes.Point(1.1, 0, 0), eyev, normalv, false)
+
+		AssertColorsEqual(t, c1, Color{Red: 1, Green: 1, Blue: 1})
+		AssertColorsEqual(t, c2, Color{Red: 0, Green: 0, Blue: 0})
+	})
+
 }

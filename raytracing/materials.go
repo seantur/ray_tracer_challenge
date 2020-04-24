@@ -8,6 +8,7 @@ type Material struct {
 	Diffuse   float64
 	Specular  float64
 	Shininess float64
+	Pattern   StripePattern
 }
 
 func GetMaterial() Material {

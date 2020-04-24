@@ -45,5 +45,4 @@ func TestMaterials(t *testing.T) {
 		assertVal(t, m.Specular, 0.2)
 		assertVal(t, m.Shininess, 500.0)
 	})
-
 }
