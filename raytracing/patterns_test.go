@@ -10,10 +10,10 @@ func TestPatterns(t *testing.T) {
 	white := Color{Red: 1, Green: 1, Blue: 1}
 
 	t.Run("Creating a striped pattern", func(t *testing.T) {
-		pattern := GetStripe(white, black)
+		stripe := Stripe{A: white, B: black}
 
-		AssertColorsEqual(t, pattern.A, white)
-		AssertColorsEqual(t, pattern.B, black)
+		AssertColorsEqual(t, stripe.A, white)
+		AssertColorsEqual(t, stripe.B, black)
 
 	})
 
@@ -49,7 +49,7 @@ func TestPatterns(t *testing.T) {
 		obj.SetTransform(datatypes.GetScaling(2, 2, 2))
 
 		pattern := GetStripe(white, black)
-		c := pattern.AtObj(obj, datatypes.Point(1.5, 0, 0))
+		c := AtObj(pattern, obj, datatypes.Point(1.5, 0, 0))
 
 		AssertColorsEqual(t, c, white)
 	})
@@ -59,7 +59,7 @@ func TestPatterns(t *testing.T) {
 
 		pattern := GetStripe(white, black)
 		pattern.SetTransform(datatypes.GetScaling(2, 2, 2))
-		c := pattern.AtObj(obj, datatypes.Point(1.5, 0, 0))
+		c := AtObj(pattern, obj, datatypes.Point(1.5, 0, 0))
 
 		AssertColorsEqual(t, c, white)
 	})
@@ -70,9 +70,18 @@ func TestPatterns(t *testing.T) {
 
 		pattern := GetStripe(white, black)
 		pattern.SetTransform(datatypes.GetScaling(2, 2, 2))
-		c := pattern.AtObj(obj, datatypes.Point(2.5, 0, 0))
+		c := AtObj(pattern, obj, datatypes.Point(2.5, 0, 0))
 
 		AssertColorsEqual(t, c, white)
+	})
+
+	t.Run("A gradient linearly interpolates between colors", func(t *testing.T) {
+		pattern := GetGradient(white, black)
+		AssertColorsEqual(t, pattern.At(datatypes.Point(0, 0, 0)), white)
+		AssertColorsEqual(t, pattern.At(datatypes.Point(0.25, 0, 0)), Color{Red: 0.75, Green: 0.75, Blue: 0.75})
+		AssertColorsEqual(t, pattern.At(datatypes.Point(0.5, 0, 0)), Color{Red: 0.5, Green: 0.5, Blue: 0.5})
+		AssertColorsEqual(t, pattern.At(datatypes.Point(0.75, 0, 0)), Color{Red: 0.25, Green: 0.25, Blue: 0.25})
+
 	})
 
 }

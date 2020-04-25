@@ -14,9 +14,8 @@ func Lighting(material Material, shape Shape, light PointLight, point datatypes.
 
 	var materialColor Color
 
-	// TODO Right now to test of the material is set, we just check to see if stripe colors are the same
-	if material.Pattern.A != material.Pattern.B {
-		materialColor = material.Pattern.AtObj(shape, point)
+	if material.Pattern != nil {
+		materialColor = AtObj(material.Pattern, shape, point)
 	} else {
 		materialColor = material.Color
 	}
