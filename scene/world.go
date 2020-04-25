@@ -47,7 +47,7 @@ func (w *World) Intersect(r raytracing.Ray) []raytracing.Intersection {
 func (w *World) ShadeHit(c raytracing.Computation) raytracing.Color {
 	shadowed := w.IsShadowed(c.OverPoint)
 
-	return raytracing.Lighting(c.Object.GetMaterial(), c.Object, w.Light, c.Point, c.Eyev, c.Normalv, shadowed)
+	return raytracing.Lighting(c.Object.GetMaterial(), c.Object, w.Light, c.OverPoint, c.Eyev, c.Normalv, shadowed)
 }
 
 func (w *World) ColorAt(r raytracing.Ray) raytracing.Color {
