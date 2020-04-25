@@ -10,13 +10,13 @@ type PointLight struct {
 	Position  datatypes.Tuple
 }
 
-func Lighting(material Material, light PointLight, point datatypes.Tuple, eyev datatypes.Tuple, normalv datatypes.Tuple, is_shadow bool) Color {
+func Lighting(material Material, shape Shape, light PointLight, point datatypes.Tuple, eyev datatypes.Tuple, normalv datatypes.Tuple, is_shadow bool) Color {
 
 	var materialColor Color
 
 	// TODO Right now to test of the material is set, we just check to see if stripe colors are the same
 	if material.Pattern.A != material.Pattern.B {
-		materialColor = material.Pattern.At(point)
+		materialColor = material.Pattern.AtObj(shape, point)
 	} else {
 		materialColor = material.Color
 	}

@@ -9,6 +9,8 @@ import (
 
 func TestLight(t *testing.T) {
 
+	sphere := GetSphere()
+
 	assertColorsEqual := func(t *testing.T, got Color, want Color) {
 		t.Helper()
 
@@ -43,7 +45,7 @@ func TestLight(t *testing.T) {
 		light := PointLight{Position: datatypes.Point(0, 0, -10), Intensity: Color{Red: 1, Green: 1, Blue: 1}}
 		in_shadow := false
 
-		result := Lighting(m, light, p, eyev, normalv, in_shadow)
+		result := Lighting(m, sphere, light, p, eyev, normalv, in_shadow)
 
 		assertColorsEqual(t, result, Color{Red: 1.9, Green: 1.9, Blue: 1.9})
 	})
@@ -57,7 +59,7 @@ func TestLight(t *testing.T) {
 		light := PointLight{Position: datatypes.Point(0, 0, -10), Intensity: Color{Red: 1, Green: 1, Blue: 1}}
 		in_shadow := false
 
-		result := Lighting(m, light, p, eyev, normalv, in_shadow)
+		result := Lighting(m, sphere, light, p, eyev, normalv, in_shadow)
 
 		assertColorsEqual(t, result, Color{Red: 1.0, Green: 1.0, Blue: 1.0})
 	})
@@ -71,7 +73,7 @@ func TestLight(t *testing.T) {
 		light := PointLight{Position: datatypes.Point(0, 10, -10), Intensity: Color{Red: 1, Green: 1, Blue: 1}}
 		in_shadow := false
 
-		result := Lighting(m, light, p, eyev, normalv, in_shadow)
+		result := Lighting(m, sphere, light, p, eyev, normalv, in_shadow)
 
 		assertColorsEqual(t, result, Color{Red: 0.7364, Green: 0.7364, Blue: 0.7364})
 	})
@@ -85,7 +87,7 @@ func TestLight(t *testing.T) {
 		light := PointLight{Position: datatypes.Point(0, 10, -10), Intensity: Color{Red: 1, Green: 1, Blue: 1}}
 		in_shadow := false
 
-		result := Lighting(m, light, p, eyev, normalv, in_shadow)
+		result := Lighting(m, sphere, light, p, eyev, normalv, in_shadow)
 
 		assertColorsEqual(t, result, Color{Red: 1.6364, Green: 1.6364, Blue: 1.6364})
 	})
@@ -99,7 +101,7 @@ func TestLight(t *testing.T) {
 		light := PointLight{Position: datatypes.Point(0, 0, 10), Intensity: Color{Red: 1, Green: 1, Blue: 1}}
 		in_shadow := false
 
-		result := Lighting(m, light, p, eyev, normalv, in_shadow)
+		result := Lighting(m, sphere, light, p, eyev, normalv, in_shadow)
 
 		assertColorsEqual(t, result, Color{Red: 0.1, Green: 0.1, Blue: 0.1})
 	})
@@ -113,7 +115,7 @@ func TestLight(t *testing.T) {
 		light := PointLight{Position: datatypes.Point(0, 0, -1), Intensity: Color{Red: 1, Green: 1, Blue: 1}}
 		in_shadow := true
 
-		result := Lighting(m, light, p, eyev, normalv, in_shadow)
+		result := Lighting(m, sphere, light, p, eyev, normalv, in_shadow)
 		assertColorsEqual(t, result, Color{Red: 0.1, Green: 0.1, Blue: 0.1})
 
 	})
@@ -129,8 +131,8 @@ func TestLight(t *testing.T) {
 		normalv := datatypes.Vector(0, 0, -1)
 		light := PointLight{Position: datatypes.Point(0, 0, -10), Intensity: Color{Red: 1, Green: 1, Blue: 1}}
 
-		c1 := Lighting(m, light, datatypes.Point(0.9, 0, 0), eyev, normalv, false)
-		c2 := Lighting(m, light, datatypes.Point(1.1, 0, 0), eyev, normalv, false)
+		c1 := Lighting(m, sphere, light, datatypes.Point(0.9, 0, 0), eyev, normalv, false)
+		c2 := Lighting(m, sphere, light, datatypes.Point(1.1, 0, 0), eyev, normalv, false)
 
 		AssertColorsEqual(t, c1, Color{Red: 1, Green: 1, Blue: 1})
 		AssertColorsEqual(t, c2, Color{Red: 0, Green: 0, Blue: 0})

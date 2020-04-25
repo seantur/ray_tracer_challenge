@@ -32,6 +32,8 @@ func saveScene(path string) {
 	mat.Color = raytracing.Color{Red: 1, Green: 0, Blue: 0}
 	mat.Diffuse = 0.7
 	mat.Specular = 0.3
+	mat.Pattern = raytracing.GetStripe(raytracing.Color{Red: 1, Green: 0, Blue: 0}, raytracing.Color{Red: 0, Green: 1, Blue: 0})
+	mat.Pattern.SetTransform(datatypes.Multiply(datatypes.GetRotationY(math.Pi/2), datatypes.GetScaling(0.1, 0.1, 0.1)))
 	middle.SetMaterial(mat)
 
 	right := raytracing.GetSphere()
