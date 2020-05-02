@@ -264,7 +264,7 @@ func TestMatrices(t *testing.T) {
 
 	})
 
-	t.Run("calculate the inverse of a third matrix", func(T *testing.T) {
+	t.Run("calculate the inverse of a third matrix", func(t *testing.T) {
 		A := Matrix{4, 4, []float64{
 			9, 3, 0, 9,
 			-5, -2, -6, -3,
@@ -283,7 +283,7 @@ func TestMatrices(t *testing.T) {
 
 	})
 
-	t.Run("multiply a product by its inverse", func(T *testing.T) {
+	t.Run("multiply a product by its inverse", func(t *testing.T) {
 		A := Matrix{4, 4, []float64{3, -9, 7, 3, 3, -8, 2, -9, -4, 4, 4, 1, -6, 5, -1, 1}}
 		B := Matrix{4, 4, []float64{8, 2, 2, 2, 3, -1, 7, 0, 7, 0, 5, 4, 6, -2, 0, 5}}
 
@@ -295,4 +295,12 @@ func TestMatrices(t *testing.T) {
 
 	})
 
+	t.Run("multiply multiple matrices", func(t *testing.T) {
+		a := GetIdentity()
+		b := GetIdentity()
+		c := GetIdentity()
+
+		d := Multiply(a, b, c)
+		AssertMatrixEqual(t, d, GetIdentity())
+	})
 }

@@ -14,8 +14,13 @@ func (m *Matrix) Init() {
 	m.Vals = make([]float64, m.Row*m.Col)
 }
 
-func (m *Matrix) At(row int, col int) (float64, error) {
+func GetEmptyMatrix(row, col int) Matrix {
+	m := Matrix{Row: row, Col: col}
+	m.Init()
+	return m
+}
 
+func (m *Matrix) At(row int, col int) (float64, error) {
 	if row > m.Row || col > m.Col {
 		return 0.0, errors.New("trying access out of bounds")
 	}
@@ -24,7 +29,6 @@ func (m *Matrix) At(row int, col int) (float64, error) {
 }
 
 func (m *Matrix) Set(row int, col int, val float64) error {
-
 	if row > m.Row || col > m.Col {
 		return errors.New("trying access out of bounds")
 	}
@@ -35,9 +39,8 @@ func (m *Matrix) Set(row int, col int, val float64) error {
 }
 
 func (m *Matrix) Transpose() Matrix {
-
-	M := Matrix{Row: m.Col, Col: m.Row}
-	M.Init()
+	// Transpose, so initial column/row instead of row/column
+	M := GetEmptyMatrix(m.Col, m.Row)
 
 	for i := 0; i < m.Row; i++ {
 		for j := 0; j < m.Col; j++ {
@@ -52,9 +55,7 @@ func (m *Matrix) Transpose() Matrix {
 // Return the matrix with row/col removed
 func (m *Matrix) Submatrix(row int, col int) Matrix {
 
-	M := Matrix{Row: m.Row - 1, Col: m.Col - 1}
-	M.Init()
-
+	M := GetEmptyMatrix(m.Row-1, m.Col-1)
 	var Mi, Mj int
 
 	for i := 0; i < m.Row; i++ {
@@ -98,8 +99,7 @@ func (m *Matrix) Inverse() (Matrix, error) {
 		return Matrix{}, errors.New("trying to invert an non-invertible matrix")
 	}
 
-	M := Matrix{Row: m.Row, Col: m.Col}
-	M.Init()
+	M := GetEmptyMatrix(m.Row, m.Col)
 
 	for i := 0; i < m.Row; i++ {
 		for j := 0; j < m.Col; j++ {
@@ -124,28 +124,26 @@ func (m *Matrix) equal(m2 Matrix) bool {
 	return true
 }
 
-func Multiply(m1 Matrix, m2 Matrix) Matrix {
+func Multiply(matrices ...Matrix) Matrix {
+	//TODO throw error if any dimensions don't match
 
-	//if m1.Col != m2.Row {
-	// TODO throw an error if you can't multiply
-	//}
-
-	M := Matrix{Row: m1.Row, Col: m2.Col}
+	M := Matrix{Row: matrices[0].Row, Col: matrices[len(matrices)-1].Col}
 	M.Init()
 
-	for i := 0; i < m1.Row; i++ {
-		for j := 0; j < m2.Col; j++ {
-			var val float64
-			//val = 0
+	var val float64
+	for index := 0; index < len(matrices)-1; index++ {
+		for i := 0; i < matrices[index].Row; i++ {
+			for j := 0; j < matrices[index+1].Col; j++ {
+				val = 0
+				for k := 0; k < matrices[index].Col; k++ {
+					m1Val, _ := matrices[index].At(i, k)
+					m2Val, _ := matrices[index+1].At(k, j)
 
-			for k := 0; k < m1.Col; k++ {
-				m1Val, _ := m1.At(i, k)
-				m2Val, _ := m2.At(k, j)
+					val += m1Val * m2Val
+				}
 
-				val += m1Val * m2Val
+				M.Set(i, j, val)
 			}
-
-			M.Set(i, j, val)
 		}
 	}
 

@@ -23,7 +23,6 @@ func (t *Tuple) Negate() Tuple {
 	return Tuple{-t.X, -t.Y, -t.Z, -t.W}
 }
 
-// TODO make this variadic
 func (t *Tuple) Multiply(a float64) Tuple {
 	return Tuple{t.X * a, t.Y * a, t.Z * a, t.W * a}
 }
