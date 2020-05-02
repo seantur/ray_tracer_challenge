@@ -8,9 +8,12 @@ import (
 )
 
 func saveScene(path string) {
+	floorColor := raytracing.Color{Red: 1, Green: 0.9, Blue: 0.9}
+	black := raytracing.Color{Red: 0, Green: 0, Blue: 0}
+
 	floor := raytracing.GetPlane()
 	mat := floor.GetMaterial()
-	mat.Color = raytracing.Color{Red: 1, Green: 0.9, Blue: 0.9}
+	mat.Pattern = raytracing.GetCheckers(floorColor, black)
 	mat.Specular = 0
 	floor.SetMaterial(mat)
 
@@ -33,7 +36,7 @@ func saveScene(path string) {
 	mat.Diffuse = 0.7
 	mat.Specular = 0.3
 	mat.Pattern = raytracing.GetGradient(raytracing.Color{Red: 1, Green: 0, Blue: 0}, raytracing.Color{Red: 0, Green: 1, Blue: 0})
-	mat.Pattern.SetTransform(datatypes.GetTranslation(2, 2, 2))
+	mat.Pattern.SetTransform(datatypes.Multiply(datatypes.GetTranslation(-1, 0, 0), datatypes.GetScaling(2, 1, 1)))
 	middle.SetMaterial(mat)
 
 	right := raytracing.GetSphere()
@@ -55,13 +58,14 @@ func saveScene(path string) {
 	world := scene.GetWorld()
 	world.Shapes = []raytracing.Shape{floor, middle, right, left}
 
-	camera := scene.GetCamera(500, 250, math.Pi/3)
+	camera := scene.GetCamera(500, 500, math.Pi/3)
 	camera.Transform = datatypes.ViewTransform(datatypes.Point(0, 1.5, -5), datatypes.Point(0, 1, 0), datatypes.Vector(0, 1, 0))
 
-	canvas := camera.Render(world)
+	canvas := camera.RenderConcurrent(world)
+
 	canvas.SavePPM(path)
 }
 
 func main() {
-	saveScene("1st_scene.ppm")
+	saveScene("scene.ppm")
 }

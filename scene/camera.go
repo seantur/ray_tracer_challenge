@@ -1,10 +1,13 @@
 package scene
 
 import (
+	"fmt"
 	"github.com/seantur/ray_tracer_challenge/canvas"
 	"github.com/seantur/ray_tracer_challenge/datatypes"
 	"github.com/seantur/ray_tracer_challenge/raytracing"
 	"math"
+	"runtime"
+	"sync"
 )
 
 type camera struct {
@@ -61,6 +64,48 @@ func (c *camera) Render(w World) canvas.Canvas {
 			im.WritePixel(x, y, color)
 		}
 	}
+
+	return im
+}
+
+type pnt struct {
+	x, y int
+}
+
+func worker(channel chan pnt, w World, c *camera, im *canvas.Canvas, wg *sync.WaitGroup) {
+	defer wg.Done()
+
+	for pnt := range channel {
+		r := c.RayForPixel(pnt.x, pnt.y)
+		color := w.ColorAt(r)
+		im.WritePixel(pnt.x, pnt.y, color)
+	}
+}
+
+func (c *camera) RenderConcurrent(w World) canvas.Canvas {
+
+	numWorkers := runtime.NumCPU() * 4
+
+	im := canvas.Canvas{Height: c.Vsize, Width: c.Hsize}
+	im.Init()
+
+	channel := make(chan pnt)
+	var wg sync.WaitGroup
+	wg.Add(numWorkers)
+
+	fmt.Printf("Starting %d goroutines\n", numWorkers)
+	for i := 0; i < numWorkers; i++ {
+		go worker(channel, w, c, &im, &wg)
+	}
+
+	for y := 0; y < c.Vsize; y++ {
+		for x := 0; x < c.Hsize; x++ {
+			channel <- pnt{x, y}
+		}
+	}
+
+	close(channel)
+	wg.Wait()
 
 	return im
 }
