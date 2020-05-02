@@ -68,3 +68,12 @@ func ViewTransform(from Tuple, to Tuple, up Tuple) Matrix {
 
 	return Multiply(orientation, GetTranslation(-from.X, -from.Y, -from.Z))
 }
+
+func GetTransform(transform_matrices ...Matrix) Matrix {
+	for i := len(transform_matrices)/2 - 1; i >= 0; i-- {
+		opp := len(transform_matrices) - 1 - i
+		transform_matrices[i], transform_matrices[opp] = transform_matrices[opp], transform_matrices[i]
+	}
+
+	return Multiply(transform_matrices...)
+}

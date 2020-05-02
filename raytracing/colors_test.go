@@ -41,4 +41,18 @@ func TestColors(t *testing.T) {
 
 		AssertColorsEqual(t, Hadamard(c1, c2), Color{0.9, 0.2, 0.04})
 	})
+
+	t.Run("HexColor convert hex to color correctly", func(f *testing.T) {
+		c1 := Color{1, 0, 0}
+		c2 := HexColor(0xFF0000)
+		AssertColorsEqual(t, c1, c2)
+
+		c1 = Color{0, 1, 0}
+		c2 = HexColor(0x00FF00)
+		AssertColorsEqual(t, c1, c2)
+
+		c1 = Color{0, 0, 1}
+		c2 = HexColor(0x0000FF)
+		AssertColorsEqual(t, c1, c2)
+	})
 }

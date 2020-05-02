@@ -295,12 +295,25 @@ func TestMatrices(t *testing.T) {
 
 	})
 
-	t.Run("multiply multiple matrices", func(t *testing.T) {
+	t.Run("multiply multiple identity matrices", func(t *testing.T) {
 		a := GetIdentity()
 		b := GetIdentity()
 		c := GetIdentity()
 
 		d := Multiply(a, b, c)
 		AssertMatrixEqual(t, d, GetIdentity())
+	})
+
+	t.Run("multiply multiple matrices", func(t *testing.T) {
+		a := Matrix{4, 4, []float64{1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 0, 0, 0, 0}}
+		b := Matrix{4, 4, []float64{4, 3, 2, 1, 4, 3, 2, 1, 4, 3, 2, 1, 0, 0, 0, 0}}
+		c := Matrix{4, 4, []float64{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0}}
+
+		m := Multiply(a, b)
+		m = Multiply(m, c)
+
+		M := Multiply(a, b, c)
+
+		AssertMatrixEqual(t, m, M)
 	})
 }

@@ -127,27 +127,33 @@ func (m *Matrix) equal(m2 Matrix) bool {
 func Multiply(matrices ...Matrix) Matrix {
 	//TODO throw error if any dimensions don't match
 
-	M := Matrix{Row: matrices[0].Row, Col: matrices[len(matrices)-1].Col}
-	M.Init()
-
 	var val float64
-	for index := 0; index < len(matrices)-1; index++ {
-		for i := 0; i < matrices[index].Row; i++ {
-			for j := 0; j < matrices[index+1].Col; j++ {
+	mult := func(m1, m2 Matrix) Matrix {
+		M := GetEmptyMatrix(matrices[0].Row, matrices[len(matrices)-1].Col)
+
+		for i := 0; i < m1.Row; i++ {
+			for j := 0; j < m2.Col; j++ {
 				val = 0
-				for k := 0; k < matrices[index].Col; k++ {
-					m1Val, _ := matrices[index].At(i, k)
-					m2Val, _ := matrices[index+1].At(k, j)
+				for k := 0; k < m1.Col; k++ {
+					m1Val, _ := m1.At(i, k)
+					m2Val, _ := m2.At(k, j)
 
 					val += m1Val * m2Val
+					M.Set(i, j, val)
 				}
-
-				M.Set(i, j, val)
 			}
 		}
+		return M
+	}
+	Mat := GetEmptyMatrix(matrices[0].Row, matrices[len(matrices)-1].Col)
+
+	Mat = mult(matrices[0], matrices[1])
+
+	for index := 2; index < len(matrices); index++ {
+		Mat = mult(Mat, matrices[index])
 	}
 
-	return M
+	return Mat
 }
 
 func TupleMultiply(m Matrix, t Tuple) Tuple {

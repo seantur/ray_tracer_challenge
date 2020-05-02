@@ -173,8 +173,7 @@ func TestTransformations(t *testing.T) {
 		B := GetScaling(5, 5, 5)
 		C := GetTranslation(10, 5, 7)
 
-		T := Multiply(C, B)
-		T = Multiply(T, A)
+		T := Multiply(C, B, A)
 
 		AssertTupleEqual(t, TupleMultiply(T, p), Point(15, 0, 7))
 	})
@@ -220,6 +219,22 @@ func TestTransformations(t *testing.T) {
 			-0.35857, 0.59761, -0.71714, 0.0,
 			0.0, 0.0, 0.0, 1.0}}
 		AssertMatrixEqual(t, T, want)
+	})
+
+	t.Run("get transform matrix from multiple tranforms", func(t *testing.T) {
+		p := Point(1, 2, 3)
+		T := GetTransform(GetRotationX(math.Pi/2), GetRotationX(-math.Pi/2))
+		AssertTupleEqual(t, TupleMultiply(T, p), p)
+	})
+
+	t.Run("Chained transformations must be applied in correct order using GetTransform", func(t *testing.T) {
+		A := GetRotationX(math.Pi / 2)
+		B := GetScaling(5, 5, 5)
+		C := GetTranslation(10, 5, 7)
+
+		T := Multiply(C, B, A)
+
+		AssertMatrixEqual(t, GetTransform(A, B, C), T)
 	})
 
 }
