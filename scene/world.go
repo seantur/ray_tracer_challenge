@@ -44,13 +44,16 @@ func (w *World) Intersect(r raytracing.Ray) []raytracing.Intersection {
 
 }
 
-func (w *World) ShadeHit(c raytracing.Computation) raytracing.Color {
+func (w *World) ShadeHit(c raytracing.Computation, remaining int) raytracing.Color {
 	shadowed := w.IsShadowed(c.OverPoint)
 
-	return raytracing.Lighting(c.Object.GetMaterial(), c.Object, w.Light, c.OverPoint, c.Eyev, c.Normalv, shadowed)
+	surfaceColor := raytracing.Lighting(c.Object.GetMaterial(), c.Object, w.Light, c.OverPoint, c.Eyev, c.Normalv, shadowed)
+	reflectedColor := w.ReflectedColor(c, remaining)
+
+	return raytracing.Add(surfaceColor, reflectedColor)
 }
 
-func (w *World) ColorAt(r raytracing.Ray) raytracing.Color {
+func (w *World) ColorAt(r raytracing.Ray, remaining int) raytracing.Color {
 	intersections := w.Intersect(r)
 
 	hit, err := raytracing.Hit(intersections)
@@ -61,7 +64,7 @@ func (w *World) ColorAt(r raytracing.Ray) raytracing.Color {
 
 	comp := hit.PrepareComputations(r)
 
-	c := w.ShadeHit(comp)
+	c := w.ShadeHit(comp, remaining)
 
 	return c
 }
@@ -80,4 +83,21 @@ func (w *World) IsShadowed(p datatypes.Tuple) bool {
 	}
 
 	return false
+}
+
+func (w *World) ReflectedColor(c raytracing.Computation, remaining int) raytracing.Color {
+	// Avoid infinite recursion
+	if remaining < 1 {
+		return raytracing.Color{Red: 0, Green: 0, Blue: 0}
+	}
+	mat := c.Object.GetMaterial()
+	if mat.Reflective == 0 {
+		return raytracing.Color{Red: 0, Green: 0, Blue: 0}
+	}
+
+	reflectRay := raytracing.Ray{Origin: c.OverPoint, Direction: c.Reflectv}
+	remaining--
+	color := w.ColorAt(reflectRay, remaining-1)
+
+	return color.Multiply(mat.Reflective)
 }

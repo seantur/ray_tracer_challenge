@@ -41,10 +41,10 @@ type Intersection struct {
 }
 
 type Computation struct {
-	T                               float64
-	Object                          Shape
-	Point, Eyev, Normalv, OverPoint datatypes.Tuple
-	IsInside                        bool
+	T                                         float64
+	Object                                    Shape
+	Point, Eyev, Normalv, OverPoint, Reflectv datatypes.Tuple
+	IsInside                                  bool
 }
 
 func (i *Intersection) PrepareComputations(r Ray) Computation {
@@ -64,6 +64,7 @@ func (i *Intersection) PrepareComputations(r Ray) Computation {
 	}
 
 	c.OverPoint = datatypes.Add(c.Point, c.Normalv.Multiply(datatypes.EPSILON))
+	c.Reflectv = r.Direction.Reflect(c.Normalv)
 
 	return c
 }

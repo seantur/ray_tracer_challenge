@@ -1,18 +1,12 @@
 package raytracing
 
 import (
+	"github.com/seantur/ray_tracer_challenge/datatypes"
 	"reflect"
 	"testing"
 )
 
 func TestMaterials(t *testing.T) {
-
-	assertVal := func(t *testing.T, got float64, want float64) {
-		t.Helper()
-		if got != want {
-			t.Errorf("got %f want %f", got, want)
-		}
-	}
 
 	t.Run("Test the default material", func(t *testing.T) {
 		m := GetMaterial()
@@ -21,10 +15,10 @@ func TestMaterials(t *testing.T) {
 			t.Error("Expected default material color did not match")
 		}
 
-		assertVal(t, m.Ambient, 0.1)
-		assertVal(t, m.Diffuse, 0.9)
-		assertVal(t, m.Specular, 0.9)
-		assertVal(t, m.Shininess, 200.0)
+		datatypes.AssertVal(t, m.Ambient, 0.1)
+		datatypes.AssertVal(t, m.Diffuse, 0.9)
+		datatypes.AssertVal(t, m.Specular, 0.9)
+		datatypes.AssertVal(t, m.Shininess, 200.0)
 	})
 
 	t.Run("Can set the values of materials", func(t *testing.T) {
@@ -40,9 +34,14 @@ func TestMaterials(t *testing.T) {
 			t.Error("Expected default material color did not match")
 		}
 
-		assertVal(t, m.Ambient, 0.2)
-		assertVal(t, m.Diffuse, 0.2)
-		assertVal(t, m.Specular, 0.2)
-		assertVal(t, m.Shininess, 500.0)
+		datatypes.AssertVal(t, m.Ambient, 0.2)
+		datatypes.AssertVal(t, m.Diffuse, 0.2)
+		datatypes.AssertVal(t, m.Specular, 0.2)
+		datatypes.AssertVal(t, m.Shininess, 500.0)
+	})
+
+	t.Run("Default material has no reflectivity", func(t *testing.T) {
+		m := GetMaterial()
+		datatypes.AssertVal(t, m.Reflective, 0.0)
 	})
 }

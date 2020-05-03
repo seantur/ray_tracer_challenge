@@ -3,12 +3,9 @@ package raytracing
 import ()
 
 type Material struct {
-	Color     Color
-	Ambient   float64
-	Diffuse   float64
-	Specular  float64
-	Shininess float64
-	Pattern   Pattern
+	Color                                             Color
+	Ambient, Diffuse, Specular, Shininess, Reflective float64
+	Pattern                                           Pattern
 }
 
 func GetMaterial() Material {

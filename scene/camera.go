@@ -60,7 +60,7 @@ func (c *camera) Render(w World) canvas.Canvas {
 	for y := 0; y < c.Vsize; y++ {
 		for x := 0; x < c.Hsize; x++ {
 			r := c.RayForPixel(x, y)
-			color := w.ColorAt(r)
+			color := w.ColorAt(r, 5)
 			im.WritePixel(x, y, color)
 		}
 	}
@@ -77,7 +77,7 @@ func worker(channel chan pnt, w World, c *camera, im *canvas.Canvas, wg *sync.Wa
 
 	for pnt := range channel {
 		r := c.RayForPixel(pnt.x, pnt.y)
-		color := w.ColorAt(r)
+		color := w.ColorAt(r, 5)
 		im.WritePixel(pnt.x, pnt.y, color)
 	}
 }

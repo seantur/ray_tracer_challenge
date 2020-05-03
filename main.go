@@ -12,9 +12,17 @@ func saveScene(path string) {
 
 	floor := raytracing.GetPlane()
 	mat := floor.GetMaterial()
-	mat.Pattern = raytracing.GetCheckers(floorColor, raytracing.HexColor(raytracing.Black))
+	mat.Color = floorColor
+	//mat.Pattern = raytracing.GetCheckers(floorColor, raytracing.HexColor(raytracing.Black))
 	mat.Specular = 0
+	mat.Reflective = 0.5
 	floor.SetMaterial(mat)
+
+	ceiling := raytracing.GetPlane()
+	ceiling.SetTransform(datatypes.GetTranslation(0, 20, 0))
+	//mat.Reflective = 0
+	mat.Specular = .5
+	ceiling.SetMaterial(mat)
 
 	leftWall := raytracing.GetPlane()
 	leftWall.SetTransform(datatypes.GetTransform(
@@ -42,9 +50,10 @@ func saveScene(path string) {
 	right := raytracing.GetSphere()
 	right.SetTransform(datatypes.GetTransform(datatypes.GetScaling(0.5, 0.5, 0.5), datatypes.GetTranslation(1.5, 0.5, -0.5)))
 	mat = right.GetMaterial()
-	mat.Color = raytracing.HexColor(raytracing.Yellow)
 	mat.Diffuse = 0.7
 	mat.Specular = 0.3
+	mat.Pattern = raytracing.GetGradient(raytracing.HexColor(raytracing.Yellow), raytracing.HexColor(raytracing.Orange))
+	mat.Pattern.SetTransform(datatypes.GetTransform(datatypes.GetScaling(2, 1, 1), datatypes.GetTranslation(-1, 0, 0), datatypes.GetRotationZ(math.Pi/2)))
 	right.SetMaterial(mat)
 
 	left := raytracing.GetSphere()
@@ -56,7 +65,7 @@ func saveScene(path string) {
 	left.SetMaterial(mat)
 
 	world := scene.GetWorld()
-	world.Shapes = []raytracing.Shape{floor, middle, left, right}
+	world.Shapes = []raytracing.Shape{floor, ceiling, middle, left, right}
 
 	camera := scene.GetCamera(1000, 1000, math.Pi/3)
 	camera.Transform = datatypes.ViewTransform(datatypes.Point(0, 1.5, -5), datatypes.Point(0, 1, 0), datatypes.Vector(0, 1, 0))

@@ -2,6 +2,7 @@ package raytracing
 
 import (
 	"github.com/seantur/ray_tracer_challenge/datatypes"
+	"math"
 	"testing"
 )
 
@@ -66,6 +67,15 @@ func TestPlanes(t *testing.T) {
 		if xs[0].Object != p {
 			t.Error("Expected intersection object didn't match")
 		}
+	})
+
+	t.Run("Ensure we precompute the reflection vector", func(t *testing.T) {
+		p := GetPlane()
+		r := Ray{Origin: datatypes.Point(0, 1, -1), Direction: datatypes.Vector(0, -math.Sqrt(2)/2, math.Sqrt(2)/2)}
+		i := Intersection{T: math.Sqrt(2), Object: p}
+
+		comps := i.PrepareComputations(r)
+		datatypes.AssertTupleEqual(t, comps.Reflectv, datatypes.Vector(0, math.Sqrt(2)/2, math.Sqrt(2)/2))
 	})
 
 }
