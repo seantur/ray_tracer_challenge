@@ -44,4 +44,10 @@ func TestMaterials(t *testing.T) {
 		m := GetMaterial()
 		datatypes.AssertVal(t, m.Reflective, 0.0)
 	})
+
+	t.Run("Transparency and Refractive Index for the default material", func(t *testing.T) {
+		m := GetMaterial()
+		datatypes.AssertVal(t, m.Transparency, 0.0)
+		datatypes.AssertVal(t, m.RefractiveIndex, 1.0)
+	})
 }

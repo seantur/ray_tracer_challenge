@@ -112,4 +112,9 @@ func TestPatterns(t *testing.T) {
 		AssertColorsEqual(t, pattern.At(datatypes.Point(0, 0, 1.01)), black)
 	})
 
+	t.Run("The default pattern transformation", func(t *testing.T) {
+		pat := GetTestPat()
+		datatypes.AssertMatrixEqual(t, pat.GetTransform(), datatypes.GetIdentity())
+	})
+
 }

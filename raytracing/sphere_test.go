@@ -124,7 +124,7 @@ func TestSpheres(t *testing.T) {
 		sphere := GetSphere()
 		i := Intersection{T: 4, Object: sphere}
 
-		comps := i.PrepareComputations(r)
+		comps := i.PrepareComputations(r, []Intersection{i})
 
 		datatypes.AssertVal(t, comps.T, i.T)
 		datatypes.AssertTupleEqual(t, comps.Point, datatypes.Point(0, 0, -1))
@@ -147,7 +147,7 @@ func TestSpheres(t *testing.T) {
 		sphere := GetSphere()
 		i := Intersection{T: 1, Object: sphere}
 
-		comps := i.PrepareComputations(r)
+		comps := i.PrepareComputations(r, []Intersection{i})
 
 		if !comps.IsInside {
 			t.Error("comp.IsInside is false, should be true")
@@ -171,7 +171,7 @@ func TestSpheres(t *testing.T) {
 
 		i := Intersection{T: 5, Object: sphere}
 
-		comps := i.PrepareComputations(r)
+		comps := i.PrepareComputations(r, []Intersection{i})
 
 		if comps.OverPoint.Z >= -datatypes.EPSILON/2 {
 			t.Error("over point is larger than expected")
@@ -180,5 +180,67 @@ func TestSpheres(t *testing.T) {
 		if comps.Point.Z <= comps.OverPoint.Z {
 			t.Error("over point is not larger than original point")
 		}
+	})
+
+	t.Run("A helper for producing a sphere with a glassy material", func(t *testing.T) {
+		s := GetGlassSphere()
+		datatypes.AssertMatrixEqual(t, s.GetTransform(), datatypes.GetIdentity())
+
+		material := s.GetMaterial()
+		datatypes.AssertVal(t, material.Transparency, 1.0)
+		datatypes.AssertVal(t, material.RefractiveIndex, 1.5)
+	})
+
+	t.Run("Finding n1 and n2 at various intersections", func(t *testing.T) {
+		A := GetGlassSphere()
+		A.SetTransform(datatypes.GetScaling(2, 2, 2))
+
+		B := GetGlassSphere()
+		B.SetTransform(datatypes.GetTranslation(0, 0, -0.25))
+		material := B.GetMaterial()
+		material.RefractiveIndex = 2.0
+		B.SetMaterial(material)
+
+		C := GetGlassSphere()
+		C.SetTransform(datatypes.GetTranslation(0, 0, 0.25))
+		material = C.GetMaterial()
+		material.RefractiveIndex = 2.5
+		C.SetMaterial(material)
+
+		r := Ray{Origin: datatypes.Point(0, 0, -4), Direction: datatypes.Vector(0, 0, 1)}
+
+		xs := []Intersection{Intersection{2, A},
+			Intersection{2.75, B},
+			Intersection{3.25, C},
+			Intersection{4.75, B},
+			Intersection{5.25, C},
+			Intersection{6, A}}
+
+		n1 := []float64{1.0, 1.5, 2.0, 2.5, 2.5, 1.5}
+		n2 := []float64{1.5, 2.0, 2.5, 2.5, 1.5, 1.0}
+
+		for index := range n1 {
+			comps := xs[index].PrepareComputations(r, xs)
+			datatypes.AssertVal(t, comps.N1, n1[index])
+			datatypes.AssertVal(t, comps.N2, n2[index])
+		}
+	})
+
+	t.Run("The under point is offset below the surface", func(t *testing.T) {
+		sphere := GetGlassSphere()
+		sphere.SetTransform(datatypes.GetTranslation(0, 0, 1))
+		r := Ray{Origin: datatypes.Point(0, 0, -5), Direction: datatypes.Vector(0, 0, 1)}
+
+		i := Intersection{5, sphere}
+
+		comps := i.PrepareComputations(r, []Intersection{i})
+
+		if comps.UnderPoint.Z <= datatypes.EPSILON/2 {
+			t.Error("Expected under point z to be > EPSILON/2")
+		}
+		if comps.Point.Z >= comps.UnderPoint.Z {
+			t.Error("Expected point z to be < under point z")
+		}
+
 	})
 }

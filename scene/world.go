@@ -3,6 +3,7 @@ package scene
 import (
 	"github.com/seantur/ray_tracer_challenge/datatypes"
 	"github.com/seantur/ray_tracer_challenge/raytracing"
+	"math"
 	"sort"
 )
 
@@ -49,8 +50,9 @@ func (w *World) ShadeHit(c raytracing.Computation, remaining int) raytracing.Col
 
 	surfaceColor := raytracing.Lighting(c.Object.GetMaterial(), c.Object, w.Light, c.OverPoint, c.Eyev, c.Normalv, shadowed)
 	reflectedColor := w.ReflectedColor(c, remaining)
+	refractedColor := w.RefractedColor(c, remaining)
 
-	return raytracing.Add(surfaceColor, reflectedColor)
+	return raytracing.Add(surfaceColor, reflectedColor, refractedColor)
 }
 
 func (w *World) ColorAt(r raytracing.Ray, remaining int) raytracing.Color {
@@ -62,7 +64,7 @@ func (w *World) ColorAt(r raytracing.Ray, remaining int) raytracing.Color {
 		return raytracing.Color{}
 	}
 
-	comp := hit.PrepareComputations(r)
+	comp := hit.PrepareComputations(r, intersections)
 
 	c := w.ShadeHit(comp, remaining)
 
@@ -100,4 +102,28 @@ func (w *World) ReflectedColor(c raytracing.Computation, remaining int) raytraci
 	color := w.ColorAt(reflectRay, remaining-1)
 
 	return color.Multiply(mat.Reflective)
+}
+
+func (w *World) RefractedColor(c raytracing.Computation, remaining int) raytracing.Color {
+	material := c.Object.GetMaterial()
+	if material.Transparency == 0 || remaining == 0 {
+		return raytracing.Color{Red: 0, Green: 0, Blue: 0}
+	}
+
+	// Check for total internal reflection
+	nRatio := c.N1 / c.N2
+	cosI := datatypes.Dot(c.Eyev, c.Normalv)
+	sin2T := math.Pow(nRatio, 2) * (1 - math.Pow(cosI, 2))
+
+	if sin2T > 1 {
+		return raytracing.Color{Red: 0, Green: 0, Blue: 0}
+	}
+
+	cosT := math.Sqrt(1.0 - sin2T)
+	direction := datatypes.Subtract(c.Normalv.Multiply((nRatio*cosI)-cosT), c.Eyev.Multiply(nRatio))
+	refractRay := raytracing.Ray{Origin: c.UnderPoint, Direction: direction}
+
+	color := w.ColorAt(refractRay, remaining-1)
+
+	return color.Multiply(material.Transparency)
 }

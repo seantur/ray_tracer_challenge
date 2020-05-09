@@ -126,3 +126,25 @@ func (c *Checkers) SetTransform(m datatypes.Matrix) {
 func (c *Checkers) GetTransform() datatypes.Matrix {
 	return c.Transform
 }
+
+type TestPat struct {
+	Transform datatypes.Matrix
+}
+
+func GetTestPat() Pattern {
+	testpat := TestPat{}
+	testpat.Transform = datatypes.GetIdentity()
+	return &testpat
+}
+
+func (t *TestPat) At(point datatypes.Tuple) Color {
+	return Color{Red: point.X, Green: point.Y, Blue: point.Z}
+}
+
+func (t *TestPat) SetTransform(m datatypes.Matrix) {
+	t.Transform = m
+}
+
+func (t *TestPat) GetTransform() datatypes.Matrix {
+	return t.Transform
+}

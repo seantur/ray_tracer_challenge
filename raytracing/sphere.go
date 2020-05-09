@@ -57,3 +57,14 @@ func (s *Sphere) Intersect(r Ray) []Intersection {
 func (s *Sphere) Normal(obj_p datatypes.Tuple) datatypes.Tuple {
 	return datatypes.Subtract(obj_p, datatypes.Point(0, 0, 0))
 }
+
+func GetGlassSphere() Shape {
+	s := GetSphere()
+
+	material := s.GetMaterial()
+	material.Transparency = 1.0
+	material.RefractiveIndex = 1.5
+	s.SetMaterial(material)
+
+	return s
+}

@@ -41,13 +41,13 @@ type Intersection struct {
 }
 
 type Computation struct {
-	T                                         float64
-	Object                                    Shape
-	Point, Eyev, Normalv, OverPoint, Reflectv datatypes.Tuple
-	IsInside                                  bool
+	T, N1, N2                                             float64
+	Object                                                Shape
+	Point, UnderPoint, Eyev, Normalv, OverPoint, Reflectv datatypes.Tuple
+	IsInside                                              bool
 }
 
-func (i *Intersection) PrepareComputations(r Ray) Computation {
+func (i *Intersection) PrepareComputations(r Ray, intersections []Intersection) Computation {
 	c := Computation{}
 
 	c.T = i.T
@@ -64,7 +64,45 @@ func (i *Intersection) PrepareComputations(r Ray) Computation {
 	}
 
 	c.OverPoint = datatypes.Add(c.Point, c.Normalv.Multiply(datatypes.EPSILON))
+	c.UnderPoint = datatypes.Subtract(c.Point, c.Normalv.Multiply(datatypes.EPSILON))
 	c.Reflectv = r.Direction.Reflect(c.Normalv)
+
+	// Refraction calculation
+	containers := []Shape{}
+
+	for _, intersection := range intersections {
+
+		if intersection == *i {
+			if len(containers) == 0 {
+				c.N1 = 1.0
+			} else {
+				material := containers[len(containers)-1].GetMaterial()
+				c.N1 = material.RefractiveIndex
+			}
+		}
+
+		included := false
+		for index, item := range containers {
+			if item == intersection.Object {
+				containers = append(containers[:index], containers[index+1:]...)
+				included = true
+				break
+			}
+		}
+
+		if !included {
+			containers = append(containers, intersection.Object)
+		}
+
+		if intersection == *i {
+			if len(containers) == 0 {
+				c.N2 = 1.0
+			} else {
+				material := containers[len(containers)-1].GetMaterial()
+				c.N2 = material.RefractiveIndex
+			}
+		}
+	}
 
 	return c
 }

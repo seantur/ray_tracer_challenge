@@ -74,7 +74,7 @@ func TestPlanes(t *testing.T) {
 		r := Ray{Origin: datatypes.Point(0, 1, -1), Direction: datatypes.Vector(0, -math.Sqrt(2)/2, math.Sqrt(2)/2)}
 		i := Intersection{T: math.Sqrt(2), Object: p}
 
-		comps := i.PrepareComputations(r)
+		comps := i.PrepareComputations(r, []Intersection{i})
 		datatypes.AssertTupleEqual(t, comps.Reflectv, datatypes.Vector(0, math.Sqrt(2)/2, math.Sqrt(2)/2))
 	})
 

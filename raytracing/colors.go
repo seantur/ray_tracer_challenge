@@ -10,8 +10,13 @@ func (c *Color) Multiply(a float64) Color {
 	return Color{c.Red * a, c.Green * a, c.Blue * a}
 }
 
-func Add(a Color, b Color) Color {
-	return Color{a.Red + b.Red, a.Green + b.Green, a.Blue + b.Blue}
+func Add(colors ...Color) (c Color) {
+	for _, color := range colors {
+		c.Red += color.Red
+		c.Green += color.Green
+		c.Blue += color.Blue
+	}
+	return
 }
 
 func Subtract(a Color, b Color) Color {
