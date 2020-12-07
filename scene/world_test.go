@@ -11,11 +11,11 @@ import (
 func TestWorld(t *testing.T) {
 
 	t.Run("the default world", func(t *testing.T) {
-		light := raytracing.PointLight{Intensity: raytracing.Color{Red: 1, Green: 1, Blue: 1}, Position: datatypes.Point(-10, 10, -10)}
+		light := raytracing.PointLight{Intensity: raytracing.RGB{Red: 1, Green: 1, Blue: 1}, Position: datatypes.Point(-10, 10, -10)}
 		s1 := raytracing.GetSphere()
 
 		mat := s1.GetMaterial()
-		mat.Color = raytracing.Color{Red: 0.8, Green: 1.0, Blue: 0.6}
+		mat.RGB = raytracing.RGB{Red: 0.8, Green: 1.0, Blue: 0.6}
 		mat.Diffuse = 0.7
 		mat.Specular = 0.2
 		s1.SetMaterial(mat)
@@ -63,12 +63,12 @@ func TestWorld(t *testing.T) {
 
 		c := w.ShadeHit(comps, 5)
 
-		raytracing.AssertColorsEqual(t, c, raytracing.Color{Red: 0.38066, Green: 0.47583, Blue: 0.2855})
+		raytracing.AssertColorsEqual(t, c, raytracing.RGB{Red: 0.38066, Green: 0.47583, Blue: 0.2855})
 	})
 
 	t.Run("shading an intersection from the inside", func(t *testing.T) {
 		w := GetWorld()
-		w.Light = raytracing.PointLight{Intensity: raytracing.Color{Red: 1, Green: 1, Blue: 1}, Position: datatypes.Point(0, 0.25, 0)}
+		w.Light = raytracing.PointLight{Intensity: raytracing.RGB{Red: 1, Green: 1, Blue: 1}, Position: datatypes.Point(0, 0.25, 0)}
 		r := raytracing.Ray{Origin: datatypes.Point(0, 0, 0), Direction: datatypes.Vector(0, 0, 1)}
 
 		sphere := w.Shapes[1]
@@ -77,7 +77,7 @@ func TestWorld(t *testing.T) {
 		comps := i.PrepareComputations(r, []raytracing.Intersection{i})
 		c := w.ShadeHit(comps, 5)
 
-		raytracing.AssertColorsEqual(t, c, raytracing.Color{Red: 0.90498, Green: 0.90498, Blue: 0.90498})
+		raytracing.AssertColorsEqual(t, c, raytracing.RGB{Red: 0.90498, Green: 0.90498, Blue: 0.90498})
 	})
 
 	t.Run("The color when a ray misses", func(t *testing.T) {
@@ -85,7 +85,7 @@ func TestWorld(t *testing.T) {
 		r := raytracing.Ray{Origin: datatypes.Point(0, 0, -5), Direction: datatypes.Vector(0, 1, 0)}
 
 		c := w.ColorAt(r, 5)
-		raytracing.AssertColorsEqual(t, c, raytracing.Color{Red: 0, Green: 0, Blue: 0})
+		raytracing.AssertColorsEqual(t, c, raytracing.RGB{Red: 0, Green: 0, Blue: 0})
 	})
 
 	t.Run("The color when a ray hits", func(t *testing.T) {
@@ -93,7 +93,7 @@ func TestWorld(t *testing.T) {
 		r := raytracing.Ray{Origin: datatypes.Point(0, 0, -5), Direction: datatypes.Vector(0, 0, 1)}
 
 		c := w.ColorAt(r, 5)
-		raytracing.AssertColorsEqual(t, c, raytracing.Color{Red: 0.38066, Green: 0.47583, Blue: 0.2855})
+		raytracing.AssertColorsEqual(t, c, raytracing.RGB{Red: 0.38066, Green: 0.47583, Blue: 0.2855})
 	})
 
 	t.Run("The color with an intersection behind the ray", func(t *testing.T) {
@@ -106,7 +106,7 @@ func TestWorld(t *testing.T) {
 		r := raytracing.Ray{Origin: datatypes.Point(0, 0, 0.75), Direction: datatypes.Vector(0, 0, -1)}
 
 		c := w.ColorAt(r, 5)
-		raytracing.AssertColorsEqual(t, c, w.Shapes[1].GetMaterial().Color)
+		raytracing.AssertColorsEqual(t, c, w.Shapes[1].GetMaterial().RGB)
 	})
 
 	t.Run("There is no shadow when nothing is colinear with point and light", func(t *testing.T) {
@@ -147,7 +147,7 @@ func TestWorld(t *testing.T) {
 
 	t.Run("Shade hit correctly shades shadows", func(t *testing.T) {
 		w := GetWorld()
-		w.Light = raytracing.PointLight{Intensity: raytracing.Color{Red: 1, Green: 1, Blue: 1}, Position: datatypes.Point(0, 0, -10)}
+		w.Light = raytracing.PointLight{Intensity: raytracing.RGB{Red: 1, Green: 1, Blue: 1}, Position: datatypes.Point(0, 0, -10)}
 
 		s1 := raytracing.GetSphere()
 		s2 := raytracing.GetSphere()
@@ -161,7 +161,7 @@ func TestWorld(t *testing.T) {
 		comps := i.PrepareComputations(r, []raytracing.Intersection{i})
 		c := w.ShadeHit(comps, 5)
 
-		raytracing.AssertColorsEqual(t, c, raytracing.Color{Red: 0.1, Green: 0.1, Blue: 0.1})
+		raytracing.AssertColorsEqual(t, c, raytracing.RGB{Red: 0.1, Green: 0.1, Blue: 0.1})
 	})
 
 	t.Run("The reflected color for a nonreflective material", func(t *testing.T) {
@@ -176,7 +176,7 @@ func TestWorld(t *testing.T) {
 		comps := i.PrepareComputations(r, []raytracing.Intersection{i})
 
 		color := w.ReflectedColor(comps, 5)
-		raytracing.AssertColorsEqual(t, color, raytracing.Color{Red: 0, Green: 0, Blue: 0})
+		raytracing.AssertColorsEqual(t, color, raytracing.RGB{Red: 0, Green: 0, Blue: 0})
 	})
 
 	t.Run("The reflected color for a reflective material", func(t *testing.T) {
@@ -196,7 +196,7 @@ func TestWorld(t *testing.T) {
 		comps := i.PrepareComputations(r, []raytracing.Intersection{i})
 		color := w.ReflectedColor(comps, 5)
 
-		raytracing.AssertColorsEqual(t, color, raytracing.Color{Red: 0.19033, Green: 0.23791, Blue: 0.14274})
+		raytracing.AssertColorsEqual(t, color, raytracing.RGB{Red: 0.19033, Green: 0.23791, Blue: 0.14274})
 	})
 
 	t.Run("ShadeHit with a reflective material", func(t *testing.T) {
@@ -216,12 +216,12 @@ func TestWorld(t *testing.T) {
 		comps := i.PrepareComputations(r, []raytracing.Intersection{i})
 		color := w.ShadeHit(comps, 5)
 
-		raytracing.AssertColorsEqual(t, color, raytracing.Color{Red: 0.87675, Green: 0.92434, Blue: 0.82917})
+		raytracing.AssertColorsEqual(t, color, raytracing.RGB{Red: 0.87675, Green: 0.92434, Blue: 0.82917})
 	})
 
 	t.Run("ColorAt with mutually reflective surfaces", func(t *testing.T) {
 		w := GetWorld()
-		w.Light = raytracing.PointLight{Intensity: raytracing.Color{Red: 1, Green: 1, Blue: 1}, Position: datatypes.Point(0, 0, 0)}
+		w.Light = raytracing.PointLight{Intensity: raytracing.RGB{Red: 1, Green: 1, Blue: 1}, Position: datatypes.Point(0, 0, 0)}
 
 		lower := raytracing.GetPlane()
 		mat := lower.GetMaterial()
@@ -258,7 +258,7 @@ func TestWorld(t *testing.T) {
 		comps := i.PrepareComputations(r, []raytracing.Intersection{i})
 		color := w.ReflectedColor(comps, 0)
 
-		raytracing.AssertColorsEqual(t, color, raytracing.Color{Red: 0, Green: 0, Blue: 0})
+		raytracing.AssertColorsEqual(t, color, raytracing.RGB{Red: 0, Green: 0, Blue: 0})
 	})
 
 	t.Run("The refracted color with an opaque surface", func(t *testing.T) {
@@ -270,7 +270,7 @@ func TestWorld(t *testing.T) {
 		comps := xs[0].PrepareComputations(r, xs)
 		c := w.RefractedColor(comps, 5)
 
-		raytracing.AssertColorsEqual(t, c, raytracing.Color{Red: 0, Green: 0, Blue: 0})
+		raytracing.AssertColorsEqual(t, c, raytracing.RGB{Red: 0, Green: 0, Blue: 0})
 	})
 
 	t.Run("The refracted color at the maximum recursive depth", func(t *testing.T) {
@@ -287,7 +287,7 @@ func TestWorld(t *testing.T) {
 		comps := xs[0].PrepareComputations(r, xs)
 		c := w.RefractedColor(comps, 0)
 
-		raytracing.AssertColorsEqual(t, c, raytracing.Color{Red: 0, Green: 0, Blue: 0})
+		raytracing.AssertColorsEqual(t, c, raytracing.RGB{Red: 0, Green: 0, Blue: 0})
 	})
 
 	t.Run("The refracted color under total unternal reflection", func(t *testing.T) {
@@ -306,7 +306,7 @@ func TestWorld(t *testing.T) {
 		comps := xs[1].PrepareComputations(r, xs)
 		c := w.RefractedColor(comps, 5)
 
-		raytracing.AssertColorsEqual(t, c, raytracing.Color{Red: 0, Green: 0, Blue: 0})
+		raytracing.AssertColorsEqual(t, c, raytracing.RGB{Red: 0, Green: 0, Blue: 0})
 	})
 
 	t.Run("The refracted color with a refracted ray", func(t *testing.T) {
@@ -334,7 +334,7 @@ func TestWorld(t *testing.T) {
 		comps := xs[2].PrepareComputations(r, xs)
 		c := w.RefractedColor(comps, 5)
 
-		raytracing.AssertColorsEqual(t, c, raytracing.Color{Red: 0, Green: 0.99887, Blue: 0.04721})
+		raytracing.AssertColorsEqual(t, c, raytracing.RGB{Red: 0, Green: 0.99887, Blue: 0.04721})
 	})
 
 	t.Run("Shade hit with a transparent material", func(t *testing.T) {
@@ -352,7 +352,7 @@ func TestWorld(t *testing.T) {
 		ball := raytracing.GetSphere()
 		ball.SetTransform(datatypes.GetTranslation(0, -3.5, -0.5))
 		material = ball.GetMaterial()
-		material.Color = raytracing.Color{Red: 1, Green: 0, Blue: 0}
+		material.RGB = raytracing.RGB{Red: 1, Green: 0, Blue: 0}
 		material.Ambient = 0.5
 		ball.SetMaterial(material)
 
@@ -364,6 +364,6 @@ func TestWorld(t *testing.T) {
 		comps := xs[0].PrepareComputations(r, xs)
 		color := w.ShadeHit(comps, 5)
 
-		raytracing.AssertColorsEqual(t, color, raytracing.Color{Red: 0.93642, Green: 0.68642, Blue: 0.68642})
+		raytracing.AssertColorsEqual(t, color, raytracing.RGB{Red: 0.93642, Green: 0.68642, Blue: 0.68642})
 	})
 }

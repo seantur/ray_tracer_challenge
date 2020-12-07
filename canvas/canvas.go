@@ -4,8 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"github.com/seantur/ray_tracer_challenge/raytracing"
+	"image/color"
 	"io/ioutil"
-	"math"
 	"strconv"
 	"strings"
 )
@@ -22,47 +22,47 @@ const (
 type Canvas struct {
 	Height int
 	Width  int
-	pixels []raytracing.Color
+	pixels []color.Color
 }
 
 func (c *Canvas) Init() {
-	c.pixels = make([]raytracing.Color, c.Height*c.Width)
+	for i := 0; i < c.Height*c.Width; i++ {
+		c.pixels = append(c.pixels, raytracing.RGB{})
+	}
 }
 
-func (c *Canvas) WritePixel(x int, y int, color raytracing.Color) error {
+func (c *Canvas) WritePixel(x int, y int, pixel color.Color) error {
 	if x > c.Width || y > c.Height {
 		return errors.New(ErrOutOfBounds)
 	}
 
-	c.pixels[x*c.Height+y] = color
+	c.pixels[x*c.Height+y] = pixel
 
 	return nil
 }
 
-func (c *Canvas) At(x, y int) raytracing.Color {
+func (c *Canvas) At(x, y int) color.Color {
 	return c.pixels[x*c.Height+y]
 }
 
-func (c *Canvas) ReadPixel(x int, y int) (raytracing.Color, error) {
+func (c *Canvas) ReadPixel(x int, y int) (color.Color, error) {
 	if x > c.Width || y > c.Height {
-		return raytracing.Color{}, errors.New(ErrOutOfBounds)
+		return raytracing.RGB{}, errors.New(ErrOutOfBounds)
 	}
 	return c.pixels[x*c.Height+y], nil
 }
 
-func scale255(val float64) string {
-	output := int(math.Round(val * 255))
-
-	if output < 0 {
+func scale255(val uint32) string {
+	if val < 0 {
 		return "0 "
-	} else if output > 255 {
+	} else if val > 255 {
 		return "255 "
 	} else {
-		return strconv.Itoa(output) + " "
+		return strconv.Itoa(int(val)) + " "
 	}
 }
 
-func addColor(color float64, s *strings.Builder, row *string) {
+func addColor(color uint32, s *strings.Builder, row *string) {
 	colorStr := scale255(color)
 
 	if len([]rune(*row))+len([]rune(colorStr)) > PPMCharLen {
@@ -88,9 +88,11 @@ func (c *Canvas) toPPM() string {
 		for j := 0; j < c.Width; j++ {
 			color, _ := c.ReadPixel(j, i)
 
-			addColor(color.Red, &str, &row)
-			addColor(color.Green, &str, &row)
-			addColor(color.Blue, &str, &row)
+			red, green, blue, _ := color.RGBA()
+
+			addColor(red, &str, &row)
+			addColor(green, &str, &row)
+			addColor(blue, &str, &row)
 
 		}
 		writeRow(&str, &row)

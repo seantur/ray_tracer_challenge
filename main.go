@@ -8,11 +8,11 @@ import (
 )
 
 func saveScene(path string) {
-	floorColor := raytracing.Color{Red: 1, Green: 0.9, Blue: 0.9}
+	floorColor := raytracing.RGB{Red: 1, Green: 0.9, Blue: 0.9}
 
 	floor := raytracing.GetPlane()
 	mat := floor.GetMaterial()
-	mat.Color = floorColor
+	mat.RGB = floorColor
 	mat.Pattern = raytracing.GetCheckers(floorColor, raytracing.HexColor(raytracing.Black))
 	mat.Specular = 0
 	mat.Reflective = 0.5
@@ -59,7 +59,7 @@ func saveScene(path string) {
 	left := raytracing.GetSphere()
 	left.SetTransform(datatypes.GetTransform(datatypes.GetScaling(0.33, 0.33, 0.33), datatypes.GetTranslation(-1.5, 0.33, -0.75)))
 	mat = left.GetMaterial()
-	mat.Color = raytracing.HexColor(raytracing.Teal)
+	mat.RGB = raytracing.HexColor(raytracing.Teal)
 	mat.Diffuse = 0.7
 	mat.Specular = 0.3
 	left.SetMaterial(mat)

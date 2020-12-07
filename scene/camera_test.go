@@ -67,7 +67,9 @@ func TestCamera(t *testing.T) {
 		c.Transform = Transform
 
 		im := c.Render(w)
-		raytracing.AssertColorsEqual(t, im.At(5, 5), raytracing.Color{Red: 0.38066, Green: 0.47583, Blue: 0.2855})
+		r, g, b, _ := im.At(5, 5).RGBA()
+		output := raytracing.RGB{float64(r) / 255, float64(g) / 255, float64(b) / 255}
+		raytracing.AssertColorsEqual(t, output, raytracing.RGB{Red: 0.38039, Green: 0.47450, Blue: 0.28235})
 	})
 
 }

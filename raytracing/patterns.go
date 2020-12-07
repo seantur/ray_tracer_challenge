@@ -6,12 +6,12 @@ import (
 )
 
 type Pattern interface {
-	At(point datatypes.Tuple) Color
+	At(point datatypes.Tuple) RGB
 	SetTransform(m datatypes.Matrix)
 	GetTransform() datatypes.Matrix
 }
 
-func AtObj(p Pattern, shape Shape, point datatypes.Tuple) Color {
+func AtObj(p Pattern, shape Shape, point datatypes.Tuple) RGB {
 	objTransform := shape.GetTransform()
 	patternTransform := p.GetTransform()
 
@@ -25,16 +25,16 @@ func AtObj(p Pattern, shape Shape, point datatypes.Tuple) Color {
 }
 
 type Stripe struct {
-	A, B      Color
+	A, B      RGB
 	Transform datatypes.Matrix
 }
 
-func GetStripe(a, b Color) Pattern {
+func GetStripe(a, b RGB) Pattern {
 	s := Stripe{a, b, datatypes.GetIdentity()}
 	return &s
 }
 
-func (s *Stripe) At(point datatypes.Tuple) Color {
+func (s *Stripe) At(point datatypes.Tuple) RGB {
 
 	if math.Mod(math.Floor(point.X), 2) == 0 {
 		return s.A
@@ -52,16 +52,16 @@ func (s *Stripe) GetTransform() datatypes.Matrix {
 }
 
 type Gradient struct {
-	A, B      Color
+	A, B      RGB
 	Transform datatypes.Matrix
 }
 
-func GetGradient(a, b Color) Pattern {
+func GetGradient(a, b RGB) Pattern {
 	g := Gradient{a, b, datatypes.GetIdentity()}
 	return &g
 }
 
-func (g *Gradient) At(point datatypes.Tuple) Color {
+func (g *Gradient) At(point datatypes.Tuple) RGB {
 	distance := Subtract(g.B, g.A)
 	frac := point.X - math.Floor(point.X)
 
@@ -77,16 +77,16 @@ func (g *Gradient) GetTransform() datatypes.Matrix {
 }
 
 type Ring struct {
-	A, B      Color
+	A, B      RGB
 	Transform datatypes.Matrix
 }
 
-func GetRing(a, b Color) Pattern {
+func GetRing(a, b RGB) Pattern {
 	r := Ring{a, b, datatypes.GetIdentity()}
 	return &r
 }
 
-func (r *Ring) At(point datatypes.Tuple) Color {
+func (r *Ring) At(point datatypes.Tuple) RGB {
 	if math.Mod(math.Floor(math.Sqrt(math.Pow(point.X, 2)+math.Pow(point.Z, 2))), 2) == 0 {
 		return r.A
 	}
@@ -102,16 +102,16 @@ func (r *Ring) GetTransform() datatypes.Matrix {
 }
 
 type Checkers struct {
-	A, B      Color
+	A, B      RGB
 	Transform datatypes.Matrix
 }
 
-func GetCheckers(a, b Color) Pattern {
+func GetCheckers(a, b RGB) Pattern {
 	r := Checkers{a, b, datatypes.GetIdentity()}
 	return &r
 }
 
-func (c *Checkers) At(point datatypes.Tuple) Color {
+func (c *Checkers) At(point datatypes.Tuple) RGB {
 
 	if math.Mod(math.Floor(point.X)+math.Floor(point.Y)+math.Floor(point.Z), 2) == 0 {
 		return c.A
@@ -137,8 +137,8 @@ func GetTestPat() Pattern {
 	return &testpat
 }
 
-func (t *TestPat) At(point datatypes.Tuple) Color {
-	return Color{Red: point.X, Green: point.Y, Blue: point.Z}
+func (t *TestPat) At(point datatypes.Tuple) RGB {
+	return RGB{Red: point.X, Green: point.Y, Blue: point.Z}
 }
 
 func (t *TestPat) SetTransform(m datatypes.Matrix) {

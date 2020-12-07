@@ -1,16 +1,33 @@
 package raytracing
 
-type Color struct {
+// RGB
+type RGB struct {
 	Red   float64
 	Green float64
 	Blue  float64
 }
 
-func (c *Color) Multiply(a float64) Color {
-	return Color{c.Red * a, c.Green * a, c.Blue * a}
+func (c RGB) RGBA() (r, g, b, a uint32) {
+	alpha := 255.0
+	if c.Red < 0 {
+		c.Red = 0
+	}
+
+	if c.Green < 0 {
+		c.Green = 0
+	}
+
+	if c.Blue < 0 {
+		c.Blue = 0
+	}
+	return uint32(c.Red * alpha), uint32(c.Green * alpha), uint32(c.Blue * alpha), uint32(alpha)
 }
 
-func Add(colors ...Color) (c Color) {
+func (c *RGB) Multiply(a float64) RGB {
+	return RGB{c.Red * a, c.Green * a, c.Blue * a}
+}
+
+func Add(colors ...RGB) (c RGB) {
 	for _, color := range colors {
 		c.Red += color.Red
 		c.Green += color.Green
@@ -19,17 +36,16 @@ func Add(colors ...Color) (c Color) {
 	return
 }
 
-func Subtract(a Color, b Color) Color {
-	return Color{a.Red - b.Red, a.Green - b.Green, a.Blue - b.Blue}
+func Subtract(a RGB, b RGB) RGB {
+	return RGB{a.Red - b.Red, a.Green - b.Green, a.Blue - b.Blue}
 }
 
-func Hadamard(a Color, b Color) Color {
-	return Color{a.Red * b.Red, a.Green * b.Green, a.Blue * b.Blue}
+func Hadamard(a RGB, b RGB) RGB {
+	return RGB{a.Red * b.Red, a.Green * b.Green, a.Blue * b.Blue}
 }
 
-func HexColor(hex int) Color {
-
-	return Color{float64((hex&0xFF0000)>>16) / 255.0, float64((hex&0x00FF00)>>8) / 255.0, float64(hex&0x0000FF) / 255.}
+func HexColor(hex int) RGB {
+	return RGB{float64((hex&0xFF0000)>>16) / 255.0, float64((hex&0x00FF00)>>8) / 255.0, float64(hex&0x0000FF) / 255.}
 }
 
 const (

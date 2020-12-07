@@ -13,12 +13,12 @@ type World struct {
 }
 
 func GetWorld() World {
-	w := World{Light: raytracing.PointLight{Position: datatypes.Point(-10, 10, -10), Intensity: raytracing.Color{Red: 1, Green: 1, Blue: 1}}}
+	w := World{Light: raytracing.PointLight{Position: datatypes.Point(-10, 10, -10), Intensity: raytracing.RGB{Red: 1, Green: 1, Blue: 1}}}
 
 	s1 := raytracing.GetSphere()
 
 	mat := s1.GetMaterial()
-	mat.Color = raytracing.Color{Red: 0.8, Green: 1.0, Blue: 0.6}
+	mat.RGB = raytracing.RGB{Red: 0.8, Green: 1.0, Blue: 0.6}
 	mat.Diffuse = 0.7
 	mat.Specular = 0.2
 	s1.SetMaterial(mat)
@@ -45,7 +45,7 @@ func (w *World) Intersect(r raytracing.Ray) []raytracing.Intersection {
 
 }
 
-func (w *World) ShadeHit(c raytracing.Computation, remaining int) raytracing.Color {
+func (w *World) ShadeHit(c raytracing.Computation, remaining int) raytracing.RGB {
 	shadowed := w.IsShadowed(c.OverPoint)
 
 	surfaceColor := raytracing.Lighting(c.Object.GetMaterial(), c.Object, w.Light, c.OverPoint, c.Eyev, c.Normalv, shadowed)
@@ -55,13 +55,13 @@ func (w *World) ShadeHit(c raytracing.Computation, remaining int) raytracing.Col
 	return raytracing.Add(surfaceColor, reflectedColor, refractedColor)
 }
 
-func (w *World) ColorAt(r raytracing.Ray, remaining int) raytracing.Color {
+func (w *World) ColorAt(r raytracing.Ray, remaining int) raytracing.RGB {
 	intersections := w.Intersect(r)
 
 	hit, err := raytracing.Hit(intersections)
 
 	if err != nil {
-		return raytracing.Color{}
+		return raytracing.RGB{}
 	}
 
 	comp := hit.PrepareComputations(r, intersections)
@@ -87,14 +87,14 @@ func (w *World) IsShadowed(p datatypes.Tuple) bool {
 	return false
 }
 
-func (w *World) ReflectedColor(c raytracing.Computation, remaining int) raytracing.Color {
+func (w *World) ReflectedColor(c raytracing.Computation, remaining int) raytracing.RGB {
 	// Avoid infinite recursion
 	if remaining < 1 {
-		return raytracing.Color{Red: 0, Green: 0, Blue: 0}
+		return raytracing.RGB{Red: 0, Green: 0, Blue: 0}
 	}
 	mat := c.Object.GetMaterial()
 	if mat.Reflective == 0 {
-		return raytracing.Color{Red: 0, Green: 0, Blue: 0}
+		return raytracing.RGB{Red: 0, Green: 0, Blue: 0}
 	}
 
 	reflectRay := raytracing.Ray{Origin: c.OverPoint, Direction: c.Reflectv}
@@ -104,10 +104,10 @@ func (w *World) ReflectedColor(c raytracing.Computation, remaining int) raytraci
 	return color.Multiply(mat.Reflective)
 }
 
-func (w *World) RefractedColor(c raytracing.Computation, remaining int) raytracing.Color {
+func (w *World) RefractedColor(c raytracing.Computation, remaining int) raytracing.RGB {
 	material := c.Object.GetMaterial()
 	if material.Transparency == 0 || remaining == 0 {
-		return raytracing.Color{Red: 0, Green: 0, Blue: 0}
+		return raytracing.RGB{Red: 0, Green: 0, Blue: 0}
 	}
 
 	// Check for total internal reflection
@@ -116,7 +116,7 @@ func (w *World) RefractedColor(c raytracing.Computation, remaining int) raytraci
 	sin2T := math.Pow(nRatio, 2) * (1 - math.Pow(cosI, 2))
 
 	if sin2T > 1 {
-		return raytracing.Color{Red: 0, Green: 0, Blue: 0}
+		return raytracing.RGB{Red: 0, Green: 0, Blue: 0}
 	}
 
 	cosT := math.Sqrt(1.0 - sin2T)

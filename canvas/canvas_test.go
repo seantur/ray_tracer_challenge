@@ -44,7 +44,9 @@ func TestCanvas(t *testing.T) {
 		for i := 0; i < c.Width; i++ {
 			for j := 0; j < c.Height; j++ {
 				val, _ := c.ReadPixel(i, j)
-				raytracing.AssertColorsEqual(t, val, raytracing.Color{0, 0, 0})
+				r, g, b, _ := val.RGBA()
+				output := raytracing.RGB{float64(r) / 255, float64(g) / 255, float64(b) / 255}
+				raytracing.AssertColorsEqual(t, output, raytracing.RGB{0, 0, 0})
 			}
 		}
 
@@ -54,12 +56,15 @@ func TestCanvas(t *testing.T) {
 		c := Canvas{Height: 20, Width: 10}
 		c.Init()
 
-		Red := raytracing.Color{1, 0, 0}
+		Red := raytracing.RGB{1, 0, 0}
 
 		c.WritePixel(2, 3, Red)
 
 		val, _ := c.ReadPixel(2, 3)
-		raytracing.AssertColorsEqual(t, val, Red)
+		r, g, b, _ := val.RGBA()
+		output := raytracing.RGB{float64(r) / 255, float64(g) / 255, float64(b) / 255}
+
+		raytracing.AssertColorsEqual(t, output, Red)
 	})
 
 	t.Run("construct PPM header", func(t *testing.T) {
@@ -76,9 +81,9 @@ func TestCanvas(t *testing.T) {
 		c := Canvas{Height: 3, Width: 5}
 		c.Init()
 
-		c1 := raytracing.Color{1.5, 0, 0}
-		c2 := raytracing.Color{0, 0.5, 0}
-		c3 := raytracing.Color{-0.5, 0, 1}
+		c1 := raytracing.RGB{1.5, 0, 0}
+		c2 := raytracing.RGB{0, 0.5, 0}
+		c3 := raytracing.RGB{-0.5, 0, 1}
 
 		c.WritePixel(0, 0, c1)
 		c.WritePixel(2, 1, c2)
@@ -87,7 +92,7 @@ func TestCanvas(t *testing.T) {
 		got := c.toPPM()
 
 		assertStringLine(t, got, "255 0 0 0 0 0 0 0 0 0 0 0 0 0 0", 3)
-		assertStringLine(t, got, "0 0 0 0 0 0 0 128 0 0 0 0 0 0 0", 4)
+		assertStringLine(t, got, "0 0 0 0 0 0 0 127 0 0 0 0 0 0 0", 4)
 		assertStringLine(t, got, "0 0 0 0 0 0 0 0 0 0 0 0 0 0 255", 5)
 
 	})
@@ -96,7 +101,7 @@ func TestCanvas(t *testing.T) {
 		c := Canvas{Height: 2, Width: 10}
 		c.Init()
 
-		color := raytracing.Color{1, 0.8, 0.6}
+		color := raytracing.RGB{1, 0.8, 0.6}
 
 		for i := 0; i < c.Width; i++ {
 			for j := 0; j < c.Height; j++ {
@@ -136,5 +141,4 @@ func TestCanvas(t *testing.T) {
 		}
 
 	})
-
 }

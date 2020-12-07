@@ -6,22 +6,22 @@ import (
 )
 
 type PointLight struct {
-	Intensity Color
+	Intensity RGB
 	Position  datatypes.Tuple
 }
 
-func Lighting(material Material, shape Shape, light PointLight, point datatypes.Tuple, eyev datatypes.Tuple, normalv datatypes.Tuple, is_shadow bool) Color {
+func Lighting(material Material, shape Shape, light PointLight, point datatypes.Tuple, eyev datatypes.Tuple, normalv datatypes.Tuple, is_shadow bool) RGB {
 
-	var materialColor Color
+	var materialColor RGB
 
 	if material.Pattern != nil {
 		materialColor = AtObj(material.Pattern, shape, point)
 	} else {
-		materialColor = material.Color
+		materialColor = material.RGB
 	}
 
-	diffuse := Color{}
-	specular := Color{}
+	diffuse := RGB{}
+	specular := RGB{}
 
 	effective_color := Hadamard(materialColor, light.Intensity)
 
@@ -46,7 +46,7 @@ func Lighting(material Material, shape Shape, light PointLight, point datatypes.
 		reflect_dot_eye := datatypes.Dot(reflectv, eyev)
 
 		if reflect_dot_eye <= 0 {
-			specular = Color{}
+			specular = RGB{}
 		} else {
 
 			factor := math.Pow(reflect_dot_eye, material.Shininess)

@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func AssertColorsEqual(t *testing.T, got Color, want Color) {
+func AssertColorsEqual(t *testing.T, got RGB, want RGB) {
 	allClose := datatypes.IsClose(got.Red, want.Red) && datatypes.IsClose(got.Green, want.Green) && datatypes.IsClose(got.Blue, want.Blue)
 
 	if !allClose {
