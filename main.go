@@ -1,10 +1,13 @@
 package main
 
 import (
+	"fmt"
+	"github.com/seantur/ray_tracer_challenge/canvas"
 	"github.com/seantur/ray_tracer_challenge/datatypes"
 	"github.com/seantur/ray_tracer_challenge/raytracing"
 	"github.com/seantur/ray_tracer_challenge/scene"
 	"math"
+	"time"
 )
 
 func saveScene(path string) {
@@ -41,8 +44,9 @@ func saveScene(path string) {
 	middle := raytracing.GetSphere()
 	middle.SetTransform(datatypes.GetTranslation(0, 1, 0))
 	mat = middle.GetMaterial()
-	mat.Transparency = 0.5
-	mat.RefractiveIndex = 1.33
+	//mat.Transparency = 0.5
+	//mat.RefractiveIndex = 1.33
+	mat.RGB = raytracing.HexColor(raytracing.Red)
 	//mat.Pattern = raytracing.GetGradient(raytracing.HexColor(raytracing.Red), raytracing.HexColor(raytracing.Green))
 	//mat.Pattern.SetTransform(datatypes.GetTransform(datatypes.GetScaling(2, 1, 1), datatypes.GetTranslation(-1, 0, 0), datatypes.GetRotationZ(math.Pi/2)))
 	middle.SetMaterial(mat)
@@ -50,10 +54,11 @@ func saveScene(path string) {
 	right := raytracing.GetSphere()
 	right.SetTransform(datatypes.GetTransform(datatypes.GetScaling(0.5, 0.5, 0.5), datatypes.GetTranslation(1.5, 0.5, -0.5)))
 	mat = right.GetMaterial()
-	mat.Diffuse = 0.7
-	mat.Specular = 0.3
-	mat.Pattern = raytracing.GetGradient(raytracing.HexColor(raytracing.Yellow), raytracing.HexColor(raytracing.Orange))
-	mat.Pattern.SetTransform(datatypes.GetTransform(datatypes.GetScaling(2, 1, 1), datatypes.GetTranslation(-1, 0, 0), datatypes.GetRotationZ(math.Pi/2)))
+	//mat.Diffuse = 0.7
+	//mat.Specular = 0.3
+	mat.RGB = raytracing.HexColor(raytracing.Red)
+	//mat.Pattern = raytracing.GetGradient(raytracing.HexColor(raytracing.Yellow), raytracing.HexColor(raytracing.Orange))
+	//mat.Pattern.SetTransform(datatypes.GetTransform(datatypes.GetScaling(2, 1, 1), datatypes.GetTranslation(-1, 0, 0), datatypes.GetRotationZ(math.Pi/2)))
 	right.SetMaterial(mat)
 
 	left := raytracing.GetSphere()
@@ -70,11 +75,15 @@ func saveScene(path string) {
 	camera := scene.GetCamera(500, 500, math.Pi/3)
 	camera.Transform = datatypes.ViewTransform(datatypes.Point(0, 1.5, -5), datatypes.Point(0, 1, 0), datatypes.Vector(0, 1, 0))
 
-	canvas := camera.RenderConcurrent(world)
+	fmt.Println("Rendering...")
+	start := time.Now()
+	output := camera.RenderConcurrent(world)
+	duration := time.Since(start)
+	fmt.Printf("done (%v elapsed)\n", duration)
 
-	canvas.SavePPM(path)
+	canvas.SavePng(output, path)
 }
 
 func main() {
-	saveScene("scene.ppm")
+	saveScene("scene.png")
 }

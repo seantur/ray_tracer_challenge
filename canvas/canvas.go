@@ -1,11 +1,13 @@
 package canvas
 
 import (
-	"errors"
 	"fmt"
-	"github.com/seantur/ray_tracer_challenge/raytracing"
-	"image/color"
+	"image"
+	"image/jpeg"
+	"image/png"
 	"io/ioutil"
+	"log"
+	"os"
 	"strconv"
 	"strings"
 )
@@ -19,40 +21,20 @@ const (
 	ErrOutOfBounds = "trying to access out of bounds"
 )
 
-type Canvas struct {
-	Height int
-	Width  int
-	pixels []color.Color
+func InitCanvas(height, width int) *image.RGBA64 {
+	return image.NewRGBA64(image.Rectangle{Min: image.Point{0, 0}, Max: image.Point{width, height}})
 }
 
-func (c *Canvas) Init() {
-	for i := 0; i < c.Height*c.Width; i++ {
-		c.pixels = append(c.pixels, raytracing.RGB{})
-	}
-}
+// WritePixel -> Set
+// At -> At
 
-func (c *Canvas) WritePixel(x int, y int, pixel color.Color) error {
-	if x > c.Width || y > c.Height {
-		return errors.New(ErrOutOfBounds)
+func scale255(color, alpha uint32) string {
+	var val uint8
+
+	if alpha != 0 {
+		val = uint8(float64(color) / float64(alpha) * 255)
 	}
 
-	c.pixels[x*c.Height+y] = pixel
-
-	return nil
-}
-
-func (c *Canvas) At(x, y int) color.Color {
-	return c.pixels[x*c.Height+y]
-}
-
-func (c *Canvas) ReadPixel(x int, y int) (color.Color, error) {
-	if x > c.Width || y > c.Height {
-		return raytracing.RGB{}, errors.New(ErrOutOfBounds)
-	}
-	return c.pixels[x*c.Height+y], nil
-}
-
-func scale255(val uint32) string {
 	if val < 0 {
 		return "0 "
 	} else if val > 255 {
@@ -62,8 +44,8 @@ func scale255(val uint32) string {
 	}
 }
 
-func addColor(color uint32, s *strings.Builder, row *string) {
-	colorStr := scale255(color)
+func addColor(color, alpha uint32, s *strings.Builder, row *string) {
+	colorStr := scale255(color, alpha)
 
 	if len([]rune(*row))+len([]rune(colorStr)) > PPMCharLen {
 		writeRow(s, row)
@@ -78,21 +60,24 @@ func writeRow(s *strings.Builder, row *string) {
 	s.WriteString((*row)[:len((*row))-1] + "\n")
 }
 
-func (c *Canvas) toPPM() string {
+func toPPM(c image.Image) string {
 	var str strings.Builder
 
-	str.WriteString(fmt.Sprintf("%s\n%d %d\n255\n", PPMHeader, c.Width, c.Height))
+	max := c.Bounds().Max
+	width, height := max.X, max.Y
 
-	for i := 0; i < c.Height; i++ {
+	str.WriteString(fmt.Sprintf("%s\n%d %d\n255\n", PPMHeader, width, height))
+
+	for i := 0; i < height; i++ {
 		row := ""
-		for j := 0; j < c.Width; j++ {
-			color, _ := c.ReadPixel(j, i)
+		for j := 0; j < width; j++ {
+			color := c.At(j, i)
 
-			red, green, blue, _ := color.RGBA()
+			red, green, blue, alpha := color.RGBA()
 
-			addColor(red, &str, &row)
-			addColor(green, &str, &row)
-			addColor(blue, &str, &row)
+			addColor(red, alpha, &str, &row)
+			addColor(green, alpha, &str, &row)
+			addColor(blue, alpha, &str, &row)
 
 		}
 		writeRow(&str, &row)
@@ -101,11 +86,43 @@ func (c *Canvas) toPPM() string {
 	return str.String()
 }
 
-func (c *Canvas) SavePPM(path string) {
-	err := ioutil.WriteFile(path, []byte(c.toPPM()), 0644)
+func SavePPM(c image.Image, path string) {
+	err := ioutil.WriteFile(path, []byte(toPPM(c)), 0644)
 
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
+}
+
+func SavePng(c image.Image, path string) {
+	f, err := os.Create(path)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if err := png.Encode(f, c); err != nil {
+		f.Close()
+		log.Fatal(err)
+	}
+
+	if err := f.Close(); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func SaveJpg(c image.Image, path string) {
+	f, err := os.Create(path)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if err := jpeg.Encode(f, c, nil); err != nil {
+		f.Close()
+		log.Fatal(err)
+	}
+
+	if err := f.Close(); err != nil {
+		log.Fatal(err)
+	}
 }

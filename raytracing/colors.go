@@ -1,5 +1,7 @@
 package raytracing
 
+import "image/color"
+
 // RGB
 type RGB struct {
 	Red   float64
@@ -7,20 +9,30 @@ type RGB struct {
 	Blue  float64
 }
 
+func clip(val float64, lower_bound, upper_bound uint32) uint32 {
+
+	if val < float64(lower_bound) {
+		return lower_bound
+	} else if val > float64(upper_bound) {
+		return upper_bound
+	} else {
+		return uint32(val)
+	}
+}
+
 func (c RGB) RGBA() (r, g, b, a uint32) {
-	alpha := 255.0
-	if c.Red < 0 {
-		c.Red = 0
-	}
+	a = 0xFFFF
 
-	if c.Green < 0 {
-		c.Green = 0
-	}
+	r = clip(c.Red*float64(a), 0, a)
+	g = clip(c.Green*float64(a), 0, a)
+	b = clip(c.Blue*float64(a), 0, a)
 
-	if c.Blue < 0 {
-		c.Blue = 0
-	}
-	return uint32(c.Red * alpha), uint32(c.Green * alpha), uint32(c.Blue * alpha), uint32(alpha)
+	return
+}
+
+func (c RGB) Cvt() color.RGBA64 {
+	r, g, b, a := c.RGBA()
+	return color.RGBA64{R: uint16(r), G: uint16(g), B: uint16(b), A: uint16(a)}
 }
 
 func (c *RGB) Multiply(a float64) RGB {
