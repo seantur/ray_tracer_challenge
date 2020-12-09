@@ -31,7 +31,7 @@ func GetWorld() World {
 	return w
 }
 
-func (w *World) Intersect(r raytracing.Ray) []raytracing.Intersection {
+func (w *World) Intersect(r datatypes.Ray) []raytracing.Intersection {
 
 	intersections := []raytracing.Intersection{}
 
@@ -55,7 +55,7 @@ func (w *World) ShadeHit(c raytracing.Computation, remaining int) raytracing.RGB
 	return raytracing.Add(surfaceColor, reflectedColor, refractedColor)
 }
 
-func (w *World) ColorAt(r raytracing.Ray, remaining int) raytracing.RGB {
+func (w *World) ColorAt(r datatypes.Ray, remaining int) raytracing.RGB {
 	intersections := w.Intersect(r)
 
 	hit, err := raytracing.Hit(intersections)
@@ -76,7 +76,7 @@ func (w *World) IsShadowed(p datatypes.Tuple) bool {
 	distance := v.Magnitude()
 	direction := v.Normalize()
 
-	r := raytracing.Ray{Origin: p, Direction: direction}
+	r := datatypes.Ray{Origin: p, Direction: direction}
 	intersections := w.Intersect(r)
 
 	h, err := raytracing.Hit(intersections)
@@ -97,7 +97,7 @@ func (w *World) ReflectedColor(c raytracing.Computation, remaining int) raytraci
 		return raytracing.RGB{Red: 0, Green: 0, Blue: 0}
 	}
 
-	reflectRay := raytracing.Ray{Origin: c.OverPoint, Direction: c.Reflectv}
+	reflectRay := datatypes.Ray{Origin: c.OverPoint, Direction: c.Reflectv}
 	remaining--
 	color := w.ColorAt(reflectRay, remaining-1)
 
@@ -121,7 +121,7 @@ func (w *World) RefractedColor(c raytracing.Computation, remaining int) raytraci
 
 	cosT := math.Sqrt(1.0 - sin2T)
 	direction := datatypes.Subtract(c.Normalv.Multiply((nRatio*cosI)-cosT), c.Eyev.Multiply(nRatio))
-	refractRay := raytracing.Ray{Origin: c.UnderPoint, Direction: direction}
+	refractRay := datatypes.Ray{Origin: c.UnderPoint, Direction: direction}
 
 	color := w.ColorAt(refractRay, remaining-1)
 

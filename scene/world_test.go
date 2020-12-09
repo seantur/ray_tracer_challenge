@@ -41,7 +41,7 @@ func TestWorld(t *testing.T) {
 
 	t.Run("intersect a world with a ray", func(t *testing.T) {
 		w := GetWorld()
-		r := raytracing.Ray{Origin: datatypes.Point(0, 0, -5), Direction: datatypes.Vector(0, 0, 1)}
+		r := datatypes.Ray{Origin: datatypes.Point(0, 0, -5), Direction: datatypes.Vector(0, 0, 1)}
 
 		xs := w.Intersect(r)
 
@@ -54,7 +54,7 @@ func TestWorld(t *testing.T) {
 
 	t.Run("shading an intersection", func(t *testing.T) {
 		w := GetWorld()
-		r := raytracing.Ray{Origin: datatypes.Point(0, 0, -5), Direction: datatypes.Vector(0, 0, 1)}
+		r := datatypes.Ray{Origin: datatypes.Point(0, 0, -5), Direction: datatypes.Vector(0, 0, 1)}
 
 		sphere := w.Shapes[0]
 		i := raytracing.Intersection{T: 4, Object: sphere}
@@ -69,7 +69,7 @@ func TestWorld(t *testing.T) {
 	t.Run("shading an intersection from the inside", func(t *testing.T) {
 		w := GetWorld()
 		w.Light = raytracing.PointLight{Intensity: raytracing.RGB{Red: 1, Green: 1, Blue: 1}, Position: datatypes.Point(0, 0.25, 0)}
-		r := raytracing.Ray{Origin: datatypes.Point(0, 0, 0), Direction: datatypes.Vector(0, 0, 1)}
+		r := datatypes.Ray{Origin: datatypes.Point(0, 0, 0), Direction: datatypes.Vector(0, 0, 1)}
 
 		sphere := w.Shapes[1]
 		i := raytracing.Intersection{T: 0.5, Object: sphere}
@@ -82,7 +82,7 @@ func TestWorld(t *testing.T) {
 
 	t.Run("The color when a ray misses", func(t *testing.T) {
 		w := GetWorld()
-		r := raytracing.Ray{Origin: datatypes.Point(0, 0, -5), Direction: datatypes.Vector(0, 1, 0)}
+		r := datatypes.Ray{Origin: datatypes.Point(0, 0, -5), Direction: datatypes.Vector(0, 1, 0)}
 
 		c := w.ColorAt(r, 5)
 		raytracing.AssertColorsEqual(t, c, raytracing.RGB{Red: 0, Green: 0, Blue: 0})
@@ -90,7 +90,7 @@ func TestWorld(t *testing.T) {
 
 	t.Run("The color when a ray hits", func(t *testing.T) {
 		w := GetWorld()
-		r := raytracing.Ray{Origin: datatypes.Point(0, 0, -5), Direction: datatypes.Vector(0, 0, 1)}
+		r := datatypes.Ray{Origin: datatypes.Point(0, 0, -5), Direction: datatypes.Vector(0, 0, 1)}
 
 		c := w.ColorAt(r, 5)
 		raytracing.AssertColorsEqual(t, c, raytracing.RGB{Red: 0.38066, Green: 0.47583, Blue: 0.2855})
@@ -103,7 +103,7 @@ func TestWorld(t *testing.T) {
 		w.Shapes[0].SetMaterial(mat)
 		w.Shapes[1].SetMaterial(mat)
 
-		r := raytracing.Ray{Origin: datatypes.Point(0, 0, 0.75), Direction: datatypes.Vector(0, 0, -1)}
+		r := datatypes.Ray{Origin: datatypes.Point(0, 0, 0.75), Direction: datatypes.Vector(0, 0, -1)}
 
 		c := w.ColorAt(r, 5)
 		raytracing.AssertColorsEqual(t, c, w.Shapes[1].GetMaterial().RGB)
@@ -155,7 +155,7 @@ func TestWorld(t *testing.T) {
 
 		w.Shapes = []raytracing.Shape{s1, s2}
 
-		r := raytracing.Ray{Origin: datatypes.Point(0, 0, 5), Direction: datatypes.Vector(0, 0, 1)}
+		r := datatypes.Ray{Origin: datatypes.Point(0, 0, 5), Direction: datatypes.Vector(0, 0, 1)}
 		i := raytracing.Intersection{T: 4, Object: s2}
 
 		comps := i.PrepareComputations(r, []raytracing.Intersection{i})
@@ -166,7 +166,7 @@ func TestWorld(t *testing.T) {
 
 	t.Run("The reflected color for a nonreflective material", func(t *testing.T) {
 		w := GetWorld()
-		r := raytracing.Ray{Origin: datatypes.Point(0, 0, 0), Direction: datatypes.Vector(0, 0, 1)}
+		r := datatypes.Ray{Origin: datatypes.Point(0, 0, 0), Direction: datatypes.Vector(0, 0, 1)}
 		shape := w.Shapes[1]
 		material := shape.GetMaterial()
 		material.Ambient = 1
@@ -190,7 +190,7 @@ func TestWorld(t *testing.T) {
 
 		w.Shapes = append(w.Shapes, shape)
 
-		r := raytracing.Ray{Origin: datatypes.Point(0, 0, -3), Direction: datatypes.Vector(0, -math.Sqrt(2)/2, math.Sqrt(2)/2)}
+		r := datatypes.Ray{Origin: datatypes.Point(0, 0, -3), Direction: datatypes.Vector(0, -math.Sqrt(2)/2, math.Sqrt(2)/2)}
 		i := raytracing.Intersection{T: math.Sqrt(2), Object: shape}
 
 		comps := i.PrepareComputations(r, []raytracing.Intersection{i})
@@ -210,7 +210,7 @@ func TestWorld(t *testing.T) {
 
 		w.Shapes = append(w.Shapes, shape)
 
-		r := raytracing.Ray{Origin: datatypes.Point(0, 0, -3), Direction: datatypes.Vector(0, -math.Sqrt(2)/2, math.Sqrt(2)/2)}
+		r := datatypes.Ray{Origin: datatypes.Point(0, 0, -3), Direction: datatypes.Vector(0, -math.Sqrt(2)/2, math.Sqrt(2)/2)}
 		i := raytracing.Intersection{T: math.Sqrt(2), Object: shape}
 
 		comps := i.PrepareComputations(r, []raytracing.Intersection{i})
@@ -237,7 +237,7 @@ func TestWorld(t *testing.T) {
 
 		w.Shapes = []raytracing.Shape{upper, lower}
 
-		r := raytracing.Ray{Origin: datatypes.Point(0, 0, 0), Direction: datatypes.Vector(0, 1, 0)}
+		r := datatypes.Ray{Origin: datatypes.Point(0, 0, 0), Direction: datatypes.Vector(0, 1, 0)}
 		w.ColorAt(r, 5)
 	})
 
@@ -252,7 +252,7 @@ func TestWorld(t *testing.T) {
 
 		w.Shapes = append(w.Shapes, shape)
 
-		r := raytracing.Ray{Origin: datatypes.Point(0, 0, -3), Direction: datatypes.Vector(0, -math.Sqrt(2)/2, math.Sqrt(2)/2)}
+		r := datatypes.Ray{Origin: datatypes.Point(0, 0, -3), Direction: datatypes.Vector(0, -math.Sqrt(2)/2, math.Sqrt(2)/2)}
 		i := raytracing.Intersection{T: math.Sqrt(2), Object: shape}
 
 		comps := i.PrepareComputations(r, []raytracing.Intersection{i})
@@ -264,7 +264,7 @@ func TestWorld(t *testing.T) {
 	t.Run("The refracted color with an opaque surface", func(t *testing.T) {
 		w := GetWorld()
 		shape := w.Shapes[0]
-		r := raytracing.Ray{Origin: datatypes.Point(0, 0, -5), Direction: datatypes.Vector(0, 0, 1)}
+		r := datatypes.Ray{Origin: datatypes.Point(0, 0, -5), Direction: datatypes.Vector(0, 0, 1)}
 		xs := []raytracing.Intersection{raytracing.Intersection{T: 4, Object: shape}, raytracing.Intersection{T: 6, Object: shape}}
 
 		comps := xs[0].PrepareComputations(r, xs)
@@ -281,7 +281,7 @@ func TestWorld(t *testing.T) {
 		material.RefractiveIndex = 1.5
 		shape.SetMaterial(material)
 
-		r := raytracing.Ray{Origin: datatypes.Point(0, 0, -5), Direction: datatypes.Vector(0, 0, 1)}
+		r := datatypes.Ray{Origin: datatypes.Point(0, 0, -5), Direction: datatypes.Vector(0, 0, 1)}
 		xs := []raytracing.Intersection{raytracing.Intersection{T: 4, Object: shape}, raytracing.Intersection{T: 6, Object: shape}}
 
 		comps := xs[0].PrepareComputations(r, xs)
@@ -298,7 +298,7 @@ func TestWorld(t *testing.T) {
 		material.RefractiveIndex = 1.5
 		shape.SetMaterial(material)
 
-		r := raytracing.Ray{Origin: datatypes.Point(0, 0, math.Sqrt(2)/2), Direction: datatypes.Vector(0, 1, 0)}
+		r := datatypes.Ray{Origin: datatypes.Point(0, 0, math.Sqrt(2)/2), Direction: datatypes.Vector(0, 1, 0)}
 		xs := []raytracing.Intersection{
 			raytracing.Intersection{T: -math.Sqrt(2) / 2, Object: shape},
 			raytracing.Intersection{T: math.Sqrt(2) / 2, Object: shape}}
@@ -324,7 +324,7 @@ func TestWorld(t *testing.T) {
 		material.RefractiveIndex = 1.5
 		B.SetMaterial(material)
 
-		r := raytracing.Ray{Origin: datatypes.Point(0, 0, 0.1), Direction: datatypes.Vector(0, 1, 0)}
+		r := datatypes.Ray{Origin: datatypes.Point(0, 0, 0.1), Direction: datatypes.Vector(0, 1, 0)}
 		xs := []raytracing.Intersection{
 			raytracing.Intersection{T: -0.9899, Object: A},
 			raytracing.Intersection{T: -0.4899, Object: B},
@@ -358,7 +358,7 @@ func TestWorld(t *testing.T) {
 
 		w.Shapes = append(w.Shapes, ball)
 
-		r := raytracing.Ray{Origin: datatypes.Point(0, 0, -3), Direction: datatypes.Vector(0, -math.Sqrt(2)/2, math.Sqrt(2)/2)}
+		r := datatypes.Ray{Origin: datatypes.Point(0, 0, -3), Direction: datatypes.Vector(0, -math.Sqrt(2)/2, math.Sqrt(2)/2)}
 		xs := []raytracing.Intersection{raytracing.Intersection{T: math.Sqrt(2), Object: floor}}
 
 		comps := xs[0].PrepareComputations(r, xs)

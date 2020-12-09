@@ -11,7 +11,7 @@ type Shape interface {
 	GetTransform() datatypes.Matrix
 	SetTransform(datatypes.Matrix)
 	Normal(datatypes.Tuple) datatypes.Tuple
-	Intersect(Ray) []Intersection
+	Intersect(datatypes.Ray) []Intersection
 }
 
 func Normal(s Shape, world_p datatypes.Tuple) datatypes.Tuple {
@@ -27,7 +27,7 @@ func Normal(s Shape, world_p datatypes.Tuple) datatypes.Tuple {
 	return worldNormal.Normalize()
 }
 
-func Intersect(s Shape, r Ray) []Intersection {
+func Intersect(s Shape, r datatypes.Ray) []Intersection {
 	transform := s.GetTransform()
 	tInv, _ := transform.Inverse()
 	r = r.Transform(tInv)
@@ -47,7 +47,7 @@ type Computation struct {
 	IsInside                                              bool
 }
 
-func (i *Intersection) PrepareComputations(r Ray, intersections []Intersection) Computation {
+func (i *Intersection) PrepareComputations(r datatypes.Ray, intersections []Intersection) Computation {
 	c := Computation{}
 
 	c.T = i.T

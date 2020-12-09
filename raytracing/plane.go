@@ -26,7 +26,7 @@ func (p *Plane) SetTransform(m datatypes.Matrix) {
 	p.Transform = m
 }
 
-func (p *Plane) Intersect(r Ray) []Intersection {
+func (p *Plane) Intersect(r datatypes.Ray) []Intersection {
 	if math.Abs(r.Direction.Y) < datatypes.EPSILON {
 		return []Intersection{}
 	}

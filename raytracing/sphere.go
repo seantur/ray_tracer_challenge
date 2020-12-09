@@ -34,7 +34,7 @@ func (s *Sphere) SetTransform(m datatypes.Matrix) {
 	s.Transform = m
 }
 
-func (s *Sphere) Intersect(r Ray) []Intersection {
+func (s *Sphere) Intersect(r datatypes.Ray) []Intersection {
 	sphereToRay := datatypes.Subtract(r.Origin, datatypes.Point(0, 0, 0))
 
 	a := datatypes.Dot(r.Direction, r.Direction)

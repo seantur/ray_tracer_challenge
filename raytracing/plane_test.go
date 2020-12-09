@@ -31,7 +31,7 @@ func TestPlanes(t *testing.T) {
 
 	t.Run("Intersect with a ray parallel to the plane", func(t *testing.T) {
 		p := GetPlane()
-		r := Ray{Origin: datatypes.Point(0, 10, 0), Direction: datatypes.Vector(0, 0, 1)}
+		r := datatypes.Ray{Origin: datatypes.Point(0, 10, 0), Direction: datatypes.Vector(0, 0, 1)}
 		xs := p.Intersect(r)
 
 		datatypes.AssertVal(t, float64(len(xs)), 0)
@@ -39,7 +39,7 @@ func TestPlanes(t *testing.T) {
 
 	t.Run("Intersect with a coplanar ray", func(t *testing.T) {
 		p := GetPlane()
-		r := Ray{Origin: datatypes.Point(0, 0, 0), Direction: datatypes.Vector(0, 0, 1)}
+		r := datatypes.Ray{Origin: datatypes.Point(0, 0, 0), Direction: datatypes.Vector(0, 0, 1)}
 		xs := p.Intersect(r)
 
 		datatypes.AssertVal(t, float64(len(xs)), 0)
@@ -47,7 +47,7 @@ func TestPlanes(t *testing.T) {
 
 	t.Run("A ray intersecting a plane from above", func(t *testing.T) {
 		p := GetPlane()
-		r := Ray{Origin: datatypes.Point(0, 1, 0), Direction: datatypes.Vector(0, -1, 0)}
+		r := datatypes.Ray{Origin: datatypes.Point(0, 1, 0), Direction: datatypes.Vector(0, -1, 0)}
 		xs := p.Intersect(r)
 
 		datatypes.AssertVal(t, float64(len(xs)), 1)
@@ -59,7 +59,7 @@ func TestPlanes(t *testing.T) {
 
 	t.Run("A ray intersecting a plane from below", func(t *testing.T) {
 		p := GetPlane()
-		r := Ray{Origin: datatypes.Point(0, -1, 0), Direction: datatypes.Vector(0, 1, 0)}
+		r := datatypes.Ray{Origin: datatypes.Point(0, -1, 0), Direction: datatypes.Vector(0, 1, 0)}
 		xs := p.Intersect(r)
 
 		datatypes.AssertVal(t, float64(len(xs)), 1)
@@ -71,7 +71,7 @@ func TestPlanes(t *testing.T) {
 
 	t.Run("Ensure we precompute the reflection vector", func(t *testing.T) {
 		p := GetPlane()
-		r := Ray{Origin: datatypes.Point(0, 1, -1), Direction: datatypes.Vector(0, -math.Sqrt(2)/2, math.Sqrt(2)/2)}
+		r := datatypes.Ray{Origin: datatypes.Point(0, 1, -1), Direction: datatypes.Vector(0, -math.Sqrt(2)/2, math.Sqrt(2)/2)}
 		i := Intersection{T: math.Sqrt(2), Object: p}
 
 		comps := i.PrepareComputations(r, []Intersection{i})

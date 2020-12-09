@@ -23,7 +23,7 @@ func TestSpheres(t *testing.T) {
 	})
 
 	t.Run("Intersecting a scaled sphere with a ray", func(t *testing.T) {
-		r := Ray{Origin: datatypes.Point(0, 0, -5), Direction: datatypes.Vector(0, 0, 1)}
+		r := datatypes.Ray{Origin: datatypes.Point(0, 0, -5), Direction: datatypes.Vector(0, 0, 1)}
 
 		s := GetSphere()
 
@@ -36,7 +36,7 @@ func TestSpheres(t *testing.T) {
 	})
 
 	t.Run("Intersecting a translated sphere with a ray", func(t *testing.T) {
-		r := Ray{Origin: datatypes.Point(0, 0, -5), Direction: datatypes.Vector(0, 0, 1)}
+		r := datatypes.Ray{Origin: datatypes.Point(0, 0, -5), Direction: datatypes.Vector(0, 0, 1)}
 
 		s := GetSphere()
 
@@ -119,7 +119,7 @@ func TestSpheres(t *testing.T) {
 	})
 
 	t.Run("Precompute the state of an intersection", func(t *testing.T) {
-		r := Ray{Origin: datatypes.Point(0, 0, -5), Direction: datatypes.Vector(0, 0, 1)}
+		r := datatypes.Ray{Origin: datatypes.Point(0, 0, -5), Direction: datatypes.Vector(0, 0, 1)}
 
 		sphere := GetSphere()
 		i := Intersection{T: 4, Object: sphere}
@@ -142,7 +142,7 @@ func TestSpheres(t *testing.T) {
 	})
 
 	t.Run("The hit, when an intersection occurs on the outside", func(t *testing.T) {
-		r := Ray{Origin: datatypes.Point(0, 0, 0), Direction: datatypes.Vector(0, 0, 1)}
+		r := datatypes.Ray{Origin: datatypes.Point(0, 0, 0), Direction: datatypes.Vector(0, 0, 1)}
 
 		sphere := GetSphere()
 		i := Intersection{T: 1, Object: sphere}
@@ -164,7 +164,7 @@ func TestSpheres(t *testing.T) {
 	})
 
 	t.Run("The hit should offset the point", func(t *testing.T) {
-		r := Ray{Origin: datatypes.Point(0, 0, -5), Direction: datatypes.Vector(0, 0, 1)}
+		r := datatypes.Ray{Origin: datatypes.Point(0, 0, -5), Direction: datatypes.Vector(0, 0, 1)}
 
 		sphere := GetSphere()
 		sphere.SetTransform(datatypes.GetTranslation(0, 0, 1))
@@ -207,7 +207,7 @@ func TestSpheres(t *testing.T) {
 		material.RefractiveIndex = 2.5
 		C.SetMaterial(material)
 
-		r := Ray{Origin: datatypes.Point(0, 0, -4), Direction: datatypes.Vector(0, 0, 1)}
+		r := datatypes.Ray{Origin: datatypes.Point(0, 0, -4), Direction: datatypes.Vector(0, 0, 1)}
 
 		xs := []Intersection{Intersection{2, A},
 			Intersection{2.75, B},
@@ -229,7 +229,7 @@ func TestSpheres(t *testing.T) {
 	t.Run("The under point is offset below the surface", func(t *testing.T) {
 		sphere := GetGlassSphere()
 		sphere.SetTransform(datatypes.GetTranslation(0, 0, 1))
-		r := Ray{Origin: datatypes.Point(0, 0, -5), Direction: datatypes.Vector(0, 0, 1)}
+		r := datatypes.Ray{Origin: datatypes.Point(0, 0, -5), Direction: datatypes.Vector(0, 0, 1)}
 
 		i := Intersection{5, sphere}
 

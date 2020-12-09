@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/seantur/ray_tracer_challenge/canvas"
 	"github.com/seantur/ray_tracer_challenge/datatypes"
-	"github.com/seantur/ray_tracer_challenge/raytracing"
 	"image"
 	"math"
 	"runtime"
@@ -36,7 +35,7 @@ func GetCamera(hsize, vsize int, fov float64) camera {
 	return c
 }
 
-func (c *camera) RayForPixel(px, py int) raytracing.Ray {
+func (c *camera) RayForPixel(px, py int) datatypes.Ray {
 	xoffset := (float64(px) + 0.5) * c.PixelSize
 	yoffset := (float64(py) + 0.5) * c.PixelSize
 
@@ -51,7 +50,7 @@ func (c *camera) RayForPixel(px, py int) raytracing.Ray {
 	direction := datatypes.Subtract(pixel, origin)
 	direction = direction.Normalize()
 
-	return raytracing.Ray{Origin: origin, Direction: direction}
+	return datatypes.Ray{Origin: origin, Direction: direction}
 }
 
 func (c *camera) Render(w World) image.Image {
