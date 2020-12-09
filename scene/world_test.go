@@ -290,7 +290,7 @@ func TestWorld(t *testing.T) {
 		raytracing.AssertColorsEqual(t, c, raytracing.RGB{Red: 0, Green: 0, Blue: 0})
 	})
 
-	t.Run("The refracted color under total unternal reflection", func(t *testing.T) {
+	t.Run("The refracted color under total internal reflection", func(t *testing.T) {
 		w := GetWorld()
 		shape := w.Shapes[0]
 		material := shape.GetMaterial()

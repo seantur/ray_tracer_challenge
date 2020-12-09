@@ -1,4 +1,4 @@
-package canvas
+package scene
 
 import (
 	"github.com/seantur/ray_tracer_challenge/raytracing"

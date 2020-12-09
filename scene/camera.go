@@ -2,7 +2,6 @@ package scene
 
 import (
 	"fmt"
-	"github.com/seantur/ray_tracer_challenge/canvas"
 	"github.com/seantur/ray_tracer_challenge/datatypes"
 	"image"
 	"math"
@@ -54,7 +53,7 @@ func (c *camera) RayForPixel(px, py int) datatypes.Ray {
 }
 
 func (c *camera) Render(w World) image.Image {
-	im := canvas.InitCanvas(c.Hsize, c.Vsize)
+	im := InitCanvas(c.Hsize, c.Vsize)
 
 	for y := 0; y < c.Vsize; y++ {
 		for x := 0; x < c.Hsize; x++ {
@@ -85,7 +84,7 @@ func (c *camera) RenderConcurrent(w World) image.Image {
 
 	numWorkers := runtime.NumCPU() * 4
 
-	im := canvas.InitCanvas(c.Hsize, c.Vsize)
+	im := InitCanvas(c.Hsize, c.Vsize)
 
 	channel := make(chan pnt)
 	var wg sync.WaitGroup

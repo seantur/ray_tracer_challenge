@@ -28,32 +28,30 @@ func TestCamera(t *testing.T) {
 		datatypes.AssertVal(t, c.PixelSize, 0.01)
 	})
 
-	/*
-		t.Run("Constructing a ray through the center of the canvas", func(t *testing.T) {
-			c := GetCamera(201, 101, math.Pi/2)
-			r := c.RayForPixel(100, 50)
+	t.Run("Constructing a ray through the center of the canvas", func(t *testing.T) {
+		c := GetCamera(201, 101, math.Pi/2)
+		r := c.RayForPixel(100, 50)
 
-			datatypes.AssertTupleEqual(t, r.Origin, datatypes.Point(0, 0, 0))
-			datatypes.AssertTupleEqual(t, r.Direction, datatypes.Vector(0, 0, -1))
-		})
+		datatypes.AssertTupleEqual(t, r.Origin, datatypes.Point(0, 0, 0))
+		datatypes.AssertTupleEqual(t, r.Direction, datatypes.Vector(0, 0, -1))
+	})
 
-		t.Run("Constructing a ray through the corner of the canvas", func(t *testing.T) {
-			c := GetCamera(201, 101, math.Pi/2)
-			r := c.RayForPixel(0, 0)
+	t.Run("Constructing a ray through the corner of the canvas", func(t *testing.T) {
+		c := GetCamera(201, 101, math.Pi/2)
+		r := c.RayForPixel(0, 0)
 
-			datatypes.AssertTupleEqual(t, r.Origin, datatypes.Point(0, 0, 0))
-			datatypes.AssertTupleEqual(t, r.Direction, datatypes.Vector(0.66519, 0.33259, -0.66851))
-		})
+		datatypes.AssertTupleEqual(t, r.Origin, datatypes.Point(0, 0, 0))
+		datatypes.AssertTupleEqual(t, r.Direction, datatypes.Vector(0.66519, 0.33259, -0.66851))
+	})
 
-		t.Run("Constructing a ray when the camera is transformed", func(t *testing.T) {
-			c := GetCamera(201, 101, math.Pi/2)
-			c.Transform = datatypes.Multiply(datatypes.GetRotationY(math.Pi/4), datatypes.GetTranslation(0, -2, 5))
-			r := c.RayForPixel(100, 50)
+	t.Run("Constructing a ray when the camera is transformed", func(t *testing.T) {
+		c := GetCamera(201, 101, math.Pi/2)
+		c.Transform = datatypes.Multiply(datatypes.GetRotationY(math.Pi/4), datatypes.GetTranslation(0, -2, 5))
+		r := c.RayForPixel(100, 50)
 
-			datatypes.AssertTupleEqual(t, r.Origin, datatypes.Point(0, 2, -5))
-			datatypes.AssertTupleEqual(t, r.Direction, datatypes.Vector(math.Sqrt(2)/2, 0, -math.Sqrt(2)/2))
-		})
-	*/
+		datatypes.AssertTupleEqual(t, r.Origin, datatypes.Point(0, 2, -5))
+		datatypes.AssertTupleEqual(t, r.Direction, datatypes.Vector(math.Sqrt(2)/2, 0, -math.Sqrt(2)/2))
+	})
 
 	t.Run("Rendering a world with the camera", func(t *testing.T) {
 		w := GetWorld()
