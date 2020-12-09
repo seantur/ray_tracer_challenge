@@ -3,6 +3,7 @@ package raytracing
 import (
 	"errors"
 	"github.com/seantur/ray_tracer_challenge/datatypes"
+	"math"
 )
 
 type Shape interface {
@@ -135,4 +136,24 @@ func Hit(intersections []Intersection) (Intersection, error) {
 	}
 
 	return hitIntersection, nil
+}
+
+// Schlick equations approximate Fresnell
+func Schlick(comp Computation) float64 {
+
+	cos := datatypes.Dot(comp.Eyev, comp.Normalv)
+
+	if comp.N1 > comp.N2 {
+		n := comp.N1 / comp.N2
+		sin2T := math.Pow(n, 2) * (1 - math.Pow(cos, 2))
+
+		if sin2T > 1.0 {
+			return 1.0
+		}
+
+		cosT := math.Sqrt(1 - sin2T)
+		cos = cosT
+	}
+	r0 := math.Pow((comp.N1-comp.N2)/(comp.N1+comp.N2), 2)
+	return r0 + (1-r0)*math.Pow(1-cos, 5)
 }

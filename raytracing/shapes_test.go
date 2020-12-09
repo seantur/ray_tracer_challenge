@@ -2,6 +2,7 @@ package raytracing
 
 import (
 	"github.com/seantur/ray_tracer_challenge/datatypes"
+	"math"
 	"reflect"
 	"testing"
 )
@@ -9,7 +10,7 @@ import (
 func TestShapes(t *testing.T) {
 	assertVal := func(t *testing.T, got float64, want float64) {
 		t.Helper()
-		if got != want {
+		if !datatypes.IsClose(got, want) {
 			t.Errorf("got %f want %f", got, want)
 		}
 
@@ -167,5 +168,37 @@ func TestShapes(t *testing.T) {
 		if err == nil {
 			t.Errorf("expected no hits, but got one")
 		}
+	})
+
+	t.Run("The Schlick approximation under total internal reflection", func(t *testing.T) {
+		s := GetGlassSphere()
+
+		r := datatypes.Ray{datatypes.Point(0, 0, math.Sqrt(2)/2), datatypes.Vector(0, 1, 0)}
+		xs := []Intersection{Intersection{-math.Sqrt(2) / 2, s}, Intersection{math.Sqrt(2) / 2, s}}
+		comps := xs[1].PrepareComputations(r, xs)
+
+		reflectance := Schlick(comps)
+
+		assertVal(t, reflectance, 1.0)
+	})
+
+	t.Run("The Schlick approximation with a perpendicular viewing angle", func(t *testing.T) {
+		s := GetGlassSphere()
+
+		r := datatypes.Ray{datatypes.Point(0, 0, 0), datatypes.Vector(0, 1, 0)}
+		xs := []Intersection{Intersection{-1, s}, Intersection{1, s}}
+		comps := xs[1].PrepareComputations(r, xs)
+
+		assertVal(t, Schlick(comps), 0.04)
+	})
+
+	t.Run("The Schlick approximation with small angle and n2 > n1", func(t *testing.T) {
+		s := GetGlassSphere()
+
+		r := datatypes.Ray{datatypes.Point(0, 0.99, -2), datatypes.Vector(0, 0, 1)}
+		xs := []Intersection{Intersection{1.8589, s}}
+		comps := xs[0].PrepareComputations(r, xs)
+
+		assertVal(t, Schlick(comps), 0.48873)
 	})
 }

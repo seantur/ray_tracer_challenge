@@ -52,6 +52,15 @@ func (w *World) ShadeHit(c raytracing.Computation, remaining int) raytracing.RGB
 	reflectedColor := w.ReflectedColor(c, remaining)
 	refractedColor := w.RefractedColor(c, remaining)
 
+	mat := c.Object.GetMaterial()
+
+	if mat.Reflective > 0 && mat.Transparency > 0 {
+		reflectance := raytracing.Schlick(c)
+		return raytracing.Add(surfaceColor,
+			reflectedColor.Multiply(reflectance),
+			refractedColor.Multiply(1-reflectance))
+	}
+
 	return raytracing.Add(surfaceColor, reflectedColor, refractedColor)
 }
 

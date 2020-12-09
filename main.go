@@ -10,45 +10,48 @@ import (
 )
 
 func saveScene(path string) {
-	floorColor := raytracing.RGB{Red: 1, Green: 0.9, Blue: 0.9}
-
 	floor := raytracing.GetPlane()
 	mat := floor.GetMaterial()
-	mat.RGB = floorColor
+	mat.Pattern = raytracing.GetCheckers(raytracing.HexColor(raytracing.White), raytracing.HexColor(raytracing.Black))
 	mat.Specular = 0.5
 	mat.Reflective = 0.5
 	floor.SetMaterial(mat)
+	floor.SetTransform(datatypes.GetTransform(
+		datatypes.GetRotationX(math.Pi/2),
+		datatypes.GetTranslation(0, 0, -20)))
 
-	ceiling := raytracing.GetPlane()
-	ceiling.SetTransform(datatypes.GetTranslation(0, 20, 0))
-	mat.Specular = .5
-	ceiling.SetMaterial(mat)
+	sphere := raytracing.GetSphere()
+	sphere.SetTransform(datatypes.GetTransform(
+		datatypes.GetScaling(0.5, 0.5, 0.5),
+		datatypes.GetTranslation(0, 0, -1)))
+	mat = sphere.GetMaterial()
+	mat.Diffuse = 0
+	mat.Transparency = 1
+	mat.RefractiveIndex = 1.52
+	mat.Ambient = 0
+	mat.Shininess = 300
+	mat.Specular = 1
+	mat.Reflective = 1
+	sphere.SetMaterial(mat)
 
-	middle := raytracing.GetSphere()
-	middle.SetTransform(datatypes.GetTranslation(0, 1, 0))
-	mat = middle.GetMaterial()
-	mat.RGB = raytracing.HexColor(raytracing.Red)
-	middle.SetMaterial(mat)
-
-	right := raytracing.GetSphere()
-	right.SetTransform(datatypes.GetTransform(datatypes.GetScaling(0.5, 0.5, 0.5), datatypes.GetTranslation(1.5, 0.5, -0.5)))
-	mat = right.GetMaterial()
-	mat.RGB = raytracing.HexColor(raytracing.Red)
-	right.SetMaterial(mat)
-
-	left := raytracing.GetSphere()
-	left.SetTransform(datatypes.GetTransform(datatypes.GetScaling(0.33, 0.33, 0.33), datatypes.GetTranslation(-1.5, 0.33, -0.75)))
-	mat = left.GetMaterial()
-	mat.RGB = raytracing.HexColor(raytracing.Teal)
-	mat.Diffuse = 0.7
-	mat.Specular = 0.3
-	left.SetMaterial(mat)
+	bubble := raytracing.GetSphere()
+	bubble.SetTransform(datatypes.GetTransform(
+		datatypes.GetScaling(0.25, 0.25, 0.25),
+		datatypes.GetTranslation(0, 0, -1)))
+	mat = bubble.GetMaterial()
+	mat.RefractiveIndex = 1.00029
+	mat.Transparency = 1
+	mat.Shininess = 300
+	mat.Specular = 1
+	mat.Reflective = 1
+	bubble.SetMaterial(mat)
 
 	world := scene.GetWorld()
-	world.Shapes = []raytracing.Shape{floor, middle, left, right}
+	world.Light.Position = datatypes.Point(10, 10, 10)
+	world.Shapes = []raytracing.Shape{floor, sphere} //, bubble}
 
 	camera := scene.GetCamera(1000, 1000, math.Pi/3)
-	camera.Transform = datatypes.ViewTransform(datatypes.Point(0, 1.5, -5), datatypes.Point(0, 1, 0), datatypes.Vector(0, 1, 0))
+	camera.Transform = datatypes.ViewTransform(datatypes.Point(0, 0, 0), datatypes.Point(0, 0, -1), datatypes.Vector(0, 1, 0))
 
 	fmt.Println("Rendering...")
 	start := time.Now()

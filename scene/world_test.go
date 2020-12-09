@@ -366,4 +366,36 @@ func TestWorld(t *testing.T) {
 
 		raytracing.AssertColorsEqual(t, color, raytracing.RGB{Red: 0.93642, Green: 0.68642, Blue: 0.68642})
 	})
+
+	t.Run("Shade hit with a transparent reflective material", func(t *testing.T) {
+		w := GetWorld()
+
+		floor := raytracing.GetPlane()
+		floor.SetTransform(datatypes.GetTranslation(0, -1, 0))
+		material := floor.GetMaterial()
+		material.Transparency = 0.5
+		material.Reflective = 0.5
+		material.RefractiveIndex = 1.5
+		floor.SetMaterial(material)
+
+		w.Shapes = append(w.Shapes, floor)
+
+		ball := raytracing.GetSphere()
+		ball.SetTransform(datatypes.GetTranslation(0, -3.5, -0.5))
+		material = ball.GetMaterial()
+		material.RGB = raytracing.RGB{Red: 1, Green: 0, Blue: 0}
+		material.Ambient = 0.5
+		ball.SetMaterial(material)
+
+		w.Shapes = append(w.Shapes, ball)
+
+		r := datatypes.Ray{Origin: datatypes.Point(0, 0, -3), Direction: datatypes.Vector(0, -math.Sqrt(2)/2, math.Sqrt(2)/2)}
+		xs := []raytracing.Intersection{raytracing.Intersection{T: math.Sqrt(2), Object: floor}}
+
+		comps := xs[0].PrepareComputations(r, xs)
+		color := w.ShadeHit(comps, 5)
+
+		raytracing.AssertColorsEqual(t, color, raytracing.RGB{Red: 0.93391, Green: 0.69643, Blue: 0.69243})
+
+	})
 }
