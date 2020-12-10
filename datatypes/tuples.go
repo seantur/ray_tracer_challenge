@@ -75,3 +75,7 @@ func Dot(a Tuple, b Tuple) float64 {
 func Cross(a Tuple, b Tuple) Tuple {
 	return Vector(a.Y*b.Z-a.Z*b.Y, a.Z*b.X-a.X*b.Z, a.X*b.Y-a.Y*b.X)
 }
+
+func IsTupleEqual(a Tuple, b Tuple) bool {
+	return a.equal(b)
+}
