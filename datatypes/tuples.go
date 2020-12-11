@@ -37,6 +37,9 @@ func (t *Tuple) Magnitude() float64 {
 
 func (t *Tuple) Normalize() Tuple {
 	magnitude := t.Magnitude()
+	if magnitude == 0 {
+		return Tuple{0, 0, 0, t.W}
+	}
 	return Tuple{t.X / magnitude, t.Y / magnitude, t.Z / magnitude, t.W / magnitude}
 }
 

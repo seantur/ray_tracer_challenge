@@ -78,7 +78,7 @@ func TestCubes(t *testing.T) {
 		c := GetCube()
 
 		for _, ray := range testcases {
-			normal := Normal(c, ray.Origin)
+			normal := c.Normal(ray.Origin)
 			if !datatypes.IsTupleEqual(normal, ray.Direction) {
 				t.Fatalf("Actual normal vector %v != expected normal vector %v", normal, ray.Direction)
 			}

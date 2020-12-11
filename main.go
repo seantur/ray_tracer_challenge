@@ -18,13 +18,14 @@ func saveScene(path string) {
 	room.SetMaterial(mat)
 	room.SetTransform(datatypes.GetScaling(100, 100, 100))
 
-	obj := shapes.GetCylinder()
-	obj.Min = 0
-	obj.Max = 1
-	obj.SetTransform(datatypes.GetTransform(datatypes.GetRotationX(math.Pi/2), datatypes.GetTranslation(0, 0, -10)))
+	obj := shapes.GetSphere()
+	//obj.Min = 0
+	//obj.Max = 1
+	//obj.Closed = true
+	obj.SetTransform(datatypes.GetTransform(datatypes.GetRotationX(math.Pi/4), datatypes.GetTranslation(0, 0, -5)))
 
 	mat = obj.GetMaterial()
-	mat.RGB = raytracing.HexColor(raytracing.Magenta)
+	mat.RGB = raytracing.HexColor(raytracing.Red)
 	//mat.Transparency = 1
 	//mat.RefractiveIndex = 1.52
 	mat.Specular = 0.5

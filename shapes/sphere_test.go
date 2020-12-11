@@ -50,35 +50,35 @@ func TestSpheres(t *testing.T) {
 	t.Run("The normal on a sphere at a point on the x axis", func(t *testing.T) {
 		s := GetSphere()
 
-		n := Normal(s, datatypes.Point(1, 0, 0))
+		n := s.Normal(datatypes.Point(1, 0, 0))
 		datatypes.AssertTupleEqual(t, n, datatypes.Vector(1, 0, 0))
 	})
 
 	t.Run("The normal on a sphere at a point on the y axis", func(t *testing.T) {
 		s := GetSphere()
 
-		n := Normal(s, datatypes.Point(0, 1, 0))
+		n := s.Normal(datatypes.Point(0, 1, 0))
 		datatypes.AssertTupleEqual(t, n, datatypes.Vector(0, 1, 0))
 	})
 
 	t.Run("The normal on a sphere at a point on the z axis", func(t *testing.T) {
 		s := GetSphere()
 
-		n := Normal(s, datatypes.Point(0, 0, 1))
+		n := s.Normal(datatypes.Point(0, 0, 1))
 		datatypes.AssertTupleEqual(t, n, datatypes.Vector(0, 0, 1))
 	})
 
 	t.Run("The normal on a sphere at a noaxial point", func(t *testing.T) {
 		s := GetSphere()
 
-		n := Normal(s, datatypes.Point(math.Sqrt(3)/3, math.Sqrt(3)/3, math.Sqrt(3)/3))
+		n := s.Normal(datatypes.Point(math.Sqrt(3)/3, math.Sqrt(3)/3, math.Sqrt(3)/3))
 		datatypes.AssertTupleEqual(t, n, datatypes.Vector(math.Sqrt(3)/3, math.Sqrt(3)/3, math.Sqrt(3)/3))
 	})
 
 	t.Run("The normal is a normalized vector", func(t *testing.T) {
 		s := GetSphere()
 
-		n := Normal(s, datatypes.Point(math.Sqrt(3)/3, math.Sqrt(3)/3, math.Sqrt(3)/3))
+		n := s.Normal(datatypes.Point(math.Sqrt(3)/3, math.Sqrt(3)/3, math.Sqrt(3)/3))
 		datatypes.AssertTupleEqual(t, n.Normalize(), n)
 	})
 

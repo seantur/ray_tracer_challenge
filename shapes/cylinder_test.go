@@ -71,7 +71,7 @@ func TestCylinders(t *testing.T) {
 		c := GetCylinder()
 
 		for _, ray := range testcases {
-			normal := Normal(c, ray.Origin)
+			normal := c.Normal(ray.Origin)
 			if !datatypes.IsTupleEqual(normal, ray.Direction) {
 				t.Fatalf("Actual normal vector %v != expected normal vector %v", normal, ray.Direction)
 			}
@@ -149,7 +149,7 @@ func TestCylinders(t *testing.T) {
 		c.Closed = true
 
 		for _, ray := range testcases {
-			normal := Normal(c, ray.Origin)
+			normal := c.Normal(ray.Origin)
 			if !datatypes.IsTupleEqual(normal, ray.Direction) {
 				t.Fatalf("Actual normal vector %v != expected normal vector %v", normal, ray.Direction)
 			}
