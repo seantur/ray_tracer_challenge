@@ -10,6 +10,14 @@ type Plane struct {
 	Material
 }
 
+func GetPlane() *Plane {
+	s := Plane{}
+	s.Transform = datatypes.GetIdentity()
+	s.Material = GetMaterial()
+
+	return &s
+}
+
 func (p *Plane) GetMaterial() Material {
 	return p.Material
 }
@@ -38,12 +46,4 @@ func (p *Plane) Intersect(r datatypes.Ray) []Intersection {
 
 func (p *Plane) Normal(obj_p datatypes.Tuple) datatypes.Tuple {
 	return datatypes.Vector(0, 1, 0)
-}
-
-func GetPlane() Shape {
-	s := Plane{}
-	s.Transform = datatypes.GetIdentity()
-	s.Material = GetMaterial()
-
-	return &s
 }

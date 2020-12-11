@@ -34,7 +34,7 @@ func (s *Sphere) SetTransform(m datatypes.Matrix) {
 	s.Transform = m
 }
 
-func (s *Sphere) Intersect(r datatypes.Ray) []Intersection {
+func (s *Sphere) Intersect(r datatypes.Ray) (xs []Intersection) {
 	sphereToRay := datatypes.Subtract(r.Origin, datatypes.Point(0, 0, 0))
 
 	a := datatypes.Dot(r.Direction, r.Direction)
@@ -44,14 +44,14 @@ func (s *Sphere) Intersect(r datatypes.Ray) []Intersection {
 	discriminant := math.Pow(b, 2) - 4*a*c
 
 	if discriminant < 0 {
-		return make([]Intersection, 0)
+		return
 	}
 
-	xs := []Intersection{
+	xs = []Intersection{
 		Intersection{(-b - math.Sqrt(discriminant)) / (2 * a), s},
 		Intersection{(-b + math.Sqrt(discriminant)) / (2 * a), s}}
 
-	return xs
+	return
 }
 
 func (s *Sphere) Normal(obj_p datatypes.Tuple) datatypes.Tuple {

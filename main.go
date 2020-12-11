@@ -10,47 +10,31 @@ import (
 )
 
 func saveScene(path string) {
-	floor := raytracing.GetPlane()
-	mat := floor.GetMaterial()
+	room := raytracing.GetCube()
+	mat := room.GetMaterial()
 	mat.Pattern = raytracing.GetCheckers(raytracing.HexColor(raytracing.White), raytracing.HexColor(raytracing.Black))
+	mat.Pattern.SetTransform(datatypes.GetScaling(0.1, 0.1, 0.1))
+	room.SetMaterial(mat)
+	room.SetTransform(datatypes.GetScaling(100, 100, 100))
+
+	obj := raytracing.GetCylinder()
+	obj.Min = 0
+	obj.Max = 1
+	obj.SetTransform(datatypes.GetTransform(datatypes.GetRotationX(math.Pi/2), datatypes.GetTranslation(0, 0, -10)))
+
+	mat = obj.GetMaterial()
+	mat.RGB = raytracing.HexColor(raytracing.Magenta)
+	//mat.Transparency = 1
+	//mat.RefractiveIndex = 1.52
 	mat.Specular = 0.5
-	mat.Reflective = 0.5
-	floor.SetMaterial(mat)
-	floor.SetTransform(datatypes.GetTransform(
-		datatypes.GetRotationX(math.Pi/2),
-		datatypes.GetTranslation(0, 0, -20)))
-
-	sphere := raytracing.GetSphere()
-	sphere.SetTransform(datatypes.GetTransform(
-		datatypes.GetScaling(0.5, 0.5, 0.5),
-		datatypes.GetTranslation(0, 0, -1)))
-	mat = sphere.GetMaterial()
-	mat.Diffuse = 0
-	mat.Transparency = 1
-	mat.RefractiveIndex = 1.52
-	mat.Ambient = 0
-	mat.Shininess = 300
-	mat.Specular = 1
-	mat.Reflective = 1
-	sphere.SetMaterial(mat)
-
-	bubble := raytracing.GetSphere()
-	bubble.SetTransform(datatypes.GetTransform(
-		datatypes.GetScaling(0.25, 0.25, 0.25),
-		datatypes.GetTranslation(0, 0, -1)))
-	mat = bubble.GetMaterial()
-	mat.RefractiveIndex = 1.00029
-	mat.Transparency = 1
-	mat.Shininess = 300
-	mat.Specular = 1
-	mat.Reflective = 1
-	bubble.SetMaterial(mat)
+	//mat.Reflective = 0.5
+	obj.SetMaterial(mat)
 
 	world := scene.GetWorld()
 	world.Light.Position = datatypes.Point(10, 10, 10)
-	world.Shapes = []raytracing.Shape{floor, sphere} //, bubble}
+	world.Shapes = []raytracing.Shape{room, obj}
 
-	camera := scene.GetCamera(1000, 1000, math.Pi/3)
+	camera := scene.GetCamera(500, 500, math.Pi/3)
 	camera.Transform = datatypes.ViewTransform(datatypes.Point(0, 0, 0), datatypes.Point(0, 0, -1), datatypes.Vector(0, 1, 0))
 
 	fmt.Println("Rendering...")

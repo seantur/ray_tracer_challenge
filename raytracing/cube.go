@@ -10,7 +10,7 @@ type Cube struct {
 	Material
 }
 
-func GetCube() Shape {
+func GetCube() *Cube {
 	c := Cube{}
 	c.Transform = datatypes.GetIdentity()
 	c.Material = GetMaterial()
