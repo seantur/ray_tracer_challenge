@@ -3,19 +3,20 @@ package scene
 import (
 	"github.com/seantur/ray_tracer_challenge/datatypes"
 	"github.com/seantur/ray_tracer_challenge/raytracing"
+	"github.com/seantur/ray_tracer_challenge/shapes"
 	"math"
 	"sort"
 )
 
 type World struct {
-	Light  raytracing.PointLight
-	Shapes []raytracing.Shape
+	Light  PointLight
+	Shapes []shapes.Shape
 }
 
 func GetWorld() World {
-	w := World{Light: raytracing.PointLight{Position: datatypes.Point(-10, 10, -10), Intensity: raytracing.RGB{Red: 1, Green: 1, Blue: 1}}}
+	w := World{Light: PointLight{Position: datatypes.Point(-10, 10, -10), Intensity: raytracing.RGB{Red: 1, Green: 1, Blue: 1}}}
 
-	s1 := raytracing.GetSphere()
+	s1 := shapes.GetSphere()
 
 	mat := s1.GetMaterial()
 	mat.RGB = raytracing.RGB{Red: 0.8, Green: 1.0, Blue: 0.6}
@@ -23,39 +24,39 @@ func GetWorld() World {
 	mat.Specular = 0.2
 	s1.SetMaterial(mat)
 
-	s2 := raytracing.GetSphere()
+	s2 := shapes.GetSphere()
 	s2.SetTransform(datatypes.GetScaling(0.5, 0.5, 0.5))
 
-	w.Shapes = []raytracing.Shape{s1, s2}
+	w.Shapes = []shapes.Shape{s1, s2}
 
 	return w
 }
 
-func (w *World) Intersect(r datatypes.Ray) []raytracing.Intersection {
+func (w *World) Intersect(r datatypes.Ray) []shapes.Intersection {
 
-	intersections := []raytracing.Intersection{}
+	intersections := []shapes.Intersection{}
 
 	for i, _ := range w.Shapes {
-		intersection := raytracing.Intersect(w.Shapes[i], r)
+		intersection := shapes.Intersect(w.Shapes[i], r)
 		intersections = append(intersections, intersection...)
 	}
-	sort.Sort(raytracing.ByT(intersections))
+	sort.Sort(shapes.ByT(intersections))
 
 	return intersections
 
 }
 
-func (w *World) ShadeHit(c raytracing.Computation, remaining int) raytracing.RGB {
+func (w *World) ShadeHit(c shapes.Computation, remaining int) raytracing.RGB {
 	shadowed := w.IsShadowed(c.OverPoint)
 
-	surfaceColor := raytracing.Lighting(c.Object.GetMaterial(), c.Object, w.Light, c.OverPoint, c.Eyev, c.Normalv, shadowed)
+	surfaceColor := Lighting(c.Object.GetMaterial(), c.Object, w.Light, c.OverPoint, c.Eyev, c.Normalv, shadowed)
 	reflectedColor := w.ReflectedColor(c, remaining)
 	refractedColor := w.RefractedColor(c, remaining)
 
 	mat := c.Object.GetMaterial()
 
 	if mat.Reflective > 0 && mat.Transparency > 0 {
-		reflectance := raytracing.Schlick(c)
+		reflectance := shapes.Schlick(c)
 		return raytracing.Add(surfaceColor,
 			reflectedColor.Multiply(reflectance),
 			refractedColor.Multiply(1-reflectance))
@@ -67,7 +68,7 @@ func (w *World) ShadeHit(c raytracing.Computation, remaining int) raytracing.RGB
 func (w *World) ColorAt(r datatypes.Ray, remaining int) raytracing.RGB {
 	intersections := w.Intersect(r)
 
-	hit, err := raytracing.Hit(intersections)
+	hit, err := shapes.Hit(intersections)
 
 	if err != nil {
 		return raytracing.RGB{}
@@ -88,7 +89,7 @@ func (w *World) IsShadowed(p datatypes.Tuple) bool {
 	r := datatypes.Ray{Origin: p, Direction: direction}
 	intersections := w.Intersect(r)
 
-	h, err := raytracing.Hit(intersections)
+	h, err := shapes.Hit(intersections)
 	if (err == nil) && (h.T < distance) {
 		return true
 	}
@@ -96,7 +97,7 @@ func (w *World) IsShadowed(p datatypes.Tuple) bool {
 	return false
 }
 
-func (w *World) ReflectedColor(c raytracing.Computation, remaining int) raytracing.RGB {
+func (w *World) ReflectedColor(c shapes.Computation, remaining int) raytracing.RGB {
 	// Avoid infinite recursion
 	if remaining < 1 {
 		return raytracing.RGB{Red: 0, Green: 0, Blue: 0}
@@ -113,7 +114,7 @@ func (w *World) ReflectedColor(c raytracing.Computation, remaining int) raytraci
 	return color.Multiply(mat.Reflective)
 }
 
-func (w *World) RefractedColor(c raytracing.Computation, remaining int) raytracing.RGB {
+func (w *World) RefractedColor(c shapes.Computation, remaining int) raytracing.RGB {
 	material := c.Object.GetMaterial()
 	if material.Transparency == 0 || remaining == 0 {
 		return raytracing.RGB{Red: 0, Green: 0, Blue: 0}

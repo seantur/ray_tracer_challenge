@@ -1,28 +1,29 @@
-package raytracing
+package shapes
 
 import (
 	"github.com/seantur/ray_tracer_challenge/datatypes"
+	"github.com/seantur/ray_tracer_challenge/raytracing"
 	"math"
 )
 
 type Plane struct {
 	Transform datatypes.Matrix
-	Material
+	raytracing.Material
 }
 
 func GetPlane() *Plane {
 	s := Plane{}
 	s.Transform = datatypes.GetIdentity()
-	s.Material = GetMaterial()
+	s.Material = raytracing.GetMaterial()
 
 	return &s
 }
 
-func (p *Plane) GetMaterial() Material {
+func (p *Plane) GetMaterial() raytracing.Material {
 	return p.Material
 }
 
-func (p *Plane) SetMaterial(m Material) {
+func (p *Plane) SetMaterial(m raytracing.Material) {
 	p.Material = m
 }
 

@@ -1,4 +1,4 @@
-package raytracing
+package shapes
 
 import (
 	"github.com/seantur/ray_tracer_challenge/datatypes"

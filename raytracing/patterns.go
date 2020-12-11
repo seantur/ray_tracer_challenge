@@ -11,19 +11,6 @@ type Pattern interface {
 	GetTransform() datatypes.Matrix
 }
 
-func AtObj(p Pattern, shape Shape, point datatypes.Tuple) RGB {
-	objTransform := shape.GetTransform()
-	patternTransform := p.GetTransform()
-
-	patternTransformInv, _ := patternTransform.Inverse()
-	objTransformInv, _ := objTransform.Inverse()
-
-	objPoint := datatypes.TupleMultiply(objTransformInv, point)
-	patternPoint := datatypes.TupleMultiply(patternTransformInv, objPoint)
-
-	return p.At(patternPoint)
-}
-
 type Stripe struct {
 	A, B      RGB
 	Transform datatypes.Matrix

@@ -1,13 +1,18 @@
-package raytracing
+package shapes
 
 import (
 	"github.com/seantur/ray_tracer_challenge/datatypes"
+	"github.com/seantur/ray_tracer_challenge/raytracing"
 	"math"
 	"reflect"
 	"testing"
 )
 
 func TestShapes(t *testing.T) {
+
+	black := raytracing.RGB{Red: 0, Green: 0, Blue: 0}
+	white := raytracing.RGB{Red: 1, Green: 1, Blue: 1}
+
 	assertVal := func(t *testing.T, got float64, want float64) {
 		t.Helper()
 		if !datatypes.IsClose(got, want) {
@@ -200,5 +205,36 @@ func TestShapes(t *testing.T) {
 		comps := xs[0].PrepareComputations(r, xs)
 
 		assertVal(t, Schlick(comps), 0.48873)
+	})
+
+	t.Run("Stripes with an object transformation", func(t *testing.T) {
+		obj := GetSphere()
+		obj.SetTransform(datatypes.GetScaling(2, 2, 2))
+
+		pattern := raytracing.GetStripe(white, black)
+		c := AtObj(pattern, obj, datatypes.Point(1.5, 0, 0))
+
+		raytracing.AssertColorsEqual(t, c, white)
+	})
+
+	t.Run("Stripes with a pattern transformation", func(t *testing.T) {
+		obj := GetSphere()
+
+		pattern := raytracing.GetStripe(white, black)
+		pattern.SetTransform(datatypes.GetScaling(2, 2, 2))
+		c := AtObj(pattern, obj, datatypes.Point(1.5, 0, 0))
+
+		raytracing.AssertColorsEqual(t, c, white)
+	})
+
+	t.Run("Stripes with an object and a pattern transformation", func(t *testing.T) {
+		obj := GetSphere()
+		obj.SetTransform(datatypes.GetScaling(2, 2, 2))
+
+		pattern := raytracing.GetStripe(white, black)
+		pattern.SetTransform(datatypes.GetScaling(2, 2, 2))
+		c := AtObj(pattern, obj, datatypes.Point(2.5, 0, 0))
+
+		raytracing.AssertColorsEqual(t, c, white)
 	})
 }

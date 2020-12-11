@@ -1,14 +1,15 @@
-package raytracing
+package shapes
 
 import (
 	"errors"
 	"github.com/seantur/ray_tracer_challenge/datatypes"
+	"github.com/seantur/ray_tracer_challenge/raytracing"
 	"math"
 )
 
 type Shape interface {
-	GetMaterial() Material
-	SetMaterial(Material)
+	GetMaterial() raytracing.Material
+	SetMaterial(raytracing.Material)
 	GetTransform() datatypes.Matrix
 	SetTransform(datatypes.Matrix)
 	Normal(datatypes.Tuple) datatypes.Tuple
@@ -156,4 +157,17 @@ func Schlick(comp Computation) float64 {
 	}
 	r0 := math.Pow((comp.N1-comp.N2)/(comp.N1+comp.N2), 2)
 	return r0 + (1-r0)*math.Pow(1-cos, 5)
+}
+
+func AtObj(p raytracing.Pattern, shape Shape, point datatypes.Tuple) raytracing.RGB {
+	objTransform := shape.GetTransform()
+	patternTransform := p.GetTransform()
+
+	patternTransformInv, _ := patternTransform.Inverse()
+	objTransformInv, _ := objTransform.Inverse()
+
+	objPoint := datatypes.TupleMultiply(objTransformInv, point)
+	patternPoint := datatypes.TupleMultiply(patternTransformInv, objPoint)
+
+	return p.At(patternPoint)
 }

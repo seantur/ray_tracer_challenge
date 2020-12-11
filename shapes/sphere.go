@@ -1,28 +1,29 @@
-package raytracing
+package shapes
 
 import (
 	"github.com/seantur/ray_tracer_challenge/datatypes"
+	"github.com/seantur/ray_tracer_challenge/raytracing"
 	"math"
 )
 
 type Sphere struct {
 	Transform datatypes.Matrix
-	Material
+	raytracing.Material
 }
 
 func GetSphere() Shape {
 	s := Sphere{}
 	s.Transform = datatypes.GetIdentity()
-	s.Material = GetMaterial()
+	s.Material = raytracing.GetMaterial()
 
 	return &s
 }
 
-func (s *Sphere) GetMaterial() Material {
+func (s *Sphere) GetMaterial() raytracing.Material {
 	return s.Material
 }
 
-func (s *Sphere) SetMaterial(m Material) {
+func (s *Sphere) SetMaterial(m raytracing.Material) {
 	s.Material = m
 }
 

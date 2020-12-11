@@ -5,19 +5,20 @@ import (
 	"github.com/seantur/ray_tracer_challenge/datatypes"
 	"github.com/seantur/ray_tracer_challenge/raytracing"
 	"github.com/seantur/ray_tracer_challenge/scene"
+	"github.com/seantur/ray_tracer_challenge/shapes"
 	"math"
 	"time"
 )
 
 func saveScene(path string) {
-	room := raytracing.GetCube()
+	room := shapes.GetCube()
 	mat := room.GetMaterial()
 	mat.Pattern = raytracing.GetCheckers(raytracing.HexColor(raytracing.White), raytracing.HexColor(raytracing.Black))
 	mat.Pattern.SetTransform(datatypes.GetScaling(0.1, 0.1, 0.1))
 	room.SetMaterial(mat)
 	room.SetTransform(datatypes.GetScaling(100, 100, 100))
 
-	obj := raytracing.GetCylinder()
+	obj := shapes.GetCylinder()
 	obj.Min = 0
 	obj.Max = 1
 	obj.SetTransform(datatypes.GetTransform(datatypes.GetRotationX(math.Pi/2), datatypes.GetTranslation(0, 0, -10)))
@@ -32,7 +33,7 @@ func saveScene(path string) {
 
 	world := scene.GetWorld()
 	world.Light.Position = datatypes.Point(10, 10, 10)
-	world.Shapes = []raytracing.Shape{room, obj}
+	world.Shapes = []shapes.Shape{room, obj}
 
 	camera := scene.GetCamera(500, 500, math.Pi/3)
 	camera.Transform = datatypes.ViewTransform(datatypes.Point(0, 0, 0), datatypes.Point(0, 0, -1), datatypes.Vector(0, 1, 0))

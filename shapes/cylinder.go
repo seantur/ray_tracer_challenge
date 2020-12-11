@@ -1,13 +1,14 @@
-package raytracing
+package shapes
 
 import (
 	"github.com/seantur/ray_tracer_challenge/datatypes"
+	"github.com/seantur/ray_tracer_challenge/raytracing"
 	"math"
 )
 
 type Cylinder struct {
 	Transform datatypes.Matrix
-	Material
+	raytracing.Material
 	Min, Max float64
 	Closed   bool
 }
@@ -15,18 +16,18 @@ type Cylinder struct {
 func GetCylinder() *Cylinder {
 	c := Cylinder{}
 	c.Transform = datatypes.GetIdentity()
-	c.Material = GetMaterial()
+	c.Material = raytracing.GetMaterial()
 	c.Min = -datatypes.INFINITY
 	c.Max = datatypes.INFINITY
 
 	return &c
 }
 
-func (c *Cylinder) GetMaterial() Material {
+func (c *Cylinder) GetMaterial() raytracing.Material {
 	return c.Material
 }
 
-func (c *Cylinder) SetMaterial(m Material) {
+func (c *Cylinder) SetMaterial(m raytracing.Material) {
 	c.Material = m
 }
 

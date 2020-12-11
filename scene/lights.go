@@ -1,29 +1,31 @@
-package raytracing
+package scene
 
 import (
 	"github.com/seantur/ray_tracer_challenge/datatypes"
+	"github.com/seantur/ray_tracer_challenge/raytracing"
+	"github.com/seantur/ray_tracer_challenge/shapes"
 	"math"
 )
 
 type PointLight struct {
-	Intensity RGB
+	Intensity raytracing.RGB
 	Position  datatypes.Tuple
 }
 
-func Lighting(material Material, shape Shape, light PointLight, point datatypes.Tuple, eyev datatypes.Tuple, normalv datatypes.Tuple, is_shadow bool) RGB {
+func Lighting(material raytracing.Material, shape shapes.Shape, light PointLight, point datatypes.Tuple, eyev datatypes.Tuple, normalv datatypes.Tuple, is_shadow bool) raytracing.RGB {
 
-	var materialColor RGB
+	var materialColor raytracing.RGB
 
 	if material.Pattern != nil {
-		materialColor = AtObj(material.Pattern, shape, point)
+		materialColor = shapes.AtObj(material.Pattern, shape, point)
 	} else {
 		materialColor = material.RGB
 	}
 
-	diffuse := RGB{}
-	specular := RGB{}
+	diffuse := raytracing.RGB{}
+	specular := raytracing.RGB{}
 
-	effective_color := Hadamard(materialColor, light.Intensity)
+	effective_color := raytracing.Hadamard(materialColor, light.Intensity)
 
 	lightv := datatypes.Subtract(light.Position, point)
 	lightv = lightv.Normalize()
@@ -46,7 +48,7 @@ func Lighting(material Material, shape Shape, light PointLight, point datatypes.
 		reflect_dot_eye := datatypes.Dot(reflectv, eyev)
 
 		if reflect_dot_eye <= 0 {
-			specular = RGB{}
+			specular = raytracing.RGB{}
 		} else {
 
 			factor := math.Pow(reflect_dot_eye, material.Shininess)
@@ -56,8 +58,8 @@ func Lighting(material Material, shape Shape, light PointLight, point datatypes.
 		}
 	}
 
-	output := Add(ambient, diffuse)
-	output = Add(output, specular)
+	output := raytracing.Add(ambient, diffuse)
+	output = raytracing.Add(output, specular)
 
 	return output
 

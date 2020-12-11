@@ -1,28 +1,29 @@
-package raytracing
+package shapes
 
 import (
 	"github.com/seantur/ray_tracer_challenge/datatypes"
+	"github.com/seantur/ray_tracer_challenge/raytracing"
 	"math"
 )
 
 type Cube struct {
 	Transform datatypes.Matrix
-	Material
+	raytracing.Material
 }
 
 func GetCube() *Cube {
 	c := Cube{}
 	c.Transform = datatypes.GetIdentity()
-	c.Material = GetMaterial()
+	c.Material = raytracing.GetMaterial()
 
 	return &c
 }
 
-func (c *Cube) GetMaterial() Material {
+func (c *Cube) GetMaterial() raytracing.Material {
 	return c.Material
 }
 
-func (c *Cube) SetMaterial(m Material) {
+func (c *Cube) SetMaterial(m raytracing.Material) {
 	c.Material = m
 }
 

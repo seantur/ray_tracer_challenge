@@ -1,7 +1,8 @@
-package raytracing
+package shapes
 
 import (
 	"github.com/seantur/ray_tracer_challenge/datatypes"
+	"github.com/seantur/ray_tracer_challenge/raytracing"
 	"math"
 	"reflect"
 	"testing"
@@ -99,7 +100,7 @@ func TestSpheres(t *testing.T) {
 
 	t.Run("A sphere has a default material", func(t *testing.T) {
 		s := GetSphere()
-		m := GetMaterial()
+		m := raytracing.GetMaterial()
 
 		if !reflect.DeepEqual(s.GetMaterial(), m) {
 			t.Error("expected sphere material is not the default")
@@ -108,7 +109,7 @@ func TestSpheres(t *testing.T) {
 
 	t.Run("A sphere may be assigned a materials", func(t *testing.T) {
 		s := GetSphere()
-		m := GetMaterial()
+		m := raytracing.GetMaterial()
 
 		m.Ambient = 1
 		s.SetMaterial(m)
