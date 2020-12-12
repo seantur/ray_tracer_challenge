@@ -11,6 +11,7 @@ type Cone struct {
 	raytracing.Material
 	Min, Max float64
 	Closed   bool
+	Parent   Shape
 }
 
 func GetCone() *Cone {
@@ -21,6 +22,14 @@ func GetCone() *Cone {
 	c.Max = datatypes.INFINITY
 
 	return &c
+}
+
+func (c *Cone) GetParent() Shape {
+	return c.Parent
+}
+
+func (c *Cone) SetParent(s Shape) {
+	c.Parent = s
 }
 
 func (c *Cone) GetMaterial() raytracing.Material {

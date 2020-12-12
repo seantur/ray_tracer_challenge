@@ -18,26 +18,23 @@ func saveScene(path string) {
 	room.SetMaterial(mat)
 	room.SetTransform(datatypes.GetScaling(100, 100, 100))
 
-	obj := shapes.GetSphere()
-	//obj.Min = 0
-	//obj.Max = 1
-	//obj.Closed = true
-	obj.SetTransform(datatypes.GetTransform(datatypes.GetRotationX(math.Pi/4), datatypes.GetTranslation(0, 0, -5)))
+	//s1 := shapes.GetSphere()
+	s2 := shapes.GetSphere()
+	s3 := shapes.GetSphere()
 
-	mat = obj.GetMaterial()
+	mat = s2.GetMaterial()
 	mat.RGB = raytracing.HexColor(raytracing.Red)
-	//mat.Transparency = 1
-	//mat.RefractiveIndex = 1.52
-	mat.Specular = 0.5
-	//mat.Reflective = 0.5
-	obj.SetMaterial(mat)
+	s2.SetMaterial(mat)
+
+	s2.SetTransform(datatypes.GetTranslation(0, 0, -3))
+	s3.SetTransform(datatypes.GetTranslation(-5, 0, -10))
 
 	world := scene.GetWorld()
 	world.Light.Position = datatypes.Point(10, 10, 10)
-	world.Shapes = []shapes.Shape{room, obj}
+	world.Shapes = []shapes.Shape{room, s2, s3}
 
 	camera := scene.GetCamera(500, 500, math.Pi/3)
-	camera.Transform = datatypes.ViewTransform(datatypes.Point(0, 0, 0), datatypes.Point(0, 0, -1), datatypes.Vector(0, 1, 0))
+	//camera.Transform = datatypes.ViewTransform(datatypes.Point(0, 0, 0), datatypes.Point(0, 0, -1), datatypes.Vector(0, 1, 0))
 
 	fmt.Println("Rendering...")
 	start := time.Now()

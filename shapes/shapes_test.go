@@ -237,4 +237,11 @@ func TestShapes(t *testing.T) {
 
 		raytracing.AssertColorsEqual(t, c, white)
 	})
+
+	t.Run("A shape has a parent attribute", func(t *testing.T) {
+		obj := GetSphere()
+		if obj.GetParent() != nil {
+			t.Error("expected parent to be nil")
+		}
+	})
 }

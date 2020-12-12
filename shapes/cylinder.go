@@ -11,6 +11,7 @@ type Cylinder struct {
 	raytracing.Material
 	Min, Max float64
 	Closed   bool
+	Parent   Shape
 }
 
 func GetCylinder() *Cylinder {
@@ -21,6 +22,14 @@ func GetCylinder() *Cylinder {
 	c.Max = datatypes.INFINITY
 
 	return &c
+}
+
+func (c *Cylinder) GetParent() Shape {
+	return c.Parent
+}
+
+func (c *Cylinder) SetParent(s Shape) {
+	c.Parent = s
 }
 
 func (c *Cylinder) GetMaterial() raytracing.Material {

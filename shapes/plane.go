@@ -9,6 +9,7 @@ import (
 type Plane struct {
 	Transform datatypes.Matrix
 	raytracing.Material
+	Parent Shape
 }
 
 func GetPlane() *Plane {
@@ -17,6 +18,14 @@ func GetPlane() *Plane {
 	s.Material = raytracing.GetMaterial()
 
 	return &s
+}
+
+func (p *Plane) GetParent() Shape {
+	return p.Parent
+}
+
+func (p *Plane) SetParent(s Shape) {
+	p.Parent = s
 }
 
 func (p *Plane) GetMaterial() raytracing.Material {

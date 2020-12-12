@@ -9,14 +9,23 @@ import (
 type Sphere struct {
 	Transform datatypes.Matrix
 	raytracing.Material
+	Parent Shape
 }
 
-func GetSphere() Shape {
+func GetSphere() *Sphere {
 	s := Sphere{}
 	s.Transform = datatypes.GetIdentity()
 	s.Material = raytracing.GetMaterial()
 
 	return &s
+}
+
+func (s *Sphere) GetParent() Shape {
+	return s.Parent
+}
+
+func (s *Sphere) SetParent(shape Shape) {
+	s.Parent = shape
 }
 
 func (s *Sphere) GetMaterial() raytracing.Material {

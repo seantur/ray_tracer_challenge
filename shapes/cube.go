@@ -9,6 +9,7 @@ import (
 type Cube struct {
 	Transform datatypes.Matrix
 	raytracing.Material
+	Parent Shape
 }
 
 func GetCube() *Cube {
@@ -17,6 +18,14 @@ func GetCube() *Cube {
 	c.Material = raytracing.GetMaterial()
 
 	return &c
+}
+
+func (c *Cube) GetParent() Shape {
+	return c.Parent
+}
+
+func (c *Cube) SetParent(s Shape) {
+	c.Parent = s
 }
 
 func (c *Cube) GetMaterial() raytracing.Material {

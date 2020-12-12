@@ -12,6 +12,8 @@ type Shape interface {
 	SetMaterial(raytracing.Material)
 	GetTransform() datatypes.Matrix
 	SetTransform(datatypes.Matrix)
+	GetParent() Shape
+	SetParent(Shape)
 	Normal(datatypes.Tuple) datatypes.Tuple
 	Intersect(datatypes.Ray) []Intersection
 }
@@ -160,14 +162,44 @@ func Schlick(comp Computation) float64 {
 }
 
 func AtObj(p raytracing.Pattern, shape Shape, point datatypes.Tuple) raytracing.RGB {
-	objTransform := shape.GetTransform()
 	patternTransform := p.GetTransform()
 
 	patternTransformInv, _ := patternTransform.Inverse()
-	objTransformInv, _ := objTransform.Inverse()
 
-	objPoint := datatypes.TupleMultiply(objTransformInv, point)
+	objPoint := WorldToObject(shape, point)
 	patternPoint := datatypes.TupleMultiply(patternTransformInv, objPoint)
 
 	return p.At(patternPoint)
+}
+
+func WorldToObject(shape Shape, point datatypes.Tuple) datatypes.Tuple {
+	parent := shape.GetParent()
+	if parent != nil {
+		point = WorldToObject(parent, point)
+	}
+
+	transform := shape.GetTransform()
+	invTransform, _ := transform.Inverse()
+	return datatypes.TupleMultiply(invTransform, point)
+}
+
+func NormalToWorld(shape Shape, normal datatypes.Tuple) datatypes.Tuple {
+	transform := shape.GetTransform()
+	transformInv, _ := transform.Inverse()
+	normal = datatypes.TupleMultiply(transformInv.Transpose(), normal)
+	normal.W = 0
+	normal = normal.Normalize()
+
+	parent := shape.GetParent()
+	if parent != nil {
+		normal = NormalToWorld(parent, normal)
+	}
+
+	return normal
+}
+
+func NormalAt(shape Shape, worldPoint datatypes.Tuple) datatypes.Tuple {
+	localPoint := WorldToObject(shape, worldPoint)
+	localNormal := shape.Normal(localPoint)
+	return NormalToWorld(shape, localNormal)
 }
